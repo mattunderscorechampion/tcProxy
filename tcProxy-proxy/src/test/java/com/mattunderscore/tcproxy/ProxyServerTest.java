@@ -31,14 +31,21 @@ import com.mattunderscore.tcproxy.proxy.ProxyServer;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author matt on 18/02/14.
  */
 public class ProxyServerTest {
     @Test
-    public void test0() throws IOException {
+    public void test0() throws IOException, InterruptedException {
+        try {
         final ProxyServer server = new ProxyServer(new AcceptorSettings(8085), new OutboundSocketSettings(8080, "localhost"));
         server.start();
+        }
+        catch (Throwable t) {
+            t.printStackTrace();
+        }
+        new CountDownLatch(1).await();
     }
 }

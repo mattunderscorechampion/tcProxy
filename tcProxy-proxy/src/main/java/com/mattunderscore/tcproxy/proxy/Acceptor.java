@@ -57,6 +57,8 @@ public class Acceptor implements Runnable {
         while (running) {
             try {
                 final SocketChannel clientSide = channel.accept();
+                clientSide.configureBlocking(false);
+                System.out.println("Accepted " + clientSide);
                 final SocketChannel serverSide = factory.createSocket();
                 newConnections.add(new ConnectionProxy(clientSide, serverSide));
             } catch (IOException e) {

@@ -67,7 +67,7 @@ public class Proxy implements Runnable {
                 final SelectionKey key0 = channel0.register(selector, SelectionKey.OP_READ);
                 key0.attach(cTs.getTo());
 
-                final Direction sTc = connection.clientToServer();
+                final Direction sTc = connection.serverToClient();
                 final SocketChannel channel1 = sTc.getFrom();
                 final SelectionKey key1 = channel1.register(selector, SelectionKey.OP_READ);
                 key1.attach(sTc.getTo());
@@ -80,15 +80,21 @@ public class Proxy implements Runnable {
 
     private void copyBytes(final ByteBuffer buffer) {
         try {
-            selector.select();
+            selector.select(100);
             final Set<SelectionKey> selectionKeys = selector.selectedKeys();
             for (final SelectionKey key : selectionKeys) {
-                buffer.position(0);
-                final SocketChannel otherSocket = (SocketChannel)key.attachment();
-                final SocketChannel channel = (SocketChannel)key.channel();
-                final int bytes = channel.read(buffer);
-                buffer.flip();
-                otherSocket.write(buffer);
+                if (key.isReadable()) {
+                    buffer.position(0);
+                    final SocketChannel otherSocket = (SocketChannel)key.attachment();
+                    final SocketChannel channel = (SocketChannel)key.channel();
+                    final int bytes = channel.read(buffer);
+                    if (bytes > 0) {
+                        System.out.println("Read " + bytes + "bytes");
+                        buffer.flip();
+                        final int bytesritten = otherSocket.write(buffer);
+                        System.out.println("Wrote " + bytesritten + "bytes");
+                    }
+                }
             }
         }
         catch (IOException e) {

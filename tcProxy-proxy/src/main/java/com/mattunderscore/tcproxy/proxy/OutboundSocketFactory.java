@@ -40,6 +40,8 @@ public class OutboundSocketFactory {
     }
 
     public SocketChannel createSocket() throws IOException {
-        return SocketChannel.open(new InetSocketAddress(settings.getHost(), settings.getPort()));
+        final SocketChannel channel = SocketChannel.open(new InetSocketAddress(settings.getHost(), settings.getPort()));
+        channel.configureBlocking(false);
+        return channel;
     }
 }
