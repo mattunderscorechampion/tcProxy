@@ -49,6 +49,7 @@ public class Proxy implements Runnable {
     @Override
     public void run() {
         final ByteBuffer buffer = ByteBuffer.allocate(4 * 1024);
+        running = true;
         while (running) {
             registerKeys();
 

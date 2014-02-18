@@ -68,10 +68,11 @@ public class Acceptor implements Runnable {
 
     public void run() {
         try {
+            running = true;
             final ServerSocketChannel channel = openServerSocket();
             mainLoop(channel);
         }
-        catch (IOException e) {
+        catch (Throwable e) {
             e.printStackTrace();
         }
     }

@@ -54,6 +54,18 @@ public class ProxyServer {
         t1 = new Thread(proxy);
         t0.setDaemon(true);
         t1.setDaemon(true);
+        t0.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                e.printStackTrace();
+            }
+        });
+        t1.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                e.printStackTrace();
+            }
+        });
         t0.start();
         t1.start();
     }
