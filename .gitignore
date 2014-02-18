@@ -1,0 +1,4 @@
+tcProxy-gui/target/
+tcProxy-proxy/target/
+*.iml
+.idea
