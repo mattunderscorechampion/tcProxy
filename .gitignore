@@ -1,4 +1,10 @@
 tcProxy-gui/target/
+/tcProxy-gui/target/.settings
+/tcProxy-gui/target/.project
 tcProxy-proxy/target/
+/tcProxy-proxy/target/.settings
+/tcProxy-proxy/target/.project
 *.iml
 .idea
+/.settings
+/.project
