@@ -25,12 +25,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * @author matt on 18/02/14.
@@ -46,6 +46,21 @@ public class Connection {
         this.serverSide = serverSide;
         writesToClient = new LinkedBlockingQueue<>();
         writesToServer = new LinkedBlockingQueue<>();
+    }
+
+    public void close() {
+        try {
+            clientSide.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            serverSide.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public Direction clientToServer() {
