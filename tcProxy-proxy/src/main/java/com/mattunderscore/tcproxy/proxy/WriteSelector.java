@@ -77,7 +77,10 @@ public class WriteSelector implements Runnable {
             selector.selectNow();
             final Set<SelectionKey> keys = selector.selectedKeys();
             for (final SelectionKey key : keys) {
-                if (key.isWritable()) {
+                if (!key.isValid()) {
+                    key.cancel();
+                }
+                else if (key.isWritable()) {
                     final ConnectionWrites write = (ConnectionWrites)key.attachment();
                     final SocketChannel target = write.getTarget();
                     final ByteBuffer data = write.current();

@@ -86,7 +86,10 @@ public class ReadSelector implements Runnable {
             selector.select(100);
             final Set<SelectionKey> selectionKeys = selector.selectedKeys();
             for (final SelectionKey key : selectionKeys) {
-                if (key.isReadable()) {
+                if (!key.isValid()) {
+                    key.cancel();
+                }
+                else if (key.isReadable()) {
                     buffer.position(0);
                     final ConnectionWrites writes = (ConnectionWrites)key.attachment();
                     final SocketChannel channel = (SocketChannel)key.channel();
