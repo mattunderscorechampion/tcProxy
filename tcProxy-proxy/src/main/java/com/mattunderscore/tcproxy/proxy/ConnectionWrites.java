@@ -42,4 +42,6 @@ public interface ConnectionWrites {
     ByteBuffer current();
 
     boolean hasData();
+
+    Connection getConnection();
 }

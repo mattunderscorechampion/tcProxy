@@ -40,12 +40,20 @@ public class Connection {
     private final SocketChannel serverSide;
     private final Queue<ByteBuffer> writesToClient;
     private final Queue<ByteBuffer> writesToServer;
+    private final Direction clientToServer;
+    private final Direction serverToClient;
+    private final ConnectionWrites cwToClient;
+    private final ConnectionWrites cwToServer;
 
     public Connection(final SocketChannel clientSide, final SocketChannel serverSide) {
         this.clientSide = clientSide;
         this.serverSide = serverSide;
         writesToClient = new LinkedBlockingQueue<>();
         writesToServer = new LinkedBlockingQueue<>();
+        clientToServer = new ClientToServer();
+        serverToClient = new ServerToClient();
+        cwToClient = new ClientWrites();
+        cwToServer = new ServerWrites();
     }
 
     public void close() {
@@ -64,12 +72,12 @@ public class Connection {
     }
 
     public Direction clientToServer() {
-        return new ClientToServer();
+        return clientToServer;
 
     }
 
     public Direction serverToClient() {
-        return new ServerToClient();
+        return serverToClient;
     }
 
     private final class ClientToServer implements Direction {
@@ -93,7 +101,7 @@ public class Connection {
 
         @Override
         public ConnectionWrites getWrites() {
-            return new ServerWrites();
+            return cwToServer;
         }
 
     }
@@ -119,7 +127,7 @@ public class Connection {
 
         @Override
         public ConnectionWrites getWrites() {
-            return new ClientWrites();
+            return cwToClient;
         }
     }
 
@@ -149,6 +157,10 @@ public class Connection {
         public boolean hasData() {
             return !writesToServer.isEmpty();
         }
+
+        public Connection getConnection() {
+            return Connection.this;
+        }
     }
 
     private final class ClientWrites implements ConnectionWrites {
@@ -176,6 +188,10 @@ public class Connection {
 
         public boolean hasData() {
             return !writesToClient.isEmpty();
+        }
+
+        public Connection getConnection() {
+            return Connection.this;
         }
     }
 }
