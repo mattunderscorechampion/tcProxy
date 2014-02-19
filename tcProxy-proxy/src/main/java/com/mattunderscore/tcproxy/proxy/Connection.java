@@ -30,6 +30,7 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -48,8 +49,8 @@ public class Connection {
     public Connection(final SocketChannel clientSide, final SocketChannel serverSide) {
         this.clientSide = clientSide;
         this.serverSide = serverSide;
-        writesToClient = new LinkedBlockingQueue<>();
-        writesToServer = new LinkedBlockingQueue<>();
+        writesToClient = new ArrayBlockingQueue<>(5000);
+        writesToServer = new ArrayBlockingQueue<>(5000);
         clientToServer = new ClientToServer();
         serverToClient = new ServerToClient();
         cwToClient = new ClientWrites();
