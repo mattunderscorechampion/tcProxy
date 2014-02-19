@@ -50,13 +50,17 @@ public class ReadSelector implements Runnable {
 
     @Override
     public void run() {
-        final ByteBuffer buffer = ByteBuffer.allocate(4 * 1024);
+        final ByteBuffer buffer = ByteBuffer.allocate(1024);
         running = true;
         while (running) {
             registerKeys();
 
             readBytes(buffer);
         }
+    }
+
+    public void stop() {
+        running = false;
     }
 
     private void registerKeys() {
@@ -95,21 +99,21 @@ public class ReadSelector implements Runnable {
                     final SocketChannel channel = (SocketChannel)key.channel();
                     final int bytes = channel.read(buffer);
                     if (bytes > 0) {
-                        //System.out.println("Read " + bytes + " bytes from " + channel);
                         buffer.flip();
                         final ByteBuffer writeBuffer = ByteBuffer.allocate(buffer.limit());
                         writeBuffer.put(buffer);
                         writeBuffer.flip();
                         if (!writes.hasData()) {
-                            //System.out.println("New write");
+                            writes.add(writeBuffer);
                             newWrites.add(writes);
                         }
-                        writes.add(writeBuffer);
+                        else {
+                            writes.add(writeBuffer);
+                        }
                     }
                     else if (bytes == -1) {
-                        //System.out.println("EOF reached, cancelling key");
                         key.cancel();
-                        //writes.getConnection().close();
+                        writes.close();
                     }
                 }
             }

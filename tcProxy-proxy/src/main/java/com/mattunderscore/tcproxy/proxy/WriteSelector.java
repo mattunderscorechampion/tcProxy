@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
 import java.util.Queue;
 import java.util.Set;
 
@@ -56,11 +55,14 @@ public class WriteSelector implements Runnable {
         }
     }
 
+    public void stop() {
+        running = false;
+    }
+
     private void registerKeys() {
         while (!newWrites.isEmpty()) {
             try {
                 final ConnectionWrites newWrite = newWrites.poll();
-                //System.out.println("Register new write");
                 if (newWrite != null) {
                     final SelectionKey key = newWrite.getTarget().register(selector, SelectionKey.OP_WRITE);
                     key.attach(newWrite);
@@ -82,20 +84,17 @@ public class WriteSelector implements Runnable {
                 }
                 else if (key.isWritable()) {
                     final ConnectionWrites write = (ConnectionWrites)key.attachment();
-                    final SocketChannel target = write.getTarget();
-                    final ByteBuffer data = write.current();
+                    final Write data = write.current();
                     try {
                         if (data != null) {
-                            final int bytes = target.write(data);
-                            //System.out.println("Wrote " + bytes + " bytes to" + target);
+                            final int bytes = data.writeToSocket();
                         }
                         else {
-                            //System.out.println("Write complete, canceling key");
                             key.cancel();
                         }
                     }
                     catch (final IOException e) {
-                        //System.out.println("Write failed, canceling key");
+                        System.out.println("Write failed, canceling key");
                         key.cancel();
                     }
                 }

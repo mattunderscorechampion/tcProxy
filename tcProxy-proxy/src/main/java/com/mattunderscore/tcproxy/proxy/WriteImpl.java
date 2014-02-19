@@ -26,14 +26,28 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 /**
  * @author matt on 19/02/14.
  */
-public interface Write {
+public class WriteImpl implements Write {
+    private SocketChannel socket;
+    private final ByteBuffer data;
 
-    int writeToSocket() throws IOException;
+    public WriteImpl(final SocketChannel socket, final ByteBuffer data) {
+        this.socket = socket;
+        this.data = data;
+    }
 
-    boolean writeComplete();
+    @Override
+    public int writeToSocket() throws IOException {
+        return socket.write(data);
+    }
+
+    @Override
+    public boolean writeComplete() {
+        return data.remaining() == 0;
+    }
 }

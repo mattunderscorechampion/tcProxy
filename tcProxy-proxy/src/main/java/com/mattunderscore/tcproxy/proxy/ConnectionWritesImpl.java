@@ -36,7 +36,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class ConnectionWritesImpl implements ConnectionWrites {
     private final SocketChannel target;
     private final Connection connection;
-    private final Queue<ByteBuffer> writes;
+    private final Queue<Write> writes;
 
     public ConnectionWritesImpl(final SocketChannel target, final Connection connection) {
 
@@ -50,18 +50,23 @@ public class ConnectionWritesImpl implements ConnectionWrites {
     }
 
     @Override
-    public void add(final ByteBuffer write) {
-        writes.add(write);
+    public void add(final ByteBuffer data) {
+        writes.add(new WriteImpl(target, data));
     }
 
     @Override
-    public ByteBuffer current() {
-        final ByteBuffer buffer = writes.peek();
-        if (buffer == null) {
+    public void close() {
+        writes.add(new CloseImpl(target));
+    }
+
+    @Override
+    public Write current() {
+        final Write write = writes.peek();
+        if (write == null) {
             return null;
         }
-        else if (buffer.remaining() > 0) {
-            return buffer;
+        else if (!write.writeComplete()) {
+            return write;
         }
         else {
             writes.poll();

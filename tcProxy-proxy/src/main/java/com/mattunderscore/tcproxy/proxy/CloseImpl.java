@@ -31,9 +31,29 @@ import java.nio.channels.SocketChannel;
 /**
  * @author matt on 19/02/14.
  */
-public interface Write {
+public class CloseImpl implements Write {
+    public final SocketChannel socket;
+    public volatile boolean written;
 
-    int writeToSocket() throws IOException;
+    public CloseImpl(final SocketChannel socket) {
+        this.socket = socket;
+        this.written = false;
+    }
 
-    boolean writeComplete();
+    @Override
+    public int writeToSocket() throws IOException {
+        if (written) {
+            return 0;
+        }
+        else {
+            socket.close();
+            written = true;
+            return -1;
+        }
+    }
+
+    @Override
+    public boolean writeComplete() {
+        return written;
+    }
 }
