@@ -109,7 +109,7 @@ public class ReadSelector implements Runnable {
                     else if (bytes == -1) {
                         //System.out.println("EOF reached, cancelling key");
                         key.cancel();
-                        writes.getConnection().close();
+                        //writes.getConnection().close();
                     }
                 }
             }

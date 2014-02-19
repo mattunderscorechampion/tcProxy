@@ -25,30 +25,39 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 
 /**
- * @author matt on 18/02/14.
+ * @author matt on 19/02/14.
  */
-public class Connection {
-    private final Direction clientToServer;
-    private final Direction serverToClient;
+public class DirectionImpl implements Direction {
+    private final SocketChannel from;
+    private final Connection connection;
+    private final ConnectionWrites writes;
 
-    public Connection(final SocketChannel clientSide, final SocketChannel serverSide) {
-        clientToServer = new DirectionImpl(clientSide, serverSide, this);
-        serverToClient = new DirectionImpl(serverSide, clientSide, this);
+    public DirectionImpl(final SocketChannel from, final SocketChannel to, final Connection connection) {
+        this.from = from;
+        this.connection = connection;
+        this.writes = new ConnectionWritesImpl(to, connection);
     }
 
-    public Direction clientToServer() {
-        return clientToServer;
-
+    @Override
+    public SocketChannel getFrom() {
+        return from;
     }
 
-    public Direction serverToClient() {
-        return serverToClient;
+    @Override
+    public SocketChannel getTo() {
+        return writes.getTarget();
+    }
+
+    @Override
+    public Connection getConnection() {
+        return connection;
+    }
+
+    @Override
+    public ConnectionWrites getWrites() {
+        return writes;
     }
 }

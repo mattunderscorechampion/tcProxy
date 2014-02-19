@@ -25,30 +25,57 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
 /**
- * @author matt on 18/02/14.
+ * @author matt on 19/02/14.
  */
-public class Connection {
-    private final Direction clientToServer;
-    private final Direction serverToClient;
+public class ConnectionWritesImpl implements ConnectionWrites {
+    private final SocketChannel target;
+    private final Connection connection;
+    private final Queue<ByteBuffer> writes;
 
-    public Connection(final SocketChannel clientSide, final SocketChannel serverSide) {
-        clientToServer = new DirectionImpl(clientSide, serverSide, this);
-        serverToClient = new DirectionImpl(serverSide, clientSide, this);
+    public ConnectionWritesImpl(final SocketChannel target, final Connection connection) {
+
+        this.target = target;
+        this.connection = connection;
+        this.writes = new ArrayBlockingQueue<>(5000);
+    }
+    @Override
+    public SocketChannel getTarget() {
+        return target;
     }
 
-    public Direction clientToServer() {
-        return clientToServer;
-
+    @Override
+    public void add(final ByteBuffer write) {
+        writes.add(write);
     }
 
-    public Direction serverToClient() {
-        return serverToClient;
+    @Override
+    public ByteBuffer current() {
+        final ByteBuffer buffer = writes.peek();
+        if (buffer == null) {
+            return null;
+        }
+        else if (buffer.remaining() > 0) {
+            return buffer;
+        }
+        else {
+            writes.poll();
+            return current();
+        }
+    }
+
+    @Override
+    public boolean hasData() {
+        return !writes.isEmpty();
+    }
+
+    @Override
+    public Connection getConnection() {
+        return connection;
     }
 }
