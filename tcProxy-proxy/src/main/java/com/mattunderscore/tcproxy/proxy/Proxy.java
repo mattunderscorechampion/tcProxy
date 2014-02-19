@@ -39,10 +39,10 @@ import java.util.Set;
 public class Proxy implements Runnable {
     private volatile boolean running = false;
     private final Selector selector;
-    private final Queue<ConnectionProxy> newConnections;
+    private final Queue<Connection> newConnections;
     private Queue<ConnectionWrites> newWrites;
 
-    public Proxy(final Selector selector, final Queue<ConnectionProxy> newConnections, final Queue<ConnectionWrites> newWrites) {
+    public Proxy(final Selector selector, final Queue<Connection> newConnections, final Queue<ConnectionWrites> newWrites) {
         this.selector = selector;
         this.newConnections = newConnections;
         this.newWrites = newWrites;
@@ -62,7 +62,7 @@ public class Proxy implements Runnable {
     private void registerKeys() {
         while (!newConnections.isEmpty()) {
             try {
-                final ConnectionProxy connection = newConnections.poll();
+                final Connection connection = newConnections.poll();
                 //System.out.println("Register new connection");
 
                 final Direction cTs = connection.clientToServer();
