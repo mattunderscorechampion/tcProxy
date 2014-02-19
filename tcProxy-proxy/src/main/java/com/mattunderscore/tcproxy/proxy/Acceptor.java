@@ -60,6 +60,7 @@ public class Acceptor implements Runnable {
                 clientSide.configureBlocking(false);
                 System.out.println("Accepted " + clientSide);
                 final SocketChannel serverSide = factory.createSocket();
+                System.out.println("Opened " + serverSide);
                 newConnections.add(new ConnectionProxy(clientSide, serverSide));
             } catch (IOException e) {
                 running = false;

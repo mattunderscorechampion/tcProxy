@@ -40,10 +40,12 @@ public class Proxy implements Runnable {
     private volatile boolean running = false;
     private final Selector selector;
     private final Queue<ConnectionProxy> newConnections;
+    private Queue<ConnectionWrites> newWrites;
 
-    public Proxy(final Selector selector, final Queue<ConnectionProxy> newConnections) {
+    public Proxy(final Selector selector, final Queue<ConnectionProxy> newConnections, final Queue<ConnectionWrites> newWrites) {
         this.selector = selector;
         this.newConnections = newConnections;
+        this.newWrites = newWrites;
     }
 
     @Override
@@ -53,7 +55,7 @@ public class Proxy implements Runnable {
         while (running) {
             registerKeys();
 
-            copyBytes(buffer);
+            readBytes(buffer);
         }
     }
 
@@ -61,16 +63,17 @@ public class Proxy implements Runnable {
         while (!newConnections.isEmpty()) {
             try {
                 final ConnectionProxy connection = newConnections.poll();
+                //System.out.println("Register new connection");
 
                 final Direction cTs = connection.clientToServer();
                 final SocketChannel channel0 = cTs.getFrom();
                 final SelectionKey key0 = channel0.register(selector, SelectionKey.OP_READ);
-                key0.attach(cTs.getTo());
+                key0.attach(cTs.getWrites());
 
                 final Direction sTc = connection.serverToClient();
                 final SocketChannel channel1 = sTc.getFrom();
                 final SelectionKey key1 = channel1.register(selector, SelectionKey.OP_READ);
-                key1.attach(sTc.getTo());
+                key1.attach(sTc.getWrites());
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -78,21 +81,31 @@ public class Proxy implements Runnable {
         }
     }
 
-    private void copyBytes(final ByteBuffer buffer) {
+    private void readBytes(final ByteBuffer buffer) {
         try {
             selector.select(100);
             final Set<SelectionKey> selectionKeys = selector.selectedKeys();
             for (final SelectionKey key : selectionKeys) {
                 if (key.isReadable()) {
                     buffer.position(0);
-                    final SocketChannel otherSocket = (SocketChannel)key.attachment();
+                    final ConnectionWrites writes = (ConnectionWrites)key.attachment();
                     final SocketChannel channel = (SocketChannel)key.channel();
                     final int bytes = channel.read(buffer);
                     if (bytes > 0) {
-                        System.out.println("Read " + bytes + "bytes");
+                        //System.out.println("Read " + bytes + " bytes from " + channel);
                         buffer.flip();
-                        final int bytesritten = otherSocket.write(buffer);
-                        System.out.println("Wrote " + bytesritten + "bytes");
+                        final ByteBuffer writeBuffer = ByteBuffer.allocate(buffer.limit());
+                        writeBuffer.put(buffer);
+                        writeBuffer.flip();
+                        if (!writes.hasData()) {
+                            //System.out.println("New write");
+                            newWrites.add(writes);
+                        }
+                        writes.add(writeBuffer);
+                    }
+                    else if (bytes == -1) {
+                        //System.out.println("EOF reached, cancelling key");
+                        key.cancel();
                     }
                 }
             }

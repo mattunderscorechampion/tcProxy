@@ -25,18 +25,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * @author matt on 18/02/14.
+ * @author matt on 19/02/14.
  */
-public interface Direction {
+public interface ConnectionWrites {
 
-    SocketChannel getFrom();
+    SocketChannel getTarget();
 
-    SocketChannel getTo();
+    void add(final ByteBuffer write);
 
-    ConnectionProxy getConnection();
+    ByteBuffer current();
 
-    ConnectionWrites getWrites();
+    boolean hasData();
 }
