@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.nio.channels.Selector;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * @author matt on 18/02/14.
@@ -37,7 +36,7 @@ import java.util.concurrent.BlockingQueue;
 public class ProxyServer {
     private final Acceptor acceptor;
     private final WriteSelector writer;
-    private final Proxy proxy;
+    private final ReadSelector proxy;
     private Thread t0;
     private Thread t1;
     private Thread t2;
@@ -50,7 +49,7 @@ public class ProxyServer {
         final Selector writeSelector = Selector.open();
 
         acceptor = new Acceptor(acceptorSettings, socketFactory, newConnections);
-        proxy = new Proxy(readSelector, newConnections, newWrites);
+        proxy = new ReadSelector(readSelector, newConnections, newWrites);
         writer = new WriteSelector(writeSelector, newWrites);
     }
 

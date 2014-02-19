@@ -36,13 +36,13 @@ import java.util.Set;
 /**
  * @author matt on 18/02/14.
  */
-public class Proxy implements Runnable {
+public class ReadSelector implements Runnable {
     private volatile boolean running = false;
     private final Selector selector;
     private final Queue<Connection> newConnections;
     private Queue<ConnectionWrites> newWrites;
 
-    public Proxy(final Selector selector, final Queue<Connection> newConnections, final Queue<ConnectionWrites> newWrites) {
+    public ReadSelector(final Selector selector, final Queue<Connection> newConnections, final Queue<ConnectionWrites> newWrites) {
         this.selector = selector;
         this.newConnections = newConnections;
         this.newWrites = newWrites;
