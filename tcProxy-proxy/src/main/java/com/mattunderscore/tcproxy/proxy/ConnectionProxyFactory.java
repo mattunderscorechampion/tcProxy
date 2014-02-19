@@ -39,7 +39,7 @@ public class ConnectionProxyFactory {
         this.executor = executor;
     }
 
-    public ConnectionProxy create(final SocketChannel clientSide, final SocketChannel serverSide) {
-        return new ConnectionProxy(clientSide, serverSide);
+    public Connection create(final SocketChannel clientSide, final SocketChannel serverSide) {
+        return new Connection(clientSide, serverSide);
     }
 }

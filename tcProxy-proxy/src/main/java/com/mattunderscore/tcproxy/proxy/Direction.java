@@ -36,7 +36,7 @@ public interface Direction {
 
     SocketChannel getTo();
 
-    ConnectionProxy getConnection();
+    Connection getConnection();
 
     ConnectionWrites getWrites();
 }

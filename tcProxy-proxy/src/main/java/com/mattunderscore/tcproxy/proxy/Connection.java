@@ -35,13 +35,13 @@ import java.util.concurrent.ScheduledExecutorService;
 /**
  * @author matt on 18/02/14.
  */
-public class ConnectionProxy {
+public class Connection {
     private final SocketChannel clientSide;
     private final SocketChannel serverSide;
     private final Queue<ByteBuffer> writesToClient;
     private final Queue<ByteBuffer> writesToServer;
 
-    public ConnectionProxy(final SocketChannel clientSide, final SocketChannel serverSide) {
+    public Connection(final SocketChannel clientSide, final SocketChannel serverSide) {
         this.clientSide = clientSide;
         this.serverSide = serverSide;
         writesToClient = new LinkedBlockingQueue<>();
@@ -72,8 +72,8 @@ public class ConnectionProxy {
         }
 
         @Override
-        public ConnectionProxy getConnection() {
-            return ConnectionProxy.this;
+        public Connection getConnection() {
+            return Connection.this;
         }
 
         @Override
@@ -98,8 +98,8 @@ public class ConnectionProxy {
         }
 
         @Override
-        public ConnectionProxy getConnection() {
-            return ConnectionProxy.this;
+        public Connection getConnection() {
+            return Connection.this;
         }
 
         @Override
