@@ -110,23 +110,36 @@ public class ReadSelector implements Runnable {
                         final ByteBuffer writeBuffer = ByteBuffer.allocate(buffer.limit());
                         writeBuffer.put(buffer);
                         writeBuffer.flip();
-                        if (!writes.hasData()) {
-                            writes.add(writeBuffer);
-                            newWrites.add(writes);
-                        }
-                        else {
-                            writes.add(writeBuffer);
-                        }
+
+                        informOfData(writes, writeBuffer);
                     }
                     else if (bytes == -1) {
                         key.cancel();
-                        writes.close();
+                        informOfClose(writes);
                     }
                 }
             }
         }
         catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void informOfData(final ConnectionWrites writes, final ByteBuffer write) {
+        informOfWrite(writes, new WriteImpl(writes.getTarget(), write));
+    }
+
+    private void informOfClose(final ConnectionWrites writes) {
+        informOfWrite(writes, new CloseImpl(writes.getTarget()));
+    }
+
+    private void informOfWrite(final ConnectionWrites writes, final Write write) {
+        if (!writes.hasData()) {
+            writes.add(write);
+            newWrites.add(writes);
+        }
+        else {
+            writes.add(write);
         }
     }
 }

@@ -50,8 +50,8 @@ public class ConnectionWritesImpl implements ConnectionWrites {
     }
 
     @Override
-    public void add(final ByteBuffer data) {
-        writes.add(new WriteImpl(target, data));
+    public void add(final Write write) {
+        writes.add(write);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class ConnectionWritesImpl implements ConnectionWrites {
             return write;
         }
         else {
-            writes.poll();
+            writes.remove(write);
             return current();
         }
     }

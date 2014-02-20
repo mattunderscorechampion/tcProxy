@@ -47,6 +47,7 @@ public class CloseImpl implements Write {
         }
         else {
             socket.close();
+            System.out.println("Closed " + socket);
             written = true;
             return -1;
         }

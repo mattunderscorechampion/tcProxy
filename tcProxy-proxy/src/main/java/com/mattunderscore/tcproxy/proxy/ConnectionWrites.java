@@ -37,7 +37,7 @@ public interface ConnectionWrites {
 
     SocketChannel getTarget();
 
-    void add(final ByteBuffer data);
+    void add(final Write write);
 
     Write current();
 

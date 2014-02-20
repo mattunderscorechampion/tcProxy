@@ -93,14 +93,13 @@ public class WriteSelector implements Runnable {
                 final Write data = write.current();
                 try {
                     if (data != null) {
-                        final int bytes = data.writeToSocket();
+                        data.writeToSocket();
                     }
                     else {
                         key.cancel();
                     }
                 }
                 catch (final IOException e) {
-                    System.out.println("Write failed, canceling key");
                     key.cancel();
                 }
             }
