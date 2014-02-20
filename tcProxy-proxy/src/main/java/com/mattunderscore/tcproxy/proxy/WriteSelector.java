@@ -26,7 +26,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy;
 
 import java.io.IOException;
-import java.nio.channels.CancelledKeyException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -77,9 +76,6 @@ public class WriteSelector implements Runnable {
             }
             catch (final ClosedChannelException e) {
                 System.out.println("Already closed");
-            }
-            catch (final IOException e) {
-                e.printStackTrace();
             }
         }
     }

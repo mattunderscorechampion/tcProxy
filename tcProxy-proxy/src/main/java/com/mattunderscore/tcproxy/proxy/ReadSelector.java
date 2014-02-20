@@ -73,15 +73,13 @@ public class ReadSelector implements Runnable {
         newConnections.drainTo(connections);
         for (final Connection connection : connections) {
             try {
-                //System.out.println("Register new connection");
-
                 final Direction cTs = connection.clientToServer();
                 final SocketChannel channel0 = cTs.getFrom();
-                final SelectionKey key0 = channel0.register(selector, SelectionKey.OP_READ, cTs.getWrites());
+                channel0.register(selector, SelectionKey.OP_READ, cTs.getWrites());
 
                 final Direction sTc = connection.serverToClient();
                 final SocketChannel channel1 = sTc.getFrom();
-                final SelectionKey key1 = channel1.register(selector, SelectionKey.OP_READ, sTc.getWrites());
+                channel1.register(selector, SelectionKey.OP_READ, sTc.getWrites());
             }
             catch (IOException e) {
                 e.printStackTrace();
