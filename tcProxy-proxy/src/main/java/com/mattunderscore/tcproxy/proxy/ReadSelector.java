@@ -30,8 +30,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.Queue;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * @author matt on 18/02/14.
@@ -39,13 +40,17 @@ import java.util.Set;
 public class ReadSelector implements Runnable {
     private volatile boolean running = false;
     private final Selector selector;
-    private final Queue<Connection> newConnections;
-    private Queue<ConnectionWrites> newWrites;
+    private final BlockingQueue<Connection> newConnections;
+    private final BlockingQueue<ConnectionWrites> newWrites;
 
-    public ReadSelector(final Selector selector, final Queue<Connection> newConnections, final Queue<ConnectionWrites> newWrites) {
+    public ReadSelector(final Selector selector, final BlockingQueue<Connection> newConnections, final BlockingQueue<ConnectionWrites> newWrites) {
         this.selector = selector;
         this.newConnections = newConnections;
         this.newWrites = newWrites;
+    }
+
+    public void stop() {
+        running = false;
     }
 
     @Override
@@ -53,20 +58,23 @@ public class ReadSelector implements Runnable {
         final ByteBuffer buffer = ByteBuffer.allocate(1024);
         running = true;
         while (running) {
+            try {
+                selector.selectNow();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             registerKeys();
 
             readBytes(buffer);
         }
     }
 
-    public void stop() {
-        running = false;
-    }
-
     private void registerKeys() {
-        while (!newConnections.isEmpty()) {
+        final Set<Connection> connections = new HashSet<>();
+        newConnections.drainTo(connections);
+        for (final Connection connection : connections) {
             try {
-                final Connection connection = newConnections.poll();
                 //System.out.println("Register new connection");
 
                 final Direction cTs = connection.clientToServer();
@@ -87,7 +95,6 @@ public class ReadSelector implements Runnable {
 
     private void readBytes(final ByteBuffer buffer) {
         try {
-            selector.select(100);
             final Set<SelectionKey> selectionKeys = selector.selectedKeys();
             for (final SelectionKey key : selectionKeys) {
                 if (!key.isValid()) {
