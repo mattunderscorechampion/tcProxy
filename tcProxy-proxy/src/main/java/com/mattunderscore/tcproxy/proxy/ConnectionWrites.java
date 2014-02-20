@@ -37,6 +37,8 @@ public interface ConnectionWrites {
 
     SocketChannel getTarget();
 
+    boolean queueFull();
+
     void add(final Write write);
 
     Write current();

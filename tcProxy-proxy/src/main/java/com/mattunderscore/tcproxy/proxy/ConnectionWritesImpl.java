@@ -29,6 +29,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * @author matt on 19/02/14.
@@ -36,7 +37,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class ConnectionWritesImpl implements ConnectionWrites {
     private final SocketChannel target;
     private final Connection connection;
-    private final Queue<Write> writes;
+    private final BlockingQueue<Write> writes;
 
     public ConnectionWritesImpl(final SocketChannel target, final Connection connection) {
 
@@ -47,6 +48,10 @@ public class ConnectionWritesImpl implements ConnectionWrites {
     @Override
     public SocketChannel getTarget() {
         return target;
+    }
+
+    public boolean queueFull() {
+        return writes.remainingCapacity() == 0;
     }
 
     @Override

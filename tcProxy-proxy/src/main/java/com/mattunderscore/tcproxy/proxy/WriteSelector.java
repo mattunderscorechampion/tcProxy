@@ -27,6 +27,7 @@ package com.mattunderscore.tcproxy.proxy;
 
 import java.io.IOException;
 import java.nio.channels.CancelledKeyException;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.HashSet;
@@ -74,7 +75,8 @@ public class WriteSelector implements Runnable {
             try {
                 newWrite.getTarget().register(selector, SelectionKey.OP_WRITE, newWrite);
             }
-            catch (final CancelledKeyException e) {
+            catch (final ClosedChannelException e) {
+                System.out.println("Already closed");
             }
             catch (final IOException e) {
                 e.printStackTrace();
@@ -85,10 +87,7 @@ public class WriteSelector implements Runnable {
     private void writeBytes() {
         final Set<SelectionKey> keys = selector.selectedKeys();
         for (final SelectionKey key : keys) {
-            if (!key.isValid()) {
-                key.cancel();
-            }
-            else if (key.isWritable()) {
+            if (key.isWritable()) {
                 final ConnectionWrites write = (ConnectionWrites)key.attachment();
                 final Write data = write.current();
                 try {
@@ -100,6 +99,7 @@ public class WriteSelector implements Runnable {
                     }
                 }
                 catch (final IOException e) {
+                    e.printStackTrace();
                     key.cancel();
                 }
             }
