@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.nio.channels.Selector;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * @author matt on 18/02/14.
@@ -42,8 +43,8 @@ public class ProxyServer {
     private Thread t2;
 
     public ProxyServer(AcceptorSettings acceptorSettings, OutboundSocketSettings outboundSocketSettings) throws IOException {
-        final Queue<Connection> newConnections = new ArrayBlockingQueue<>(5000);
-        final Queue<ConnectionWrites> newWrites = new ArrayBlockingQueue<>(5000);
+        final BlockingQueue<Connection> newConnections = new ArrayBlockingQueue<>(5000);
+        final BlockingQueue<ConnectionWrites> newWrites = new ArrayBlockingQueue<>(5000);
         final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
         final Selector readSelector = Selector.open();
         final Selector writeSelector = Selector.open();

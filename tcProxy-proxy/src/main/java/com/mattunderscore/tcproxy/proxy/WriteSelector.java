@@ -26,21 +26,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.Queue;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * @author matt on 19/02/14.
  */
 public class WriteSelector implements Runnable {
     private final Selector selector;
-    private final Queue<ConnectionWrites> newWrites;
+    private final BlockingQueue<ConnectionWrites> newWrites;
     private volatile boolean running = false;
 
-    public WriteSelector(final Selector selector, final Queue<ConnectionWrites> newWrites) {
+    public WriteSelector(final Selector selector, final BlockingQueue<ConnectionWrites> newWrites) {
         this.selector = selector;
         this.newWrites = newWrites;
     }
@@ -49,6 +50,12 @@ public class WriteSelector implements Runnable {
     public void run() {
         running = true;
         while (running) {
+            try {
+                selector.selectNow();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             registerKeys();
 
             writeBytes();
@@ -60,13 +67,14 @@ public class WriteSelector implements Runnable {
     }
 
     private void registerKeys() {
-        while (!newWrites.isEmpty()) {
+        final Set<ConnectionWrites> writes = new HashSet<>();
+        newWrites.drainTo(writes);
+        for (final ConnectionWrites newWrite : writes)
+        {
             try {
-                final ConnectionWrites newWrite = newWrites.poll();
-                if (newWrite != null) {
-                    final SelectionKey key = newWrite.getTarget().register(selector, SelectionKey.OP_WRITE);
-                    key.attach(newWrite);
-                }
+                newWrite.getTarget().register(selector, SelectionKey.OP_WRITE, newWrite);
+            }
+            catch (final CancelledKeyException e) {
             }
             catch (final IOException e) {
                 e.printStackTrace();
@@ -75,33 +83,27 @@ public class WriteSelector implements Runnable {
     }
 
     private void writeBytes() {
-        try {
-            selector.selectNow();
-            final Set<SelectionKey> keys = selector.selectedKeys();
-            for (final SelectionKey key : keys) {
-                if (!key.isValid()) {
-                    key.cancel();
-                }
-                else if (key.isWritable()) {
-                    final ConnectionWrites write = (ConnectionWrites)key.attachment();
-                    final Write data = write.current();
-                    try {
-                        if (data != null) {
-                            final int bytes = data.writeToSocket();
-                        }
-                        else {
-                            key.cancel();
-                        }
+        final Set<SelectionKey> keys = selector.selectedKeys();
+        for (final SelectionKey key : keys) {
+            if (!key.isValid()) {
+                key.cancel();
+            }
+            else if (key.isWritable()) {
+                final ConnectionWrites write = (ConnectionWrites)key.attachment();
+                final Write data = write.current();
+                try {
+                    if (data != null) {
+                        final int bytes = data.writeToSocket();
                     }
-                    catch (final IOException e) {
-                        System.out.println("Write failed, canceling key");
+                    else {
                         key.cancel();
                     }
                 }
+                catch (final IOException e) {
+                    System.out.println("Write failed, canceling key");
+                    key.cancel();
+                }
             }
-        }
-        catch (final IOException e) {
-            e.printStackTrace();
         }
     }
 }

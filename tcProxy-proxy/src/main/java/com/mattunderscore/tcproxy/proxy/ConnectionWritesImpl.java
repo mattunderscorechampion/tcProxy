@@ -42,7 +42,7 @@ public class ConnectionWritesImpl implements ConnectionWrites {
 
         this.target = target;
         this.connection = connection;
-        this.writes = new ArrayBlockingQueue<>(5000);
+        this.writes = new ArrayBlockingQueue<>(10000);
     }
     @Override
     public SocketChannel getTarget() {
