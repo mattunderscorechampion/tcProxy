@@ -25,8 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy;
 
-import com.mattunderscore.tcproxy.proxy.AcceptorSettings;
-import com.mattunderscore.tcproxy.proxy.OutboundSocketSettings;
+import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.AcceptorSettings;
+import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.ProxyServer;
 import org.junit.Test;
 
