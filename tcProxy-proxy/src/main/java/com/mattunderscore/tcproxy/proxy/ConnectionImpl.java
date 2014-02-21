@@ -40,11 +40,13 @@ public class ConnectionImpl implements Connection {
         serverToClient = new DirectionImpl(serverSide, clientSide, this, serverToClientQueue);
     }
 
+    @Override
     public Direction clientToServer() {
         return clientToServer;
 
     }
 
+    @Override
     public Direction serverToClient() {
         return serverToClient;
     }

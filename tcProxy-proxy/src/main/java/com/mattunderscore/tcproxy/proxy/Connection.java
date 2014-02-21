@@ -25,27 +25,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import java.nio.channels.SocketChannel;
 /**
- * @author matt on 18/02/14.
+ * @author matt on 21/02/14.
  */
-public class Connection {
-    private final Direction clientToServer;
-    private final Direction serverToClient;
+public interface Connection {
+    Direction clientToServer();
 
-    public Connection(final SocketChannel clientSide, final SocketChannel serverSide, final int queueSize) {
-        final WriteQueue clientToServerQueue = new WriteQueueImpl(serverSide, this, queueSize);
-        final WriteQueue serverToClientQueue = new WriteQueueImpl(clientSide, this, queueSize);
-        clientToServer = new DirectionImpl(clientSide, serverSide, this, clientToServerQueue);
-        serverToClient = new DirectionImpl(serverSide, clientSide, this, serverToClientQueue);
-    }
-
-    public Direction clientToServer() {
-        return clientToServer;
-
-    }
-
-    public Direction serverToClient() {
-        return serverToClient;
-    }
+    Direction serverToClient();
 }

@@ -28,6 +28,7 @@ package com.mattunderscore.tcproxy.proxy;
 import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.AcceptorSettings;
 import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.OutboundSocketSettings;
+import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.ReadSelectorSettings;
 
 import java.io.IOException;
 import java.nio.channels.Selector;
@@ -47,7 +48,8 @@ public class ProxyServer {
 
     public ProxyServer(final AcceptorSettings acceptorSettings,
                        final ConnectionSettings connectionSettings,
-                       final OutboundSocketSettings outboundSocketSettings) throws IOException {
+                       final OutboundSocketSettings outboundSocketSettings,
+                       final ReadSelectorSettings readSelectorSettings) throws IOException {
         final BlockingQueue<Connection> newConnections = new ArrayBlockingQueue<>(5000);
         final BlockingQueue<WriteQueue> newWrites = new ArrayBlockingQueue<>(5000);
         final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
@@ -56,7 +58,7 @@ public class ProxyServer {
         final Selector writeSelector = Selector.open();
 
         acceptor = new Acceptor(acceptorSettings, connectionFactory, socketFactory, newConnections);
-        proxy = new ReadSelector(readSelector, newConnections, newWrites);
+        proxy = new ReadSelector(readSelector,readSelectorSettings, newConnections, newWrites);
         writer = new WriteSelector(writeSelector, newWrites);
     }
 

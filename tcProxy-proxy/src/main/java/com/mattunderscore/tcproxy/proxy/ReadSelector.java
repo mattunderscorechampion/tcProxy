@@ -25,6 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
+import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.ReadSelectorSettings;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
@@ -38,11 +40,13 @@ import java.util.concurrent.BlockingQueue;
 public class ReadSelector implements Runnable {
     private volatile boolean running = false;
     private final Selector selector;
+    private final ReadSelectorSettings settings;
     private final BlockingQueue<Connection> newConnections;
     private final BlockingQueue<WriteQueue> newWrites;
 
-    public ReadSelector(final Selector selector, final BlockingQueue<Connection> newConnections, final BlockingQueue<WriteQueue> newWrites) {
+    public ReadSelector(final Selector selector, final ReadSelectorSettings settings, final BlockingQueue<Connection> newConnections, final BlockingQueue<WriteQueue> newWrites) {
         this.selector = selector;
+        this.settings = settings;
         this.newConnections = newConnections;
         this.newWrites = newWrites;
     }
@@ -53,7 +57,7 @@ public class ReadSelector implements Runnable {
 
     @Override
     public void run() {
-        final ByteBuffer buffer = ByteBuffer.allocate(1024);
+        final ByteBuffer buffer = ByteBuffer.allocate(settings.getReadBufferSize());
         running = true;
         while (running) {
             try {
