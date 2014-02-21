@@ -64,7 +64,6 @@ public class Acceptor implements Runnable {
                 System.out.println("Opened " + serverSide);
                 newConnections.add(new Connection(clientSide, serverSide));
             } catch (IOException e) {
-                running = false;
                 e.printStackTrace();
             }
         }
@@ -76,8 +75,9 @@ public class Acceptor implements Runnable {
             final ServerSocketChannel channel = openServerSocket();
             mainLoop(channel);
         }
-        catch (Throwable e) {
+        catch (final Throwable e) {
             e.printStackTrace();
+            running = false;
         }
     }
 }
