@@ -32,12 +32,12 @@ import java.util.concurrent.BlockingQueue;
 /**
  * @author matt on 19/02/14.
  */
-public class ConnectionWritesImpl implements ConnectionWrites {
+public class WriteQueueImpl implements WriteQueue {
     private final SocketChannel target;
     private final Connection connection;
     private final BlockingQueue<Write> writes;
 
-    public ConnectionWritesImpl(final SocketChannel target, final Connection connection) {
+    public WriteQueueImpl(final SocketChannel target, final Connection connection) {
 
         this.target = target;
         this.connection = connection;
@@ -55,11 +55,6 @@ public class ConnectionWritesImpl implements ConnectionWrites {
     @Override
     public void add(final Write write) {
         writes.add(write);
-    }
-
-    @Override
-    public void close() {
-        writes.add(new CloseImpl(target));
     }
 
     @Override

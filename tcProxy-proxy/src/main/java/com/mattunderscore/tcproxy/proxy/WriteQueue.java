@@ -33,7 +33,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * @author matt on 19/02/14.
  */
-public interface ConnectionWrites {
+public interface WriteQueue {
 
     SocketChannel getTarget();
 
@@ -46,6 +46,4 @@ public interface ConnectionWrites {
     boolean hasData();
 
     Connection getConnection();
-
-    void close();
 }

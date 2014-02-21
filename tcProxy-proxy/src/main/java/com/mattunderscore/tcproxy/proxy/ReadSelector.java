@@ -39,9 +39,9 @@ public class ReadSelector implements Runnable {
     private volatile boolean running = false;
     private final Selector selector;
     private final BlockingQueue<Connection> newConnections;
-    private final BlockingQueue<ConnectionWrites> newWrites;
+    private final BlockingQueue<WriteQueue> newWrites;
 
-    public ReadSelector(final Selector selector, final BlockingQueue<Connection> newConnections, final BlockingQueue<ConnectionWrites> newWrites) {
+    public ReadSelector(final Selector selector, final BlockingQueue<Connection> newConnections, final BlockingQueue<WriteQueue> newWrites) {
         this.selector = selector;
         this.newConnections = newConnections;
         this.newWrites = newWrites;
@@ -91,7 +91,7 @@ public class ReadSelector implements Runnable {
         final Set<SelectionKey> selectionKeys = selector.selectedKeys();
         for (final SelectionKey key : selectionKeys) {
             if (key.isValid() && key.isReadable()) {
-                final ConnectionWrites writes = (ConnectionWrites)key.attachment();
+                final WriteQueue writes = (WriteQueue)key.attachment();
                 if (!writes.queueFull()) {
                     buffer.position(0);
                     final SocketChannel channel = (SocketChannel)key.channel();
@@ -125,15 +125,15 @@ public class ReadSelector implements Runnable {
         }
     }
 
-    private void informOfData(final ConnectionWrites writes, final ByteBuffer write) {
+    private void informOfData(final WriteQueue writes, final ByteBuffer write) {
         informOfWrite(writes, new WriteImpl(writes.getTarget(), write));
     }
 
-    private void informOfClose(final ConnectionWrites writes) {
+    private void informOfClose(final WriteQueue writes) {
         informOfWrite(writes, new CloseImpl(writes.getTarget()));
     }
 
-    private void informOfWrite(final ConnectionWrites writes, final Write write) {
+    private void informOfWrite(final WriteQueue writes, final Write write) {
         if (!writes.hasData()) {
             writes.add(write);
             newWrites.add(writes);

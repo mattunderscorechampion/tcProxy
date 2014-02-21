@@ -38,5 +38,5 @@ public interface Direction {
 
     Connection getConnection();
 
-    ConnectionWrites getWrites();
+    WriteQueue getWrites();
 }
