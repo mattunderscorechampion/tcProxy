@@ -31,10 +31,14 @@ package com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings;
 public final class OutboundSocketSettings {
     private final int port;
     private final String host;
+    private final int receiveBuffer;
+    private final int sendBuffer;
 
-    public OutboundSocketSettings(final int port, final String host) {
+    public OutboundSocketSettings(final int port, final String host, final int receiveBuffer, final int sendBuffer) {
         this.port = port;
         this.host = host;
+        this.receiveBuffer = receiveBuffer;
+        this.sendBuffer = sendBuffer;
     }
 
     public int getPort() {
@@ -43,5 +47,13 @@ public final class OutboundSocketSettings {
 
     public String getHost() {
         return host;
+    }
+
+    public int getReceiveBuffer() {
+        return receiveBuffer;
+    }
+
+    public int getSendBuffer() {
+        return sendBuffer;
     }
 }

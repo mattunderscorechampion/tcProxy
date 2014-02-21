@@ -25,11 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy;
 
-import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.AcceptorSettings;
-import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.ConnectionSettings;
-import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.OutboundSocketSettings;
+import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.*;
 import com.mattunderscore.tcproxy.proxy.ProxyServer;
-import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.ReadSelectorSettings;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -45,8 +42,9 @@ public class ProxyServerTest {
         final ProxyServer server = new ProxyServer(
                 new AcceptorSettings(8085),
                 new ConnectionSettings(10000),
-                new OutboundSocketSettings(8080, "localhost"),
-                new ReadSelectorSettings(1024));
+                new InboundSocketSettings(8192, 8192),
+                new OutboundSocketSettings(8080, "localhost", 8192, 8192),
+                new ReadSelectorSettings(2048));
         server.start();
         }
         catch (Throwable t) {

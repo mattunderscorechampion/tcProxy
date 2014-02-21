@@ -26,9 +26,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy;
 
 import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.AcceptorSettings;
+import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.InboundSocketSettings;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
@@ -38,14 +40,19 @@ import java.util.Queue;
  */
 public class Acceptor implements Runnable {
     private final AcceptorSettings settings;
+    private final InboundSocketSettings inboundSettings;
     private final ConnectionFactory connectionFactory;
     private final OutboundSocketFactory factory;
     private final Queue<Connection> newConnections;
     private volatile boolean running = false;
 
-    public Acceptor(final AcceptorSettings settings, final ConnectionFactory connectionFactory,
-                    final OutboundSocketFactory factory, final Queue<Connection> newConnections) {
+    public Acceptor(final AcceptorSettings settings,
+                    final InboundSocketSettings inboundSettings,
+                    final ConnectionFactory connectionFactory,
+                    final OutboundSocketFactory factory,
+                    final Queue<Connection> newConnections) {
         this.settings = settings;
+        this.inboundSettings = inboundSettings;
         this.connectionFactory = connectionFactory;
         this.factory = factory;
         this.newConnections = newConnections;
@@ -53,6 +60,7 @@ public class Acceptor implements Runnable {
 
     public ServerSocketChannel openServerSocket() throws IOException {
         final ServerSocketChannel serverSocket = ServerSocketChannel.open();
+        serverSocket.setOption(StandardSocketOptions.SO_RCVBUF, inboundSettings.getReceiveBufferSize());
         serverSocket.bind(new InetSocketAddress(settings.getPort()));
         return serverSocket;
     }
@@ -61,6 +69,7 @@ public class Acceptor implements Runnable {
         while (running) {
             try {
                 final SocketChannel clientSide = channel.accept();
+                clientSide.setOption(StandardSocketOptions.SO_SNDBUF, inboundSettings.getSendBufferSize());
                 clientSide.configureBlocking(false);
                 System.out.println("Accepted " + clientSide);
                 final SocketChannel serverSide = factory.createSocket();

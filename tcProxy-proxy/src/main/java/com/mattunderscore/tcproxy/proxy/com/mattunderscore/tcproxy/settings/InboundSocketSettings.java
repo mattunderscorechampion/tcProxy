@@ -23,34 +23,26 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy;
-
-import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.OutboundSocketSettings;
-
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.StandardSocketOptions;
-import java.nio.channels.SocketChannel;
+package com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings;
 
 /**
- * @author matt on 18/02/14.
+ * @author matt on 21/02/14.
  */
-public class OutboundSocketFactory {
-    private final OutboundSocketSettings settings;
+public final class InboundSocketSettings {
+    private final int receiveBufferSize;
+    private final int sendBufferSize;
 
-    public OutboundSocketFactory(final OutboundSocketSettings settings) {
-        this.settings = settings;
+    public InboundSocketSettings(final int receiveBufferSize, final int sendBufferSize) {
+
+        this.receiveBufferSize = receiveBufferSize;
+        this.sendBufferSize = sendBufferSize;
     }
 
-    public SocketChannel createSocket() throws IOException {
-        final SocketChannel channel = SocketChannel.open();
-        channel.configureBlocking(false);
-        channel.setOption(StandardSocketOptions.SO_RCVBUF, settings.getReceiveBuffer());
-        channel.setOption(StandardSocketOptions.SO_SNDBUF, settings.getSendBuffer());
-        final InetSocketAddress remote = new InetSocketAddress(settings.getHost(), settings.getPort());
-        channel.bind(null);
-        channel.connect(remote);
-        channel.finishConnect();
-        return channel;
+    public int getReceiveBufferSize() {
+        return receiveBufferSize;
+    }
+
+    public int getSendBufferSize() {
+        return sendBufferSize;
     }
 }
