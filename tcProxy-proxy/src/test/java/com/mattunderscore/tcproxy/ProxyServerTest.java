@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy;
 
 import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.AcceptorSettings;
+import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.ProxyServer;
 import org.junit.Test;
@@ -40,7 +41,10 @@ public class ProxyServerTest {
     @Test
     public void test0() throws IOException, InterruptedException {
         try {
-        final ProxyServer server = new ProxyServer(new AcceptorSettings(8085), new OutboundSocketSettings(8080, "localhost"));
+        final ProxyServer server = new ProxyServer(
+                new AcceptorSettings(8085),
+                new ConnectionSettings(10000),
+                new OutboundSocketSettings(8080, "localhost"));
         server.start();
         }
         catch (Throwable t) {

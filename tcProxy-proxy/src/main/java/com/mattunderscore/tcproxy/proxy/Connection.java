@@ -33,9 +33,11 @@ public class Connection {
     private final Direction clientToServer;
     private final Direction serverToClient;
 
-    public Connection(final SocketChannel clientSide, final SocketChannel serverSide) {
-        clientToServer = new DirectionImpl(clientSide, serverSide, this);
-        serverToClient = new DirectionImpl(serverSide, clientSide, this);
+    public Connection(final SocketChannel clientSide, final SocketChannel serverSide, final int queueSize) {
+        final WriteQueue clientToServerQueue = new WriteQueueImpl(serverSide, this, queueSize);
+        final WriteQueue serverToClientQueue = new WriteQueueImpl(clientSide, this, queueSize);
+        clientToServer = new DirectionImpl(clientSide, serverSide, this, clientToServerQueue);
+        serverToClient = new DirectionImpl(serverSide, clientSide, this, serverToClientQueue);
     }
 
     public Direction clientToServer() {

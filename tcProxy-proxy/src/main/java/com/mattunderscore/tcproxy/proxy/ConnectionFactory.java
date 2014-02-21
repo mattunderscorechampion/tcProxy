@@ -23,18 +23,25 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings;
+package com.mattunderscore.tcproxy.proxy;
+
+import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.ConnectionSettings;
+
+import java.nio.channels.SocketChannel;
 
 /**
- * @author matt on 18/02/14.
+ * @author matt on 21/02/14.
  */
-public final class AcceptorSettings {
-    private final int port;
-    public AcceptorSettings(final int port) {
-        this.port = port;
+public class ConnectionFactory {
+
+    private final ConnectionSettings settings;
+
+    public ConnectionFactory(final ConnectionSettings settings) {
+
+        this.settings = settings;
     }
 
-    public int getPort() {
-        return port;
+    public Connection create(final SocketChannel clientSide, final SocketChannel serverSide) {
+        return new Connection(clientSide, serverSide, settings.getWriteQueueSize());
     }
 }

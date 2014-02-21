@@ -33,12 +33,12 @@ import java.nio.channels.SocketChannel;
 public class DirectionImpl implements Direction {
     private final SocketChannel from;
     private final Connection connection;
-    private final WriteQueue writes;
+    private final WriteQueue queue;
 
-    public DirectionImpl(final SocketChannel from, final SocketChannel to, final Connection connection) {
+    public DirectionImpl(final SocketChannel from, final SocketChannel to, final Connection connection, final WriteQueue queue) {
         this.from = from;
         this.connection = connection;
-        this.writes = new WriteQueueImpl(to, connection);
+        this.queue = queue;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class DirectionImpl implements Direction {
 
     @Override
     public SocketChannel getTo() {
-        return writes.getTarget();
+        return queue.getTarget();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class DirectionImpl implements Direction {
     }
 
     @Override
-    public WriteQueue getWrites() {
-        return writes;
+    public WriteQueue getQueue() {
+        return queue;
     }
 }

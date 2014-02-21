@@ -38,12 +38,15 @@ import java.util.Queue;
  */
 public class Acceptor implements Runnable {
     private final AcceptorSettings settings;
+    private final ConnectionFactory connectionFactory;
     private final OutboundSocketFactory factory;
     private final Queue<Connection> newConnections;
     private volatile boolean running = false;
 
-    public Acceptor(final AcceptorSettings settings, final OutboundSocketFactory factory, final Queue<Connection> newConnections) {
+    public Acceptor(final AcceptorSettings settings, final ConnectionFactory connectionFactory,
+                    final OutboundSocketFactory factory, final Queue<Connection> newConnections) {
         this.settings = settings;
+        this.connectionFactory = connectionFactory;
         this.factory = factory;
         this.newConnections = newConnections;
     }
@@ -62,7 +65,7 @@ public class Acceptor implements Runnable {
                 System.out.println("Accepted " + clientSide);
                 final SocketChannel serverSide = factory.createSocket();
                 System.out.println("Opened " + serverSide);
-                newConnections.add(new Connection(clientSide, serverSide));
+                newConnections.add(connectionFactory.create(clientSide, serverSide));
             } catch (IOException e) {
                 e.printStackTrace();
             }

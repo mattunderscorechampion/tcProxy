@@ -37,11 +37,10 @@ public class WriteQueueImpl implements WriteQueue {
     private final Connection connection;
     private final BlockingQueue<Write> writes;
 
-    public WriteQueueImpl(final SocketChannel target, final Connection connection) {
-
+    public WriteQueueImpl(final SocketChannel target, final Connection connection, final int queueSize) {
         this.target = target;
         this.connection = connection;
-        this.writes = new ArrayBlockingQueue<>(10000);
+        this.writes = new ArrayBlockingQueue<>(queueSize);
     }
     @Override
     public SocketChannel getTarget() {

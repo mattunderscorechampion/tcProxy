@@ -28,7 +28,7 @@ package com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings;
 /**
  * @author matt on 18/02/14.
  */
-public class OutboundSocketSettings {
+public final class OutboundSocketSettings {
     private final int port;
     private final String host;
 

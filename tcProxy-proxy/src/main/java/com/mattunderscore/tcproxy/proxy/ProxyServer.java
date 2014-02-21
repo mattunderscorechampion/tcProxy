@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy;
 
 import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.AcceptorSettings;
+import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.OutboundSocketSettings;
 
 import java.io.IOException;
@@ -44,14 +45,17 @@ public class ProxyServer {
     private Thread t1;
     private Thread t2;
 
-    public ProxyServer(AcceptorSettings acceptorSettings, OutboundSocketSettings outboundSocketSettings) throws IOException {
+    public ProxyServer(final AcceptorSettings acceptorSettings,
+                       final ConnectionSettings connectionSettings,
+                       final OutboundSocketSettings outboundSocketSettings) throws IOException {
         final BlockingQueue<Connection> newConnections = new ArrayBlockingQueue<>(5000);
         final BlockingQueue<WriteQueue> newWrites = new ArrayBlockingQueue<>(5000);
         final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
+        final ConnectionFactory connectionFactory = new ConnectionFactory(connectionSettings);
         final Selector readSelector = Selector.open();
         final Selector writeSelector = Selector.open();
 
-        acceptor = new Acceptor(acceptorSettings, socketFactory, newConnections);
+        acceptor = new Acceptor(acceptorSettings, connectionFactory, socketFactory, newConnections);
         proxy = new ReadSelector(readSelector, newConnections, newWrites);
         writer = new WriteSelector(writeSelector, newWrites);
     }

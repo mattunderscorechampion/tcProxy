@@ -75,11 +75,11 @@ public class ReadSelector implements Runnable {
             try {
                 final Direction cTs = connection.clientToServer();
                 final SocketChannel channel0 = cTs.getFrom();
-                channel0.register(selector, SelectionKey.OP_READ, cTs.getWrites());
+                channel0.register(selector, SelectionKey.OP_READ, cTs.getQueue());
 
                 final Direction sTc = connection.serverToClient();
                 final SocketChannel channel1 = sTc.getFrom();
-                channel1.register(selector, SelectionKey.OP_READ, sTc.getWrites());
+                channel1.register(selector, SelectionKey.OP_READ, sTc.getQueue());
             }
             catch (IOException e) {
                 e.printStackTrace();
