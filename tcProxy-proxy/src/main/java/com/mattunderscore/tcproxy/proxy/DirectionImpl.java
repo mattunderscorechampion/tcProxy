@@ -39,6 +39,7 @@ public class DirectionImpl implements Direction {
     private final ActionQueue queue;
     private volatile int read;
     private volatile int written;
+    private volatile boolean open;
 
     public DirectionImpl(final SocketChannel from, final SocketChannel to, final Connection connection, final int queueSize) {
         this.from = from;
@@ -47,6 +48,7 @@ public class DirectionImpl implements Direction {
         this.queue = new ActionQueueImpl(this, connection, queueSize);
         this.read = 0;
         this.written = 0;
+        this.open = true;
     }
 
     @Override
@@ -95,7 +97,10 @@ public class DirectionImpl implements Direction {
 
     @Override
     public void close() throws IOException {
-        System.out.println("Closed " + to);
-        to.close();
+        if (!open) {
+            System.out.println("Closed " + to);
+            to.close();
+            this.open = true;
+        }
     }
 }
