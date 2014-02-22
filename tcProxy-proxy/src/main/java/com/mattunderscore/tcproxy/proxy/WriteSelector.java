@@ -38,10 +38,10 @@ import java.util.concurrent.BlockingQueue;
  */
 public class WriteSelector implements Runnable {
     private final Selector selector;
-    private final BlockingQueue<WriteQueue> newWrites;
+    private final BlockingQueue<ActionQueue> newWrites;
     private volatile boolean running = false;
 
-    public WriteSelector(final Selector selector, final BlockingQueue<WriteQueue> newWrites) {
+    public WriteSelector(final Selector selector, final BlockingQueue<ActionQueue> newWrites) {
         this.selector = selector;
         this.newWrites = newWrites;
     }
@@ -67,9 +67,9 @@ public class WriteSelector implements Runnable {
     }
 
     private void registerKeys() {
-        final Set<WriteQueue> writes = new HashSet<>();
+        final Set<ActionQueue> writes = new HashSet<>();
         newWrites.drainTo(writes);
-        for (final WriteQueue newWrite : writes)
+        for (final ActionQueue newWrite : writes)
         {
             try {
                 newWrite.getDirection().getTo().register(selector, SelectionKey.OP_WRITE, newWrite);
@@ -84,8 +84,8 @@ public class WriteSelector implements Runnable {
         final Set<SelectionKey> keys = selector.selectedKeys();
         for (final SelectionKey key : keys) {
             if (key.isWritable()) {
-                final WriteQueue write = (WriteQueue)key.attachment();
-                final Write data = write.current();
+                final ActionQueue write = (ActionQueue)key.attachment();
+                final Action data = write.current();
                 try {
                     if (data != null) {
                         data.writeToSocket();

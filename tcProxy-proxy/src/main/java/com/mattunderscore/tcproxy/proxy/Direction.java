@@ -40,7 +40,7 @@ public interface Direction {
 
     Connection getConnection();
 
-    WriteQueue getQueue();
+    ActionQueue getQueue();
 
     int read();
 

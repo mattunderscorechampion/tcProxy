@@ -25,35 +25,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import java.io.IOException;
-import java.nio.channels.SocketChannel;
-
 /**
  * @author matt on 19/02/14.
  */
-public class CloseImpl implements Write {
-    public final Direction direction;
-    public volatile boolean written;
+public interface ActionQueue {
 
-    public CloseImpl(final Direction direction) {
-        this.direction = direction;
-        this.written = false;
-    }
+    boolean queueFull();
 
-    @Override
-    public int writeToSocket() throws IOException {
-        if (written) {
-            return 0;
-        }
-        else {
-            direction.close();
-            written = true;
-            return -1;
-        }
-    }
+    void add(final Action action);
 
-    @Override
-    public boolean writeComplete() {
-        return written;
-    }
+    Action current();
+
+    boolean hasData();
+
+    Connection getConnection();
+
+    Direction getDirection();
 }

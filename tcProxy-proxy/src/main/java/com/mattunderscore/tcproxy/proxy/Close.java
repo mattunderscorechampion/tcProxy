@@ -25,25 +25,34 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.io.IOException;
 
 /**
  * @author matt on 19/02/14.
  */
-public interface WriteQueue {
+public class Close implements Action {
+    public final Direction direction;
+    public volatile boolean written;
 
-    boolean queueFull();
+    public Close(final Direction direction) {
+        this.direction = direction;
+        this.written = false;
+    }
 
-    void add(final Write write);
+    @Override
+    public int writeToSocket() throws IOException {
+        if (written) {
+            return 0;
+        }
+        else {
+            direction.close();
+            written = true;
+            return -1;
+        }
+    }
 
-    Write current();
-
-    boolean hasData();
-
-    Connection getConnection();
-
-    Direction getDirection();
+    @Override
+    public boolean writeComplete() {
+        return written;
+    }
 }

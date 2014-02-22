@@ -25,28 +25,59 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * @author matt on 19/02/14.
  */
-public class WriteImpl implements Write {
-    private Direction direction;
-    private final ByteBuffer data;
+public class ActionQueueImpl implements ActionQueue {
+    private final Direction direction;
+    private final Connection connection;
+    private final BlockingQueue<Action> actions;
 
-    public WriteImpl(final Direction direction, final ByteBuffer data) {
+    public ActionQueueImpl(final Direction direction, final Connection connection, final int queueSize) {
         this.direction = direction;
-        this.data = data;
+        this.connection = connection;
+        this.actions = new ArrayBlockingQueue<>(queueSize);
+    }
+
+    public boolean queueFull() {
+        return actions.remainingCapacity() == 0;
     }
 
     @Override
-    public int writeToSocket() throws IOException {
-        return direction.write(data);
+    public void add(final Action action) {
+        actions.add(action);
     }
 
     @Override
-    public boolean writeComplete() {
-        return data.remaining() == 0;
+    public Action current() {
+        final Action action = actions.peek();
+        if (action == null) {
+            return null;
+        }
+        else if (!action.writeComplete()) {
+            return action;
+        }
+        else {
+            actions.remove(action);
+            return current();
+        }
+    }
+
+    @Override
+    public boolean hasData() {
+        return !actions.isEmpty();
+    }
+
+    @Override
+    public Connection getConnection() {
+        return connection;
+    }
+
+    @Override
+    public Direction getDirection() {
+        return direction;
     }
 }

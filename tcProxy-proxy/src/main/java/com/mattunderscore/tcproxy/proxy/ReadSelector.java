@@ -42,9 +42,9 @@ public class ReadSelector implements Runnable {
     private final Selector selector;
     private final ReadSelectorSettings settings;
     private final BlockingQueue<Connection> newConnections;
-    private final BlockingQueue<WriteQueue> newWrites;
+    private final BlockingQueue<ActionQueue> newWrites;
 
-    public ReadSelector(final Selector selector, final ReadSelectorSettings settings, final BlockingQueue<Connection> newConnections, final BlockingQueue<WriteQueue> newWrites) {
+    public ReadSelector(final Selector selector, final ReadSelectorSettings settings, final BlockingQueue<Connection> newConnections, final BlockingQueue<ActionQueue> newWrites) {
         this.selector = selector;
         this.settings = settings;
         this.newConnections = newConnections;
@@ -96,7 +96,7 @@ public class ReadSelector implements Runnable {
         for (final SelectionKey key : selectionKeys) {
             if (key.isValid() && key.isReadable()) {
                 final Direction direction = (Direction)key.attachment();
-                final WriteQueue queue = direction.getQueue();
+                final ActionQueue queue = direction.getQueue();
                 if (!queue.queueFull()) {
                     buffer.position(0);
                     final SocketChannel channel = (SocketChannel)key.channel();
@@ -130,21 +130,21 @@ public class ReadSelector implements Runnable {
         }
     }
 
-    private void informOfData(final WriteQueue writes, final ByteBuffer write) {
-        informOfWrite(writes, new WriteImpl(writes.getDirection(), write));
+    private void informOfData(final ActionQueue writes, final ByteBuffer write) {
+        informOfWrite(writes, new Write(writes.getDirection(), write));
     }
 
-    private void informOfClose(final WriteQueue writes) {
-        informOfWrite(writes, new CloseImpl(writes.getDirection()));
+    private void informOfClose(final ActionQueue writes) {
+        informOfWrite(writes, new Close(writes.getDirection()));
     }
 
-    private void informOfWrite(final WriteQueue writes, final Write write) {
+    private void informOfWrite(final ActionQueue writes, final Action action) {
         if (!writes.hasData()) {
-            writes.add(write);
+            writes.add(action);
             newWrites.add(writes);
         }
         else {
-            writes.add(write);
+            writes.add(action);
         }
     }
 }

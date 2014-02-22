@@ -25,60 +25,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import java.nio.channels.SocketChannel;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.io.IOException;
 
 /**
  * @author matt on 19/02/14.
  */
-public class WriteQueueImpl implements WriteQueue {
-    private final Direction direction;
-    private final Connection connection;
-    private final BlockingQueue<Write> writes;
+public interface Action {
 
-    public WriteQueueImpl(final Direction direction, final Connection connection, final int queueSize) {
-        this.direction = direction;
-        this.connection = connection;
-        this.writes = new ArrayBlockingQueue<>(queueSize);
-    }
+    int writeToSocket() throws IOException;
 
-    public boolean queueFull() {
-        return writes.remainingCapacity() == 0;
-    }
-
-    @Override
-    public void add(final Write write) {
-        writes.add(write);
-    }
-
-    @Override
-    public Write current() {
-        final Write write = writes.peek();
-        if (write == null) {
-            return null;
-        }
-        else if (!write.writeComplete()) {
-            return write;
-        }
-        else {
-            writes.remove(write);
-            return current();
-        }
-    }
-
-    @Override
-    public boolean hasData() {
-        return !writes.isEmpty();
-    }
-
-    @Override
-    public Connection getConnection() {
-        return connection;
-    }
-
-    @Override
-    public Direction getDirection() {
-        return direction;
-    }
+    boolean writeComplete();
 }

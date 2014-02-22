@@ -36,7 +36,7 @@ public class DirectionImpl implements Direction {
     private final SocketChannel from;
     private final SocketChannel to;
     private final Connection connection;
-    private final WriteQueue queue;
+    private final ActionQueue queue;
     private volatile int read;
     private volatile int written;
 
@@ -44,7 +44,7 @@ public class DirectionImpl implements Direction {
         this.from = from;
         this.to = to;
         this.connection = connection;
-        this.queue = new WriteQueueImpl(this, connection, queueSize);
+        this.queue = new ActionQueueImpl(this, connection, queueSize);
         this.read = 0;
         this.written = 0;
     }
@@ -65,7 +65,7 @@ public class DirectionImpl implements Direction {
     }
 
     @Override
-    public WriteQueue getQueue() {
+    public ActionQueue getQueue() {
         return queue;
     }
 

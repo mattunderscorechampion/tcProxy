@@ -49,7 +49,7 @@ public class ProxyServer {
                        final OutboundSocketSettings outboundSocketSettings,
                        final ReadSelectorSettings readSelectorSettings) throws IOException {
         final BlockingQueue<Connection> newConnections = new ArrayBlockingQueue<>(5000);
-        final BlockingQueue<WriteQueue> newWrites = new ArrayBlockingQueue<>(5000);
+        final BlockingQueue<ActionQueue> newWrites = new ArrayBlockingQueue<>(5000);
         final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
         final ConnectionFactory connectionFactory = new ConnectionFactory(connectionSettings);
         final Selector readSelector = Selector.open();
