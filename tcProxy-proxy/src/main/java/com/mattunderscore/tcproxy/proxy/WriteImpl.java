@@ -27,23 +27,22 @@ package com.mattunderscore.tcproxy.proxy;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 
 /**
  * @author matt on 19/02/14.
  */
 public class WriteImpl implements Write {
-    private SocketChannel socket;
+    private Direction direction;
     private final ByteBuffer data;
 
-    public WriteImpl(final SocketChannel socket, final ByteBuffer data) {
-        this.socket = socket;
+    public WriteImpl(final Direction direction, final ByteBuffer data) {
+        this.direction = direction;
         this.data = data;
     }
 
     @Override
     public int writeToSocket() throws IOException {
-        return socket.write(data);
+        return direction.write(data);
     }
 
     @Override

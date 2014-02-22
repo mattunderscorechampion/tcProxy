@@ -32,11 +32,11 @@ import java.nio.channels.SocketChannel;
  * @author matt on 19/02/14.
  */
 public class CloseImpl implements Write {
-    public final SocketChannel socket;
+    public final Direction direction;
     public volatile boolean written;
 
-    public CloseImpl(final SocketChannel socket) {
-        this.socket = socket;
+    public CloseImpl(final Direction direction) {
+        this.direction = direction;
         this.written = false;
     }
 
@@ -46,8 +46,7 @@ public class CloseImpl implements Write {
             return 0;
         }
         else {
-            System.out.println("Closed " + socket);
-            socket.close();
+            direction.close();
             written = true;
             return -1;
         }

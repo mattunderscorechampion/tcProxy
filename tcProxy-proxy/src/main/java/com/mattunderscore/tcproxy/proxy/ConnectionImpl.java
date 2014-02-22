@@ -34,10 +34,8 @@ public class ConnectionImpl implements Connection {
     private final Direction serverToClient;
 
     public ConnectionImpl(final SocketChannel clientSide, final SocketChannel serverSide, final int queueSize) {
-        final WriteQueue clientToServerQueue = new WriteQueueImpl(serverSide, this, queueSize);
-        final WriteQueue serverToClientQueue = new WriteQueueImpl(clientSide, this, queueSize);
-        clientToServer = new DirectionImpl(clientSide, serverSide, this, clientToServerQueue);
-        serverToClient = new DirectionImpl(serverSide, clientSide, this, serverToClientQueue);
+        clientToServer = new DirectionImpl(clientSide, serverSide, this, queueSize);
+        serverToClient = new DirectionImpl(serverSide, clientSide, this, queueSize);
     }
 
     @Override

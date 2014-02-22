@@ -35,8 +35,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public interface WriteQueue {
 
-    SocketChannel getTarget();
-
     boolean queueFull();
 
     void add(final Write write);
@@ -46,4 +44,6 @@ public interface WriteQueue {
     boolean hasData();
 
     Connection getConnection();
+
+    Direction getDirection();
 }

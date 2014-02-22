@@ -25,6 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 /**
@@ -39,4 +41,14 @@ public interface Direction {
     Connection getConnection();
 
     WriteQueue getQueue();
+
+    int read();
+
+    int written();
+
+    int write(ByteBuffer data) throws IOException;
+
+    int read(ByteBuffer data) throws IOException;
+
+    void close() throws IOException;
 }

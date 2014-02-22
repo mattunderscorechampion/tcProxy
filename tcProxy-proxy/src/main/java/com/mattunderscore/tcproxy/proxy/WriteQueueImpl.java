@@ -33,18 +33,14 @@ import java.util.concurrent.BlockingQueue;
  * @author matt on 19/02/14.
  */
 public class WriteQueueImpl implements WriteQueue {
-    private final SocketChannel target;
+    private final Direction direction;
     private final Connection connection;
     private final BlockingQueue<Write> writes;
 
-    public WriteQueueImpl(final SocketChannel target, final Connection connection, final int queueSize) {
-        this.target = target;
+    public WriteQueueImpl(final Direction direction, final Connection connection, final int queueSize) {
+        this.direction = direction;
         this.connection = connection;
         this.writes = new ArrayBlockingQueue<>(queueSize);
-    }
-    @Override
-    public SocketChannel getTarget() {
-        return target;
     }
 
     public boolean queueFull() {
@@ -79,5 +75,10 @@ public class WriteQueueImpl implements WriteQueue {
     @Override
     public Connection getConnection() {
         return connection;
+    }
+
+    @Override
+    public Direction getDirection() {
+        return direction;
     }
 }

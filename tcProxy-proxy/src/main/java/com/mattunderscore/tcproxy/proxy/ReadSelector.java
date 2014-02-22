@@ -79,11 +79,11 @@ public class ReadSelector implements Runnable {
             try {
                 final Direction cTs = connection.clientToServer();
                 final SocketChannel channel0 = cTs.getFrom();
-                channel0.register(selector, SelectionKey.OP_READ, cTs.getQueue());
+                channel0.register(selector, SelectionKey.OP_READ, cTs);
 
                 final Direction sTc = connection.serverToClient();
                 final SocketChannel channel1 = sTc.getFrom();
-                channel1.register(selector, SelectionKey.OP_READ, sTc.getQueue());
+                channel1.register(selector, SelectionKey.OP_READ, sTc);
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -95,23 +95,24 @@ public class ReadSelector implements Runnable {
         final Set<SelectionKey> selectionKeys = selector.selectedKeys();
         for (final SelectionKey key : selectionKeys) {
             if (key.isValid() && key.isReadable()) {
-                final WriteQueue writes = (WriteQueue)key.attachment();
-                if (!writes.queueFull()) {
+                final Direction direction = (Direction)key.attachment();
+                final WriteQueue queue = direction.getQueue();
+                if (!queue.queueFull()) {
                     buffer.position(0);
                     final SocketChannel channel = (SocketChannel)key.channel();
                     try {
-                        final int bytes = channel.read(buffer);
+                        final int bytes = direction.read(buffer);
                         if (bytes > 0) {
                             buffer.flip();
                             final ByteBuffer writeBuffer = ByteBuffer.allocate(buffer.limit());
                             writeBuffer.put(buffer);
                             writeBuffer.flip();
 
-                            informOfData(writes, writeBuffer);
+                            informOfData(queue, writeBuffer);
                         }
                         else if (bytes == -1) {
                             key.cancel();
-                            informOfClose(writes);
+                            informOfClose(queue);
                             System.out.println("Closed " + channel);
                             channel.close();
                         }
@@ -130,11 +131,11 @@ public class ReadSelector implements Runnable {
     }
 
     private void informOfData(final WriteQueue writes, final ByteBuffer write) {
-        informOfWrite(writes, new WriteImpl(writes.getTarget(), write));
+        informOfWrite(writes, new WriteImpl(writes.getDirection(), write));
     }
 
     private void informOfClose(final WriteQueue writes) {
-        informOfWrite(writes, new CloseImpl(writes.getTarget()));
+        informOfWrite(writes, new CloseImpl(writes.getDirection()));
     }
 
     private void informOfWrite(final WriteQueue writes, final Write write) {

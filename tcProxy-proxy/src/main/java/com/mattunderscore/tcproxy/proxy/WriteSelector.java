@@ -72,7 +72,7 @@ public class WriteSelector implements Runnable {
         for (final WriteQueue newWrite : writes)
         {
             try {
-                newWrite.getTarget().register(selector, SelectionKey.OP_WRITE, newWrite);
+                newWrite.getDirection().getTo().register(selector, SelectionKey.OP_WRITE, newWrite);
             }
             catch (final ClosedChannelException e) {
                 System.out.println("Already closed");

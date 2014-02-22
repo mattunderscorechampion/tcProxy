@@ -25,6 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 /**
@@ -32,13 +34,19 @@ import java.nio.channels.SocketChannel;
  */
 public class DirectionImpl implements Direction {
     private final SocketChannel from;
+    private final SocketChannel to;
     private final Connection connection;
     private final WriteQueue queue;
+    private volatile int read;
+    private volatile int written;
 
-    public DirectionImpl(final SocketChannel from, final SocketChannel to, final Connection connection, final WriteQueue queue) {
+    public DirectionImpl(final SocketChannel from, final SocketChannel to, final Connection connection, final int queueSize) {
         this.from = from;
+        this.to = to;
         this.connection = connection;
-        this.queue = queue;
+        this.queue = new WriteQueueImpl(this, connection, queueSize);
+        this.read = 0;
+        this.written = 0;
     }
 
     @Override
@@ -48,7 +56,7 @@ public class DirectionImpl implements Direction {
 
     @Override
     public SocketChannel getTo() {
-        return queue.getTarget();
+        return to;
     }
 
     @Override
@@ -59,5 +67,35 @@ public class DirectionImpl implements Direction {
     @Override
     public WriteQueue getQueue() {
         return queue;
+    }
+
+    @Override
+    public int read() {
+        return read;
+    }
+
+    @Override
+    public int written() {
+        return written;
+    }
+
+    @Override
+    public int write(final ByteBuffer destination) throws IOException {
+        final int newlyWritten = to.write(destination);
+        written += newlyWritten;
+        return newlyWritten;
+    }
+
+    @Override
+    public int read(final ByteBuffer source) throws IOException {
+        final int newlyRead = from.read(source);
+        read += newlyRead;
+        return newlyRead;
+    }
+
+    @Override
+    public void close() throws IOException {
+        System.out.println("Closed " + to);
+        to.close();
     }
 }
