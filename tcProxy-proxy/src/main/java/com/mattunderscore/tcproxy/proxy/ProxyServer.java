@@ -47,11 +47,12 @@ public class ProxyServer {
                        final ConnectionSettings connectionSettings,
                        final InboundSocketSettings inboundSocketSettings,
                        final OutboundSocketSettings outboundSocketSettings,
-                       final ReadSelectorSettings readSelectorSettings) throws IOException {
+                       final ReadSelectorSettings readSelectorSettings,
+                       final ConnectionManager manager) throws IOException {
         final BlockingQueue<Connection> newConnections = new ArrayBlockingQueue<>(5000);
         final BlockingQueue<ActionQueue> newWrites = new ArrayBlockingQueue<>(5000);
         final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
-        final ConnectionFactory connectionFactory = new ConnectionFactory(connectionSettings);
+        final ConnectionFactory connectionFactory = new ConnectionFactory(connectionSettings, manager);
         final Selector readSelector = Selector.open();
         final Selector writeSelector = Selector.open();
 

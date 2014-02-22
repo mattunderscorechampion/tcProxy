@@ -25,15 +25,40 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import java.io.IOException;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * @author matt on 21/02/14.
+ * @author matt on 22/02/14.
  */
-public interface Connection {
-    Direction clientToServer();
+public class ConnectionManager {
+    private final Set<Connection> connections = new CopyOnWriteArraySet<>();
+    private final Set<Listener> listeners = new CopyOnWriteArraySet<>();
 
-    Direction serverToClient();
+    public void register(final Connection connection) {
+        connections.add(connection);
+        for (final Listener listener : listeners) {
+            listener.newConnection(connection);
+        }
+    }
 
-    void close() throws IOException;
+    public void unregister(final Connection connection) {
+        connections.remove(connection);
+        for (final Listener listener : listeners) {
+            listener.closedConnection(connection);
+        }
+    }
+
+    public Set<Connection> getConnections() {
+        return connections;
+    }
+
+    public void addListener(final Listener listener) {
+        listeners.add(listener);
+    }
+
+    public interface Listener {
+        void newConnection(Connection connection);
+        void closedConnection(Connection connection);
+    }
 }

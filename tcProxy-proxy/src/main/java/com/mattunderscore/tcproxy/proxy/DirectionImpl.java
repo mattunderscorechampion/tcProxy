@@ -35,13 +35,13 @@ import java.nio.channels.SocketChannel;
 public class DirectionImpl implements Direction {
     private final SocketChannel from;
     private final SocketChannel to;
-    private final Connection connection;
+    private final ConnectionImpl connection;
     private final ActionQueue queue;
     private volatile int read;
     private volatile int written;
     private volatile boolean open;
 
-    public DirectionImpl(final SocketChannel from, final SocketChannel to, final Connection connection, final int queueSize) {
+    public DirectionImpl(final SocketChannel from, final SocketChannel to, final ConnectionImpl connection, final int queueSize) {
         this.from = from;
         this.to = to;
         this.connection = connection;
@@ -101,6 +101,7 @@ public class DirectionImpl implements Direction {
             System.out.println("Closed " + to);
             to.close();
             this.open = true;
+            connection.partClosed();
         }
     }
 }

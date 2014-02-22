@@ -35,13 +35,17 @@ import java.nio.channels.SocketChannel;
 public class ConnectionFactory {
 
     private final ConnectionSettings settings;
+    private final ConnectionManager manager;
 
-    public ConnectionFactory(final ConnectionSettings settings) {
+    public ConnectionFactory(final ConnectionSettings settings, final ConnectionManager manager) {
 
         this.settings = settings;
+        this.manager = manager;
     }
 
     public Connection create(final SocketChannel clientSide, final SocketChannel serverSide) {
-        return new ConnectionImpl(clientSide, serverSide, settings.getWriteQueueSize());
+        final Connection conn = new ConnectionImpl(manager, clientSide, serverSide, settings.getWriteQueueSize());
+        manager.register(conn);
+        return conn;
     }
 }

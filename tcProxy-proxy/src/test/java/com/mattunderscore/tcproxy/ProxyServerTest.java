@@ -25,12 +25,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy;
 
+import com.mattunderscore.tcproxy.proxy.Connection;
+import com.mattunderscore.tcproxy.proxy.ConnectionManager;
+import com.mattunderscore.tcproxy.proxy.Direction;
 import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.*;
 import com.mattunderscore.tcproxy.proxy.ProxyServer;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.*;
 
 /**
  * @author matt on 18/02/14.
@@ -38,14 +41,48 @@ import java.util.concurrent.CountDownLatch;
 public class ProxyServerTest {
     @Test
     public void test0() throws IOException, InterruptedException {
+        final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         try {
-        final ProxyServer server = new ProxyServer(
-                new AcceptorSettings(8085),
-                new ConnectionSettings(10000),
-                new InboundSocketSettings(8192, 8192),
-                new OutboundSocketSettings(8080, "localhost", 8192, 8192),
-                new ReadSelectorSettings(2048));
-        server.start();
+            final ConnectionManager manager = new ConnectionManager();
+            final ProxyServer server = new ProxyServer(
+                    new AcceptorSettings(8085),
+                    new ConnectionSettings(10000),
+                    new InboundSocketSettings(8192, 8192),
+                    new OutboundSocketSettings(8080, "localhost", 8192, 8192),
+                    new ReadSelectorSettings(2048),
+                    manager);
+
+            manager.addListener(new ConnectionManager.Listener() {
+                private volatile Future<?> task;
+                @Override
+                public void newConnection(final Connection connection) {
+                    task = executor.scheduleAtFixedRate(new Runnable() {
+                        @Override
+                        public void run() {
+                            final Direction clientToServer = connection.clientToServer();
+                            final Direction serverToClient = connection.serverToClient();
+                            System.out.println(String.format("Read %d bytes from %s", clientToServer.read(), clientToServer.getFrom()));
+                            System.out.println(String.format("Wrote %d bytes to %s", clientToServer.written(), clientToServer.getTo()));
+                            System.out.println(String.format("Read %d bytes from %s", serverToClient.read(), serverToClient.getFrom()));
+                            System.out.println(String.format("Wrote %d bytes to %s", serverToClient.written(), serverToClient.getTo()));
+                        }
+                    }, 1, 5, TimeUnit.SECONDS);
+                }
+
+                @Override
+                public void closedConnection(final Connection connection) {
+                    task.cancel(true);
+                    System.out.println("Connection closed");
+                    final Direction clientToServer = connection.clientToServer();
+                    final Direction serverToClient = connection.serverToClient();
+                    System.out.println(String.format("Read %d bytes from %s", clientToServer.read(), clientToServer.getFrom()));
+                    System.out.println(String.format("Wrote %d bytes to %s", clientToServer.written(), clientToServer.getTo()));
+                    System.out.println(String.format("Read %d bytes from %s", serverToClient.read(), serverToClient.getFrom()));
+                    System.out.println(String.format("Wrote %d bytes to %s", serverToClient.written(), serverToClient.getTo()));
+                }
+            });
+
+            server.start();
         }
         catch (Throwable t) {
             t.printStackTrace();

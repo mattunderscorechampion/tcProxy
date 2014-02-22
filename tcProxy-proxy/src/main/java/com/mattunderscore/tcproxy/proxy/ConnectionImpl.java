@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
+import java.io.IOException;
 import java.nio.channels.SocketChannel;
 /**
  * @author matt on 18/02/14.
@@ -32,10 +33,14 @@ import java.nio.channels.SocketChannel;
 public class ConnectionImpl implements Connection {
     private final Direction clientToServer;
     private final Direction serverToClient;
+    private final ConnectionManager manager;
+    private volatile boolean partClosed;
 
-    public ConnectionImpl(final SocketChannel clientSide, final SocketChannel serverSide, final int queueSize) {
+    public ConnectionImpl(final ConnectionManager manager, final SocketChannel clientSide, final SocketChannel serverSide, final int queueSize) {
+        this.manager = manager;
         clientToServer = new DirectionImpl(clientSide, serverSide, this, queueSize);
         serverToClient = new DirectionImpl(serverSide, clientSide, this, queueSize);
+        partClosed = false;
     }
 
     @Override
@@ -47,5 +52,31 @@ public class ConnectionImpl implements Connection {
     @Override
     public Direction serverToClient() {
         return serverToClient;
+    }
+
+    @Override
+    public void close() throws IOException {
+        clientToServer.close();
+        serverToClient.close();
+        manager.unregister(this);
+    }
+
+    void partClosed() {
+        if (partClosed) {
+            manager.unregister(this);
+        }
+        partClosed = true;
+    }
+
+    Direction otherDirection(final Direction direction) {
+        if (direction == clientToServer) {
+            return serverToClient;
+        }
+        else if (direction == serverToClient) {
+            return clientToServer;
+        }
+        else {
+            return null;
+        }
     }
 }
