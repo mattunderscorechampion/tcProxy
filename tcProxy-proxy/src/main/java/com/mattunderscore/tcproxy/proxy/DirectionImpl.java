@@ -25,6 +25,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -33,6 +36,7 @@ import java.nio.channels.SocketChannel;
  * @author matt on 19/02/14.
  */
 public class DirectionImpl implements Direction {
+    private static final Logger LOG = LoggerFactory.getLogger("direction");
     private final SocketChannel from;
     private final SocketChannel to;
     private final ConnectionImpl connection;
@@ -98,7 +102,7 @@ public class DirectionImpl implements Direction {
     @Override
     public void close() throws IOException {
         if (open) {
-            System.out.println("Closed d " + to);
+            LOG.info("Closed {}", to);
             to.close();
             open = false;
             connection.partClosed();

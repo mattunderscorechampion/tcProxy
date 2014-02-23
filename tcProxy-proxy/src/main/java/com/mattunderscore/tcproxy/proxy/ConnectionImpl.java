@@ -62,7 +62,6 @@ public class ConnectionImpl implements Connection {
     }
 
     void partClosed() {
-        System.out.println("Part close");
         if (partClosed) {
             manager.unregister(this);
         }

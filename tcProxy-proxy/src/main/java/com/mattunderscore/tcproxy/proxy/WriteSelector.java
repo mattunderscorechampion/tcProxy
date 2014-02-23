@@ -25,6 +25,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
@@ -37,6 +40,7 @@ import java.util.concurrent.BlockingQueue;
  * @author matt on 19/02/14.
  */
 public class WriteSelector implements Runnable {
+    public static final Logger LOG = LoggerFactory.getLogger("writer");
     private final Selector selector;
     private final BlockingQueue<ActionQueue> newWrites;
     private volatile boolean running = false;
@@ -53,7 +57,7 @@ public class WriteSelector implements Runnable {
             try {
                 selector.selectNow();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.debug("Error selecting", e);
             }
 
             registerKeys();
@@ -75,7 +79,7 @@ public class WriteSelector implements Runnable {
                 newWrite.getDirection().getTo().register(selector, SelectionKey.OP_WRITE, newWrite);
             }
             catch (final ClosedChannelException e) {
-                System.out.println("Already closed");
+                LOG.debug("Already closed");
             }
         }
     }
@@ -98,7 +102,7 @@ public class WriteSelector implements Runnable {
                     }
                 }
                 catch (final IOException e) {
-                    e.printStackTrace();
+                    LOG.debug("Error writing", e);
                     key.cancel();
                 }
             }

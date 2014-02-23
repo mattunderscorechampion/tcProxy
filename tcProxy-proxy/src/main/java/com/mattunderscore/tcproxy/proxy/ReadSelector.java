@@ -26,6 +26,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy;
 
 import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.ReadSelectorSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -38,6 +40,7 @@ import java.util.concurrent.BlockingQueue;
  * @author matt on 18/02/14.
  */
 public class ReadSelector implements Runnable {
+    public static final Logger LOG = LoggerFactory.getLogger("reader");
     private volatile boolean running = false;
     private final Selector selector;
     private final ReadSelectorSettings settings;
@@ -63,7 +66,7 @@ public class ReadSelector implements Runnable {
             try {
                 selector.selectNow();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.debug("Error selecting", e);
             }
 
             registerKeys();
@@ -86,7 +89,7 @@ public class ReadSelector implements Runnable {
                 channel1.register(selector, SelectionKey.OP_READ, sTc);
             }
             catch (IOException e) {
-                e.printStackTrace();
+                LOG.debug("Error registering", e);
             }
         }
     }
@@ -113,19 +116,17 @@ public class ReadSelector implements Runnable {
                         else if (bytes == -1) {
                             key.cancel();
                             informOfClose(queue);
-                            System.out.println("Closed r " + channel);
+                            LOG.info("Closed r " + channel);
                             final ConnectionImpl conn = (ConnectionImpl) direction.getConnection();
                             conn.otherDirection(direction).close();
-                            //direction.close();
                         }
                     }
                     catch (final ClosedChannelException e) {
-                        System.out.println("Channel already closed");
+                        LOG.debug("Channel already closed");
                         key.cancel();
                     }
                     catch (final IOException e) {
-                        System.err.println("Error on channel " + channel + ", key " + key);
-                        e.printStackTrace();
+                        LOG.debug("Error on channel " + channel + ", key " + key, e);
                     }
                 }
             }
@@ -142,6 +143,7 @@ public class ReadSelector implements Runnable {
 
     private void informOfWrite(final ActionQueue writes, final Action action) {
         if (!writes.hasData()) {
+            LOG.info("New writes");
             writes.add(action);
             newWrites.add(writes);
         }

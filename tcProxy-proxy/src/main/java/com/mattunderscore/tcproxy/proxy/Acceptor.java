@@ -27,6 +27,8 @@ package com.mattunderscore.tcproxy.proxy;
 
 import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.AcceptorSettings;
 import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.InboundSocketSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -39,6 +41,7 @@ import java.util.Queue;
  * @author matt on 18/02/14.
  */
 public class Acceptor implements Runnable {
+    public static final Logger LOG = LoggerFactory.getLogger("acceptor");
     private final AcceptorSettings settings;
     private final InboundSocketSettings inboundSettings;
     private final ConnectionFactory connectionFactory;
@@ -71,9 +74,9 @@ public class Acceptor implements Runnable {
                 final SocketChannel clientSide = channel.accept();
                 clientSide.setOption(StandardSocketOptions.SO_SNDBUF, inboundSettings.getSendBufferSize());
                 clientSide.configureBlocking(false);
-                System.out.println("Accepted " + clientSide);
+                LOG.info("Accepted " + clientSide);
                 final SocketChannel serverSide = factory.createSocket();
-                System.out.println("Opened " + serverSide);
+                LOG.info("Opened " + serverSide);
                 newConnections.add(connectionFactory.create(clientSide, serverSide));
             } catch (IOException e) {
                 e.printStackTrace();

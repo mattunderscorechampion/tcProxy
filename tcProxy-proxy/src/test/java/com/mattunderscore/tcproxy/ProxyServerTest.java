@@ -31,16 +31,23 @@ import com.mattunderscore.tcproxy.proxy.Direction;
 import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.*;
 import com.mattunderscore.tcproxy.proxy.ProxyServer;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.*;
+import java.util.logging.LogManager;
 
 /**
  * @author matt on 18/02/14.
  */
 public class ProxyServerTest {
+    public static final Logger LOG = LoggerFactory.getLogger("test");
     @Test
     public void test0() throws IOException, InterruptedException {
+        LogManager.getLogManager().readConfiguration(getClass().getResourceAsStream("/logging.properties"));
+
+
         final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         try {
             final ConnectionManager manager = new ConnectionManager();
@@ -59,12 +66,13 @@ public class ProxyServerTest {
                     task = executor.scheduleAtFixedRate(new Runnable() {
                         @Override
                         public void run() {
+                            LOG.info("New connection");
                             final Direction clientToServer = connection.clientToServer();
                             final Direction serverToClient = connection.serverToClient();
-                            System.out.println(String.format("Read %d bytes from %s", clientToServer.read(), clientToServer.getFrom()));
-                            System.out.println(String.format("Wrote %d bytes to %s %d ops queued", clientToServer.written(), clientToServer.getTo(), clientToServer.getQueue().opsPending()));
-                            System.out.println(String.format("Read %d bytes from %s", serverToClient.read(), serverToClient.getFrom()));
-                            System.out.println(String.format("Wrote %d bytes to %s %d ops queued", serverToClient.written(), serverToClient.getTo(), serverToClient.getQueue().opsPending()));
+                            LOG.info(String.format("Read %d bytes from %s", clientToServer.read(), clientToServer.getFrom()));
+                            LOG.info(String.format("Wrote %d bytes to %s %d ops queued", clientToServer.written(), clientToServer.getTo(), clientToServer.getQueue().opsPending()));
+                            LOG.info(String.format("Read %d bytes from %s", serverToClient.read(), serverToClient.getFrom()));
+                            LOG.info(String.format("Wrote %d bytes to %s %d ops queued", serverToClient.written(), serverToClient.getTo(), serverToClient.getQueue().opsPending()));
                         }
                     }, 1, 5, TimeUnit.SECONDS);
                 }
@@ -72,13 +80,13 @@ public class ProxyServerTest {
                 @Override
                 public void closedConnection(final Connection connection) {
                     task.cancel(true);
-                    System.out.println("Connection closed");
+                    LOG.info("Connection closed");
                     final Direction clientToServer = connection.clientToServer();
                     final Direction serverToClient = connection.serverToClient();
-                    System.out.println(String.format("Read %d bytes from %s", clientToServer.read(), clientToServer.getFrom()));
-                    System.out.println(String.format("Wrote %d bytes to %s", clientToServer.written(), clientToServer.getTo()));
-                    System.out.println(String.format("Read %d bytes from %s", serverToClient.read(), serverToClient.getFrom()));
-                    System.out.println(String.format("Wrote %d bytes to %s", serverToClient.written(), serverToClient.getTo()));
+                    LOG.info(String.format("Read %d bytes from %s", clientToServer.read(), clientToServer.getFrom()));
+                    LOG.info(String.format("Wrote %d bytes to %s", clientToServer.written(), clientToServer.getTo()));
+                    LOG.info(String.format("Read %d bytes from %s", serverToClient.read(), serverToClient.getFrom()));
+                    LOG.info(String.format("Wrote %d bytes to %s", serverToClient.written(), serverToClient.getTo()));
                 }
             });
 
