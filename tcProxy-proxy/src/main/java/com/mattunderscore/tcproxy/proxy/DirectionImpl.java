@@ -108,4 +108,41 @@ public class DirectionImpl implements Direction {
             connection.partClosed();
         }
     }
+
+    @Override
+    public String toString() {
+        String fromRA;
+        String fromLA;
+        String toLA;
+        String toRA;
+        try {
+            fromRA = from.getRemoteAddress().toString();
+        }
+        catch (final IOException e) {
+            fromRA = "unknown";
+        }
+        try {
+            fromLA = from.getLocalAddress().toString();
+        }
+        catch (final IOException e) {
+            fromLA = "unknown";
+        }
+        try {
+            toLA = to.getLocalAddress().toString();
+        }
+        catch (final IOException e) {
+            toLA = "unknown";
+        }
+        try {
+            toRA = to.getRemoteAddress().toString();
+        }
+        catch (final IOException e) {
+            toRA = "unknown";
+        }
+        return String.format("%s -> %s -> %s -> %s",
+                fromRA,
+                fromLA,
+                toLA,
+                toRA);
+    }
 }

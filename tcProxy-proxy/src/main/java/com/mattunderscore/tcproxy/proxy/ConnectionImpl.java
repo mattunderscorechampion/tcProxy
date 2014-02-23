@@ -79,4 +79,11 @@ public class ConnectionImpl implements Connection {
             return null;
         }
     }
+
+    @Override
+    public String toString() {
+        return String.format("c - s : %s, s - c %s",
+                clientToServer,
+                serverToClient);
+    }
 }
