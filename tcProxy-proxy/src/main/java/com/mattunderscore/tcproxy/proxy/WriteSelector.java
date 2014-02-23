@@ -92,6 +92,9 @@ public class WriteSelector implements Runnable {
                     }
                     else {
                         key.cancel();
+                        if (write.current() != null) {
+                            newWrites.add(write);
+                        }
                     }
                 }
                 catch (final IOException e) {

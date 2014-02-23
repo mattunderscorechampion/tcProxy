@@ -35,4 +35,6 @@ public interface Action {
     int writeToSocket() throws IOException;
 
     boolean writeComplete();
+
+    int dataPending();
 }

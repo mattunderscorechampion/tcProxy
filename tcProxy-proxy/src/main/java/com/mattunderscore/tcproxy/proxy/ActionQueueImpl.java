@@ -46,6 +46,10 @@ public class ActionQueueImpl implements ActionQueue {
         return actions.remainingCapacity() == 0;
     }
 
+    public int opsPending() {
+        return actions.size();
+    }
+
     @Override
     public void add(final Action action) {
         actions.add(action);
@@ -68,7 +72,7 @@ public class ActionQueueImpl implements ActionQueue {
 
     @Override
     public boolean hasData() {
-        return !actions.isEmpty();
+        return current() != null;
     }
 
     @Override

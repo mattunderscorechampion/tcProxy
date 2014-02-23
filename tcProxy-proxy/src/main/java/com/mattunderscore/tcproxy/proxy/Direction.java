@@ -51,4 +51,5 @@ public interface Direction {
     int read(ByteBuffer data) throws IOException;
 
     void close() throws IOException;
+
 }

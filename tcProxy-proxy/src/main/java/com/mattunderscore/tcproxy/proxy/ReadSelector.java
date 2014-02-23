@@ -113,10 +113,10 @@ public class ReadSelector implements Runnable {
                         else if (bytes == -1) {
                             key.cancel();
                             informOfClose(queue);
-                            System.out.println("Closed " + channel);
+                            System.out.println("Closed r " + channel);
                             final ConnectionImpl conn = (ConnectionImpl) direction.getConnection();
-                            //conn.otherDirection(direction).close();
-                            direction.close();
+                            conn.otherDirection(direction).close();
+                            //direction.close();
                         }
                     }
                     catch (final ClosedChannelException e) {

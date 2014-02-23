@@ -97,10 +97,10 @@ public class DirectionImpl implements Direction {
 
     @Override
     public void close() throws IOException {
-        if (!open) {
-            System.out.println("Closed " + to);
+        if (open) {
+            System.out.println("Closed d " + to);
             to.close();
-            this.open = true;
+            open = false;
             connection.partClosed();
         }
     }

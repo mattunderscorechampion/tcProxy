@@ -62,9 +62,9 @@ public class ProxyServerTest {
                             final Direction clientToServer = connection.clientToServer();
                             final Direction serverToClient = connection.serverToClient();
                             System.out.println(String.format("Read %d bytes from %s", clientToServer.read(), clientToServer.getFrom()));
-                            System.out.println(String.format("Wrote %d bytes to %s", clientToServer.written(), clientToServer.getTo()));
+                            System.out.println(String.format("Wrote %d bytes to %s %d ops queued", clientToServer.written(), clientToServer.getTo(), clientToServer.getQueue().opsPending()));
                             System.out.println(String.format("Read %d bytes from %s", serverToClient.read(), serverToClient.getFrom()));
-                            System.out.println(String.format("Wrote %d bytes to %s", serverToClient.written(), serverToClient.getTo()));
+                            System.out.println(String.format("Wrote %d bytes to %s %d ops queued", serverToClient.written(), serverToClient.getTo(), serverToClient.getQueue().opsPending()));
                         }
                     }, 1, 5, TimeUnit.SECONDS);
                 }

@@ -49,4 +49,9 @@ public class Write implements Action {
     public boolean writeComplete() {
         return data.remaining() == 0;
     }
+
+    @Override
+    public int dataPending() {
+        return data.remaining();
+    }
 }

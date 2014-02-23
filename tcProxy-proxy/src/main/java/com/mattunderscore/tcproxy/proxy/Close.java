@@ -55,4 +55,9 @@ public class Close implements Action {
     public boolean writeComplete() {
         return written;
     }
+
+    @Override
+    public int dataPending() {
+        return 0;
+    }
 }
