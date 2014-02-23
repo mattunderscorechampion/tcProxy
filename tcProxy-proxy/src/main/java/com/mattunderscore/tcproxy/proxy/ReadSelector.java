@@ -116,9 +116,10 @@ public class ReadSelector implements Runnable {
                         else if (bytes == -1) {
                             key.cancel();
                             informOfClose(queue);
-                            LOG.info("Closed r " + channel);
                             final ConnectionImpl conn = (ConnectionImpl) direction.getConnection();
-                            conn.otherDirection(direction).close();
+                            final Direction otherDirection = conn.otherDirection(direction);
+                            LOG.info("Closed {} ", otherDirection);
+                            otherDirection.close();
                         }
                     }
                     catch (final ClosedChannelException e) {
@@ -126,7 +127,7 @@ public class ReadSelector implements Runnable {
                         key.cancel();
                     }
                     catch (final IOException e) {
-                        LOG.debug("Error on channel " + channel + ", key " + key, e);
+                        LOG.debug("Error on channel {}, {}", channel, key, e);
                     }
                 }
             }
@@ -143,7 +144,7 @@ public class ReadSelector implements Runnable {
 
     private void informOfWrite(final ActionQueue writes, final Action action) {
         if (!writes.hasData()) {
-            LOG.info("New writes");
+            LOG.debug("New writes");
             writes.add(action);
             newWrites.add(writes);
         }

@@ -95,8 +95,10 @@ public class WriteSelector implements Runnable {
                         data.writeToSocket();
                     }
                     else {
+                        LOG.debug("Finished write");
                         key.cancel();
                         if (write.current() != null) {
+                            LOG.debug("Add back");
                             newWrites.add(write);
                         }
                     }

@@ -74,9 +74,9 @@ public class Acceptor implements Runnable {
                 final SocketChannel clientSide = channel.accept();
                 clientSide.setOption(StandardSocketOptions.SO_SNDBUF, inboundSettings.getSendBufferSize());
                 clientSide.configureBlocking(false);
-                LOG.info("Accepted " + clientSide);
+                LOG.info("Accepted {}", clientSide);
                 final SocketChannel serverSide = factory.createSocket();
-                LOG.info("Opened " + serverSide);
+                LOG.info("Opened {}", serverSide);
                 newConnections.add(connectionFactory.create(clientSide, serverSide));
             } catch (IOException e) {
                 e.printStackTrace();

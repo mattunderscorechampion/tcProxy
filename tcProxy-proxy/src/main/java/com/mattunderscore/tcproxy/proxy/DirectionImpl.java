@@ -102,7 +102,7 @@ public class DirectionImpl implements Direction {
     @Override
     public void close() throws IOException {
         if (open) {
-            LOG.info("Closed {}", to);
+            LOG.info("Closed {}", this);
             to.close();
             open = false;
             connection.partClosed();
