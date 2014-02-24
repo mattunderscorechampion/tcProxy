@@ -86,8 +86,9 @@ public class Acceptor implements Runnable {
     }
 
     public void run() {
+        LOG.info("{} : Started", this);
+        running = true;
         try {
-            running = true;
             final ServerSocketChannel channel = openServerSocket();
             mainLoop(channel);
         }

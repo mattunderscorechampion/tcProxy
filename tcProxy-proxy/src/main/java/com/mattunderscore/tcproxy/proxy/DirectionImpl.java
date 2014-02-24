@@ -41,6 +41,7 @@ public class DirectionImpl implements Direction {
     private final SocketChannel to;
     private final ConnectionImpl connection;
     private final ActionQueue queue;
+    private final String stringValue;
     private volatile int read;
     private volatile int written;
     private volatile boolean open;
@@ -53,6 +54,7 @@ public class DirectionImpl implements Direction {
         this.read = 0;
         this.written = 0;
         this.open = true;
+        this.stringValue = asString();
     }
 
     @Override
@@ -102,47 +104,49 @@ public class DirectionImpl implements Direction {
     @Override
     public void close() throws IOException {
         if (open) {
-            LOG.info("Closed {}", this);
+            LOG.info("{} : Closed", this);
             to.close();
             open = false;
             connection.partClosed();
         }
     }
 
+    private String asString() {
+        final String unknown = "unknown";
+        final String separator = " -> ";
+        final StringBuilder builder = new StringBuilder(12 + (4 * 32));
+        try {
+            builder.append(from.getRemoteAddress().toString());
+        }
+        catch (final IOException e) {
+            builder.append(unknown);
+        }
+        builder.append(separator);
+        try {
+            builder.append(from.getLocalAddress().toString());
+        }
+        catch (final IOException e) {
+            builder.append(unknown);
+        }
+        builder.append(separator);
+        try {
+            builder.append(to.getLocalAddress().toString());
+        }
+        catch (final IOException e) {
+            builder.append(unknown);
+        }
+        builder.append(separator);
+        try {
+            builder.append(to.getRemoteAddress().toString());
+        }
+        catch (final IOException e) {
+            builder.append(unknown);
+        }
+        return builder.toString();
+    }
+
     @Override
     public String toString() {
-        String fromRA;
-        String fromLA;
-        String toLA;
-        String toRA;
-        try {
-            fromRA = from.getRemoteAddress().toString();
-        }
-        catch (final IOException e) {
-            fromRA = "unknown";
-        }
-        try {
-            fromLA = from.getLocalAddress().toString();
-        }
-        catch (final IOException e) {
-            fromLA = "unknown";
-        }
-        try {
-            toLA = to.getLocalAddress().toString();
-        }
-        catch (final IOException e) {
-            toLA = "unknown";
-        }
-        try {
-            toRA = to.getRemoteAddress().toString();
-        }
-        catch (final IOException e) {
-            toRA = "unknown";
-        }
-        return String.format("%s -> %s -> %s -> %s",
-                fromRA,
-                fromLA,
-                toLA,
-                toRA);
+        return stringValue;
     }
 }
