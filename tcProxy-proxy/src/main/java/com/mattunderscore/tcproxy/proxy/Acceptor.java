@@ -74,12 +74,13 @@ public class Acceptor implements Runnable {
                 final SocketChannel clientSide = channel.accept();
                 clientSide.setOption(StandardSocketOptions.SO_SNDBUF, inboundSettings.getSendBufferSize());
                 clientSide.configureBlocking(false);
-                LOG.info("Accepted {}", clientSide);
+                LOG.info("{} : Accepted {}", this, clientSide);
                 final SocketChannel serverSide = factory.createSocket();
-                LOG.info("Opened {}", serverSide);
+                LOG.info("{} : Opened {}", this, serverSide);
                 newConnections.add(connectionFactory.create(clientSide, serverSide));
-            } catch (IOException e) {
-                e.printStackTrace();
+            }
+            catch (final IOException e) {
+                LOG.warn("{} : There was an unhandled exception in the main loop - continuing", this, e);
             }
         }
     }
@@ -90,9 +91,14 @@ public class Acceptor implements Runnable {
             final ServerSocketChannel channel = openServerSocket();
             mainLoop(channel);
         }
-        catch (final Throwable e) {
-            e.printStackTrace();
+        catch (final Exception e) {
             running = false;
+            LOG.error("{} : Threw an exception it is not able to handle", this, e);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Acceptor";
     }
 }
