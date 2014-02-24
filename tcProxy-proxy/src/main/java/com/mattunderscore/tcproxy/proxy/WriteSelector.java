@@ -52,12 +52,14 @@ public class WriteSelector implements Runnable {
 
     @Override
     public void run() {
+        LOG.debug("{} : Starting", this);
         running = true;
         while (running) {
             try {
                 selector.selectNow();
-            } catch (IOException e) {
-                LOG.debug("Error selecting", e);
+            }
+            catch (final IOException e) {
+                LOG.debug("{} : Error selecting keys", this, e);
             }
 
             registerKeys();
@@ -68,6 +70,7 @@ public class WriteSelector implements Runnable {
 
     public void stop() {
         running = false;
+        LOG.debug("{} : Stopping", this);
     }
 
     private void registerKeys() {
@@ -75,11 +78,12 @@ public class WriteSelector implements Runnable {
         newWrites.drainTo(writes);
         for (final ActionQueue newWrite : writes)
         {
+            final Direction direction = newWrite.getDirection();
             try {
-                newWrite.getDirection().getTo().register(selector, SelectionKey.OP_WRITE, newWrite);
+                direction.getTo().register(selector, SelectionKey.OP_WRITE, newWrite);
             }
             catch (final ClosedChannelException e) {
-                LOG.debug("Already closed");
+                LOG.debug("{} : The destination of {} is already closed", this, direction);
             }
         }
     }
@@ -95,19 +99,24 @@ public class WriteSelector implements Runnable {
                         data.writeToSocket();
                     }
                     else {
-                        LOG.debug("Finished write");
+                        LOG.debug("{} : Finished queued actions, cancel key", this);
                         key.cancel();
                         if (write.current() != null) {
-                            LOG.debug("Add back");
+                            LOG.debug("{} : Actions queued, requeue for key registration", this);
                             newWrites.add(write);
                         }
                     }
                 }
                 catch (final IOException e) {
-                    LOG.debug("Error writing", e);
+                    LOG.warn("{} : Error writing", this, e);
                     key.cancel();
                 }
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Write Selector";
     }
 }

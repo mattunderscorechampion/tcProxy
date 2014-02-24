@@ -56,17 +56,20 @@ public class ReadSelector implements Runnable {
 
     public void stop() {
         running = false;
+        LOG.debug("{} : Stopping", this);
     }
 
     @Override
     public void run() {
+        LOG.debug("{} : Starting", this);
         final ByteBuffer buffer = ByteBuffer.allocate(settings.getReadBufferSize());
         running = true;
         while (running) {
             try {
                 selector.selectNow();
-            } catch (IOException e) {
-                LOG.debug("Error selecting", e);
+            }
+            catch (final IOException e) {
+                LOG.debug("{} : Error selecting", this, e);
             }
 
             registerKeys();
@@ -88,8 +91,8 @@ public class ReadSelector implements Runnable {
                 final SocketChannel channel1 = sTc.getFrom();
                 channel1.register(selector, SelectionKey.OP_READ, sTc);
             }
-            catch (IOException e) {
-                LOG.debug("Error registering", e);
+            catch (final IOException e) {
+                LOG.debug("{} : Error registering", this, e);
             }
         }
     }
@@ -118,16 +121,16 @@ public class ReadSelector implements Runnable {
                             informOfClose(queue);
                             final ConnectionImpl conn = (ConnectionImpl) direction.getConnection();
                             final Direction otherDirection = conn.otherDirection(direction);
-                            LOG.info("Closed {} ", otherDirection);
+                            LOG.info("{} : Closed {} ", this, otherDirection);
                             otherDirection.close();
                         }
                     }
                     catch (final ClosedChannelException e) {
-                        LOG.debug("Channel already closed");
+                        LOG.debug("{} : Channel {} already closed", this, channel);
                         key.cancel();
                     }
                     catch (final IOException e) {
-                        LOG.debug("Error on channel {}, {}", channel, key, e);
+                        LOG.debug("{} : Error on channel {}, {}", this, channel, key, e);
                     }
                 }
             }
@@ -144,12 +147,17 @@ public class ReadSelector implements Runnable {
 
     private void informOfWrite(final ActionQueue writes, final Action action) {
         if (!writes.hasData()) {
-            LOG.debug("New writes");
+            LOG.debug("{} : New actions queued", this);
             writes.add(action);
             newWrites.add(writes);
         }
         else {
             writes.add(action);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Read Selector";
     }
 }
