@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.nio.channels.SocketChannel;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -79,8 +80,11 @@ public class WriteSelector implements Runnable {
         for (final ActionQueue newWrite : writes)
         {
             final Direction direction = newWrite.getDirection();
+            final SocketChannel channel = direction.getTo();
             try {
-                direction.getTo().register(selector, SelectionKey.OP_WRITE, newWrite);
+                if (channel.keyFor(selector) == null) {
+                    direction.getTo().register(selector, SelectionKey.OP_WRITE, newWrite);
+                }
             }
             catch (final ClosedChannelException e) {
                 LOG.debug("{} : The destination of {} is already closed", this, direction);
@@ -101,7 +105,7 @@ public class WriteSelector implements Runnable {
                     else {
                         LOG.debug("{} : Finished queued actions, cancel key", this);
                         key.cancel();
-                        if (write.current() != null) {
+                        if (write.hasData()) {
                             LOG.debug("{} : Actions queued, requeue for key registration", this);
                             newWrites.add(write);
                         }

@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.logging.LogManager;
 
@@ -60,13 +61,13 @@ public class ProxyServerTest {
                     manager);
 
             manager.addListener(new ConnectionManager.Listener() {
-                private volatile Future<?> task;
+                private final Map<Connection, Future<?>> tasks = new ConcurrentHashMap<>();
                 @Override
                 public void newConnection(final Connection connection) {
-                    task = executor.scheduleAtFixedRate(new Runnable() {
+                    LOG.info("New connection");
+                    tasks.put(connection, executor.scheduleAtFixedRate(new Runnable() {
                         @Override
                         public void run() {
-                            LOG.info("New connection");
                             final Direction clientToServer = connection.clientToServer();
                             final Direction serverToClient = connection.serverToClient();
                             LOG.info(String.format("Read %d bytes from %s", clientToServer.read(), clientToServer.getFrom()));
@@ -74,11 +75,12 @@ public class ProxyServerTest {
                             LOG.info(String.format("Read %d bytes from %s", serverToClient.read(), serverToClient.getFrom()));
                             LOG.info(String.format("Wrote %d bytes to %s %d ops queued", serverToClient.written(), serverToClient.getTo(), serverToClient.getQueue().opsPending()));
                         }
-                    }, 1, 5, TimeUnit.SECONDS);
+                    }, 1, 5, TimeUnit.SECONDS));
                 }
 
                 @Override
                 public void closedConnection(final Connection connection) {
+                    final Future<?> task = tasks.get(connection);
                     task.cancel(true);
                     LOG.info("Connection closed");
                     final Direction clientToServer = connection.clientToServer();

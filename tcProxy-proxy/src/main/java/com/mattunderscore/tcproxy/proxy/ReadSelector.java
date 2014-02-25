@@ -138,6 +138,7 @@ public class ReadSelector implements Runnable {
     }
 
     private void informOfData(final ActionQueue writes, final ByteBuffer write) {
+        LOG.trace("{} : Data read {} bytes", this, write.remaining());
         informOfWrite(writes, new Write(writes.getDirection(), write));
     }
 
@@ -153,6 +154,7 @@ public class ReadSelector implements Runnable {
         }
         else {
             writes.add(action);
+            newWrites.add(writes);
         }
     }
 
