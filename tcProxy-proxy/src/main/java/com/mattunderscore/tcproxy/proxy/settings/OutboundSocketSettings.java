@@ -23,19 +23,38 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings;
+package com.mattunderscore.tcproxy.proxy.settings;
 
 /**
- * Settings for the acceptor.
+ * Settings for the outbound socket.
  * @author Matt Champion on 18/02/14.
  */
-public final class AcceptorSettings {
+public final class OutboundSocketSettings {
     private final int port;
-    public AcceptorSettings(final int port) {
+    private final String host;
+    private final int receiveBuffer;
+    private final int sendBuffer;
+
+    public OutboundSocketSettings(final int port, final String host, final int receiveBuffer, final int sendBuffer) {
         this.port = port;
+        this.host = host;
+        this.receiveBuffer = receiveBuffer;
+        this.sendBuffer = sendBuffer;
     }
 
     public int getPort() {
         return port;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public int getReceiveBuffer() {
+        return receiveBuffer;
+    }
+
+    public int getSendBuffer() {
+        return sendBuffer;
     }
 }

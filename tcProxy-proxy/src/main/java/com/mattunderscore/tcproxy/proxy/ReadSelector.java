@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.ReadSelectorSettings;
+import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

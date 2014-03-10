@@ -23,20 +23,19 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings;
+package com.mattunderscore.tcproxy.proxy.settings;
 
 /**
- * Settings for the proxied connections.
- * @author Matt Champion on 21/02/14.
+ * Settings for the acceptor.
+ * @author Matt Champion on 18/02/14.
  */
-public final class ConnectionSettings {
-    private final int writeQueueSize;
-
-    public ConnectionSettings(final int writeQueueSize) {
-        this.writeQueueSize = writeQueueSize;
+public final class AcceptorSettings {
+    private final int port;
+    public AcceptorSettings(final int port) {
+        this.port = port;
     }
 
-    public int getWriteQueueSize() {
-        return writeQueueSize;
+    public int getPort() {
+        return port;
     }
 }
