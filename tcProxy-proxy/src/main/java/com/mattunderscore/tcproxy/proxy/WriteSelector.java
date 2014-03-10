@@ -82,9 +82,7 @@ public class WriteSelector implements Runnable {
             final Direction direction = newWrite.getDirection();
             final SocketChannel channel = direction.getTo();
             try {
-                if (channel.keyFor(selector) == null) {
-                    direction.getTo().register(selector, SelectionKey.OP_WRITE, newWrite);
-                }
+                channel.register(selector, SelectionKey.OP_WRITE, newWrite);
             }
             catch (final ClosedChannelException e) {
                 LOG.debug("{} : The destination of {} is already closed", this, direction);
@@ -97,9 +95,10 @@ public class WriteSelector implements Runnable {
         for (final SelectionKey key : keys) {
             if (key.isWritable()) {
                 final ActionQueue write = (ActionQueue)key.attachment();
-                final Action data = write.current();
+
                 try {
-                    if (data != null) {
+                    if (write.hasData()) {
+                        final Action data = write.current();
                         data.writeToSocket();
                     }
                     else {

@@ -143,6 +143,7 @@ public class ReadSelector implements Runnable {
     }
 
     private void informOfClose(final ActionQueue writes) {
+        LOG.trace("{} : Read close", this);
         informOfWrite(writes, new Close(writes.getDirection()));
     }
 
@@ -154,7 +155,6 @@ public class ReadSelector implements Runnable {
         }
         else {
             writes.add(action);
-            newWrites.add(writes);
         }
     }
 
