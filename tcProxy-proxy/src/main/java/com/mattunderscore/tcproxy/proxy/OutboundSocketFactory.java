@@ -33,7 +33,8 @@ import java.net.StandardSocketOptions;
 import java.nio.channels.SocketChannel;
 
 /**
- * @author matt on 18/02/14.
+ * Factory for outbound sockets.
+ * @author Matt Champion on 18/02/14.
  */
 public class OutboundSocketFactory {
     private final OutboundSocketSettings settings;

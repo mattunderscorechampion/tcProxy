@@ -29,7 +29,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
- * @author matt on 19/02/14.
+ * The write action.
+ * @author Matt Champion on 19/02/14.
  */
 public class Write implements Action {
     private Direction direction;

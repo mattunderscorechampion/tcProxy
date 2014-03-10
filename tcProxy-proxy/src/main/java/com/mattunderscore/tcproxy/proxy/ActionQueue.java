@@ -26,7 +26,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy;
 
 /**
- * @author matt on 19/02/14.
+ * The queue of actions for a single direction.
+ * @author Matt Champion on 19/02/14.
  */
 public interface ActionQueue {
 

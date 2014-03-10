@@ -29,7 +29,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * @author matt on 19/02/14.
+ * Implementation of {@link com.mattunderscore.tcproxy.proxy.ActionQueue}.
+ * @author Matt Champion on 19/02/14.
  */
 public class ActionQueueImpl implements ActionQueue {
     private final Direction direction;

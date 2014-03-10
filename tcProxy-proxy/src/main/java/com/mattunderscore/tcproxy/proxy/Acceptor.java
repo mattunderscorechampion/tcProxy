@@ -38,7 +38,8 @@ import java.nio.channels.SocketChannel;
 import java.util.Queue;
 
 /**
- * @author matt on 18/02/14.
+ * The acceptor.
+ * @author Matt Champion on 18/02/14.
  */
 public class Acceptor implements Runnable {
     public static final Logger LOG = LoggerFactory.getLogger("acceptor");

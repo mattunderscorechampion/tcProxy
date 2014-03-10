@@ -27,8 +27,10 @@ package com.mattunderscore.tcproxy.proxy;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
+
 /**
- * @author matt on 18/02/14.
+ * Implementation of {@link com.mattunderscore.tcproxy.proxy.Connection}.
+ * @author Matt Champion on 18/02/14.
  */
 public class ConnectionImpl implements Connection {
     private final Direction clientToServer;

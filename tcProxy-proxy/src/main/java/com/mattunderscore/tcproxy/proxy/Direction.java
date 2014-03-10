@@ -30,7 +30,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 /**
- * @author matt on 18/02/14.
+ * A direction.
+ * @author Matt Champion on 18/02/14.
  */
 public interface Direction {
 

@@ -33,7 +33,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * @author matt on 18/02/14.
+ * The proxy.
+ * @author Matt Champion on 18/02/14.
  */
 public class ProxyServer {
     private final Acceptor acceptor;

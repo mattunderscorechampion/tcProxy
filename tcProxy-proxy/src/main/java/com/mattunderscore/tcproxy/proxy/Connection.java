@@ -28,7 +28,8 @@ package com.mattunderscore.tcproxy.proxy;
 import java.io.IOException;
 
 /**
- * @author matt on 21/02/14.
+ * A connection.
+ * @author Matt Champion on 21/02/14.
  */
 public interface Connection {
     Direction clientToServer();

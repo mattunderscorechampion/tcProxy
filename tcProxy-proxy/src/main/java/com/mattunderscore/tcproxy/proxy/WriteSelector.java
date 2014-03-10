@@ -38,7 +38,8 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * @author matt on 19/02/14.
+ * The write selector for the proxy.
+ * @author Matt Champion on 19/02/14.
  */
 public class WriteSelector implements Runnable {
     public static final Logger LOG = LoggerFactory.getLogger("writer");

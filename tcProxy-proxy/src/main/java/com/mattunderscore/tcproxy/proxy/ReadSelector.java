@@ -37,7 +37,8 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * @author matt on 18/02/14.
+ * The read selector for the proxy.
+ * @author Matt Champion on 18/02/14.
  */
 public class ReadSelector implements Runnable {
     public static final Logger LOG = LoggerFactory.getLogger("reader");

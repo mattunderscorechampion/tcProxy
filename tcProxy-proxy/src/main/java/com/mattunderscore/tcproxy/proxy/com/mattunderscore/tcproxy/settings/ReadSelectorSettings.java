@@ -26,7 +26,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings;
 
 /**
- * @author matt on 21/02/14.
+ * Settings for the read selector thread.
+ * @author Matt Champion on 21/02/14.
  */
 public final class ReadSelectorSettings {
     private final int readBufferSize;

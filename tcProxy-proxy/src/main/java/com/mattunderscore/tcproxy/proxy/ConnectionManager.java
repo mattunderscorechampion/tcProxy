@@ -29,7 +29,8 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * @author matt on 22/02/14.
+ * Manager for connections.
+ * @author Matt Champion on 22/02/14.
  */
 public class ConnectionManager {
     private final Set<Connection> connections = new CopyOnWriteArraySet<>();

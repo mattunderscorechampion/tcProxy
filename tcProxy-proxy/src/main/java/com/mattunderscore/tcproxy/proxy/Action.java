@@ -28,7 +28,8 @@ package com.mattunderscore.tcproxy.proxy;
 import java.io.IOException;
 
 /**
- * @author matt on 19/02/14.
+ * An action.
+ * @author Matt Champion on 19/02/14.
  */
 public interface Action {
 

@@ -30,7 +30,8 @@ import com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings.Conn
 import java.nio.channels.SocketChannel;
 
 /**
- * @author matt on 21/02/14.
+ * Factory for connections.
+ * @author Matt Champion on 21/02/14.
  */
 public class ConnectionFactory {
 

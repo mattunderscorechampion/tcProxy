@@ -26,7 +26,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy.com.mattunderscore.tcproxy.settings;
 
 /**
- * @author matt on 18/02/14.
+ * Settings for the outbound socket.
+ * @author Matt Champion on 18/02/14.
  */
 public final class OutboundSocketSettings {
     private final int port;

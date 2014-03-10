@@ -33,7 +33,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 /**
- * @author matt on 19/02/14.
+ * Implementation of {@link com.mattunderscore.tcproxy.proxy.Direction}.
+ * @author Matt Champion on 19/02/14.
  */
 public class DirectionImpl implements Direction {
     private static final Logger LOG = LoggerFactory.getLogger("direction");
