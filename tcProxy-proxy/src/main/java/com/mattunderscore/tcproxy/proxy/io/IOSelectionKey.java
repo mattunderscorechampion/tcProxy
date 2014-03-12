@@ -29,7 +29,7 @@ import java.nio.channels.SelectionKey;
 import java.util.Set;
 
 /**
- * Delegates to {@link SelectionKey}.
+ * Provides a selection key for use with this package.
  * @author matt on 12/03/14.
  */
 public interface IOSelectionKey {

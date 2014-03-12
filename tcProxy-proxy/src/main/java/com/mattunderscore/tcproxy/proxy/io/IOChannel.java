@@ -31,6 +31,7 @@ import java.nio.channels.*;
 import java.util.Set;
 
 /**
+ * Provides a selectable {@link java.nio.channels.ByteChannel} for network operations.
  * @author matt on 12/03/14.
  */
 public interface IOChannel extends ByteChannel {

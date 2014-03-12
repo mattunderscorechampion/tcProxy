@@ -28,6 +28,7 @@ package com.mattunderscore.tcproxy.proxy.io;
 import java.nio.channels.SelectionKey;
 
 /**
+ * Delegates to {@link SelectionKey}.
  * @author matt on 12/03/14.
  */
 public class IOSelectionKeyImpl implements IOSelectionKey {

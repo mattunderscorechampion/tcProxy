@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.Set;
 
 /**
+ * Provides a selector that can be used with this package.
  * @author matt on 12/03/14.
  */
 public interface IOSelector {

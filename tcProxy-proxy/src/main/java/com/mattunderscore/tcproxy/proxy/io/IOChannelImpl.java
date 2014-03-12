@@ -36,6 +36,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 /**
+ * Delegates to {@link SocketChannel}.
  * @author matt on 12/03/14.
  */
 public final class IOChannelImpl implements IOChannel {

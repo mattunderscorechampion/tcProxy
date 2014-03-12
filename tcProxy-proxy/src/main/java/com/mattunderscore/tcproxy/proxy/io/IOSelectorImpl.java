@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Delegates to {@link Selector}.
  * @author matt on 12/03/14.
  */
 public final class IOSelectorImpl implements IOSelector {
