@@ -28,13 +28,16 @@ package com.mattunderscore.tcproxy.proxy.io;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.channels.*;
+import java.util.Set;
 
 /**
  * @author matt on 12/03/14.
  */
 public interface IOChannel extends ByteChannel {
 
-    IOSelectionKey register(IOSelector selector, int ops, Object att) throws ClosedChannelException;
+    IOSelectionKey register(IOSelector selector, IOSelectionKey.Op op, Object att) throws ClosedChannelException;
+
+    IOSelectionKey register(IOSelector selector, Set<IOSelectionKey.Op> ops, Object att) throws ClosedChannelException;
 
     SocketAddress getRemoteAddress() throws IOException;
 

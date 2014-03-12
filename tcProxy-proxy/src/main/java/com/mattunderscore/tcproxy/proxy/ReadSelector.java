@@ -89,11 +89,11 @@ public class ReadSelector implements Runnable {
             try {
                 final Direction cTs = connection.clientToServer();
                 final IOChannel channel0 = cTs.getFrom();
-                channel0.register(selector, SelectionKey.OP_READ, cTs);
+                channel0.register(selector, IOSelectionKey.Op.READ, cTs);
 
                 final Direction sTc = connection.serverToClient();
                 final IOChannel channel1 = sTc.getFrom();
-                channel1.register(selector, SelectionKey.OP_READ, sTc);
+                channel1.register(selector, IOSelectionKey.Op.READ, sTc);
             }
             catch (final IOException e) {
                 LOG.debug("{} : Error registering", this, e);

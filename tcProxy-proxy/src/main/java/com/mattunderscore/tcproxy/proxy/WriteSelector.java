@@ -86,7 +86,7 @@ public class WriteSelector implements Runnable {
             final Direction direction = newWrite.getDirection();
             final IOChannel channel = direction.getTo();
             try {
-                channel.register(selector, SelectionKey.OP_WRITE, newWrite);
+                channel.register(selector, IOSelectionKey.Op.WRITE, newWrite);
             }
             catch (final ClosedChannelException e) {
                 LOG.debug("{} : The destination of {} is already closed", this, direction);

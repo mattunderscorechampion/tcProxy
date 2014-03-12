@@ -32,6 +32,8 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * @author matt on 12/03/14.
@@ -65,9 +67,14 @@ public final class IOChannelImpl implements IOChannel {
     }
 
     @Override
-    public IOSelectionKey register(IOSelector selector, int ops, Object att) throws ClosedChannelException {
+    public IOSelectionKey register(IOSelector selector, IOSelectionKey.Op op, Object att) throws ClosedChannelException {
+        return register(selector, EnumSet.of(op), att);
+    }
+
+    @Override
+    public IOSelectionKey register(IOSelector selector, Set<IOSelectionKey.Op> ops, Object att) throws ClosedChannelException {
         final IOSelectorImpl selectorImpl = (IOSelectorImpl)selector;
-        return new IOSelectionKeyImpl(channel.register(selectorImpl.selector, ops, att));
+        return new IOSelectionKeyImpl(channel.register(selectorImpl.selector, IOSelectionKey.Op.bitSet(ops), att));
     }
 
     @Override

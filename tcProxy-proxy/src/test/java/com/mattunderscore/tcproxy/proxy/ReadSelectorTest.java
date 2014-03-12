@@ -101,17 +101,17 @@ public class ReadSelectorTest {
     public void registerKeys0() throws ClosedChannelException {
         readSelector.registerKeys();
 
-        verify(channel, never()).register(selector, SelectionKey.OP_READ, direction);
+        verify(channel, never()).register(selector, IOSelectionKey.Op.READ, direction);
     }
 
     @Test
     public void registerKeys1() throws ClosedChannelException {
-        when(channel.register(selector, SelectionKey.OP_READ, direction)).thenReturn(key);
+        when(channel.register(selector, IOSelectionKey.Op.READ, direction)).thenReturn(key);
         newConnections.add(connection);
 
         readSelector.registerKeys();
 
-        verify(channel, times(2)).register(selector, SelectionKey.OP_READ, direction);
+        verify(channel, times(2)).register(selector, IOSelectionKey.Op.READ, direction);
         assertEquals(0, newConnections.size());
     }
 
