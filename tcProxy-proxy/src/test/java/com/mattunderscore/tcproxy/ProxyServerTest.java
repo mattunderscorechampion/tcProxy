@@ -30,6 +30,7 @@ import com.mattunderscore.tcproxy.proxy.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.Direction;
 import com.mattunderscore.tcproxy.proxy.ProxyServer;
 import com.mattunderscore.tcproxy.proxy.settings.*;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ import java.util.logging.LogManager;
 /**
  * @author matt on 18/02/14.
  */
+@Ignore
 public class ProxyServerTest {
     public static final Logger LOG = LoggerFactory.getLogger("test");
     @Test

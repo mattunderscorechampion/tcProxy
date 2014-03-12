@@ -25,6 +25,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
+import com.mattunderscore.tcproxy.proxy.io.IOChannel;
+import com.mattunderscore.tcproxy.proxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.proxy.io.IOSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,11 +46,11 @@ import java.util.concurrent.BlockingQueue;
  */
 public class WriteSelector implements Runnable {
     public static final Logger LOG = LoggerFactory.getLogger("writer");
-    private final Selector selector;
+    private final IOSelector selector;
     private final BlockingQueue<ActionQueue> newWrites;
     private volatile boolean running = false;
 
-    public WriteSelector(final Selector selector, final BlockingQueue<ActionQueue> newWrites) {
+    public WriteSelector(final IOSelector selector, final BlockingQueue<ActionQueue> newWrites) {
         this.selector = selector;
         this.newWrites = newWrites;
     }
@@ -81,7 +84,7 @@ public class WriteSelector implements Runnable {
         for (final ActionQueue newWrite : writes)
         {
             final Direction direction = newWrite.getDirection();
-            final SocketChannel channel = direction.getTo();
+            final IOChannel channel = direction.getTo();
             try {
                 channel.register(selector, SelectionKey.OP_WRITE, newWrite);
             }
@@ -92,8 +95,8 @@ public class WriteSelector implements Runnable {
     }
 
     private void writeBytes() {
-        final Set<SelectionKey> keys = selector.selectedKeys();
-        for (final SelectionKey key : keys) {
+        final Set<IOSelectionKey> keys = selector.selectedKeys();
+        for (final IOSelectionKey key : keys) {
             if (key.isWritable()) {
                 final ActionQueue write = (ActionQueue)key.attachment();
 

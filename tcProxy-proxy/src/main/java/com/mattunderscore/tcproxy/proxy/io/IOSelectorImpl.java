@@ -23,36 +23,38 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy;
-
-import com.mattunderscore.tcproxy.proxy.io.IOChannel;
+package com.mattunderscore.tcproxy.proxy.io;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * A direction.
- * @author Matt Champion on 18/02/14.
+ * @author matt on 12/03/14.
  */
-public interface Direction {
+public final class IOSelectorImpl implements IOSelector {
+    final Selector selector;
 
-    IOChannel getFrom();
+    public IOSelectorImpl(final Selector selector) {
 
-    IOChannel getTo();
+        this.selector = selector;
+    }
 
-    Connection getConnection();
+    @Override
+    public void selectNow() throws IOException {
+        selector.selectNow();
+    }
 
-    ActionQueue getQueue();
-
-    int read();
-
-    int written();
-
-    int write(ByteBuffer data) throws IOException;
-
-    int read(ByteBuffer data) throws IOException;
-
-    void close() throws IOException;
-
+    @Override
+    public Set<IOSelectionKey> selectedKeys() {
+        final Set<SelectionKey> keys = selector.selectedKeys();
+        final Set<IOSelectionKey> ioKeys = new HashSet<>();
+        for (final SelectionKey key : keys) {
+            ioKeys.add(new IOSelectionKeyImpl(key));
+        }
+        return Collections.unmodifiableSet(ioKeys);
+    }
 }

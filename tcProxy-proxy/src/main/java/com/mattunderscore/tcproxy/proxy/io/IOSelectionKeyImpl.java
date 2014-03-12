@@ -23,36 +23,43 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy;
+package com.mattunderscore.tcproxy.proxy.io;
 
-import com.mattunderscore.tcproxy.proxy.io.IOChannel;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.SelectionKey;
 
 /**
- * A direction.
- * @author Matt Champion on 18/02/14.
+ * @author matt on 12/03/14.
  */
-public interface Direction {
+public class IOSelectionKeyImpl implements IOSelectionKey {
+    private final SelectionKey key;
 
-    IOChannel getFrom();
+    public IOSelectionKeyImpl(final SelectionKey key) {
 
-    IOChannel getTo();
+        this.key = key;
+    }
 
-    Connection getConnection();
+    @Override
+    public boolean isValid() {
+        return key.isValid();
+    }
 
-    ActionQueue getQueue();
+    @Override
+    public boolean isReadable() {
+        return key.isReadable();
+    }
 
-    int read();
+    @Override
+    public boolean isWritable() {
+        return key.isWritable();
+    }
 
-    int written();
+    @Override
+    public void cancel() {
+        key.cancel();
+    }
 
-    int write(ByteBuffer data) throws IOException;
-
-    int read(ByteBuffer data) throws IOException;
-
-    void close() throws IOException;
-
+    @Override
+    public Object attachment() {
+        return key.attachment();
+    }
 }

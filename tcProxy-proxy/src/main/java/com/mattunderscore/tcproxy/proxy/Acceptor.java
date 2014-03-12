@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
+import com.mattunderscore.tcproxy.proxy.io.IOChannelImpl;
 import com.mattunderscore.tcproxy.proxy.settings.AcceptorSettings;
 import com.mattunderscore.tcproxy.proxy.settings.InboundSocketSettings;
 import org.slf4j.Logger;
@@ -99,7 +100,7 @@ public class Acceptor implements Runnable {
                 LOG.info("{} : Accepted {}", this, clientSide);
                 final SocketChannel serverSide = factory.createSocket();
                 LOG.info("{} : Opened {}", this, serverSide);
-                newConnections.add(connectionFactory.create(clientSide, serverSide));
+                newConnections.add(connectionFactory.create(new IOChannelImpl(clientSide), new IOChannelImpl(serverSide)));
             }
             catch (final IOException e) {
                 LOG.warn("{} : There was an unhandled exception in the main loop - continuing", this, e);

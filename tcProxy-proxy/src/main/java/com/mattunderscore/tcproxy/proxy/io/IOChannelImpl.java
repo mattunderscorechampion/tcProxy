@@ -23,71 +23,60 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy;
-
-import com.mattunderscore.tcproxy.proxy.io.IOChannel;
+package com.mattunderscore.tcproxy.proxy.io;
 
 import java.io.IOException;
+import java.net.SocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 
 /**
- * Implementation of {@link com.mattunderscore.tcproxy.proxy.Connection}.
- * @author Matt Champion on 18/02/14.
+ * @author matt on 12/03/14.
  */
-public class ConnectionImpl implements Connection {
-    private final Direction clientToServer;
-    private final Direction serverToClient;
-    private final ConnectionManager manager;
-    private volatile boolean partClosed;
+public final class IOChannelImpl implements IOChannel {
+    private final SocketChannel channel;
 
-    public ConnectionImpl(final ConnectionManager manager, final IOChannel clientSide, final IOChannel serverSide, final int queueSize) {
-        this.manager = manager;
-        clientToServer = new DirectionImpl(clientSide, serverSide, this, queueSize);
-        serverToClient = new DirectionImpl(serverSide, clientSide, this, queueSize);
-        partClosed = false;
+    public IOChannelImpl(final SocketChannel channel) {
+        this.channel = channel;
+    }
+
+
+    @Override
+    public int read(final ByteBuffer dst) throws IOException {
+        return channel.read(dst);
     }
 
     @Override
-    public Direction clientToServer() {
-        return clientToServer;
-
+    public int write(final ByteBuffer src) throws IOException {
+        return channel.write(src);
     }
 
     @Override
-    public Direction serverToClient() {
-        return serverToClient;
+    public boolean isOpen() {
+        return channel.isOpen();
     }
 
     @Override
     public void close() throws IOException {
-        clientToServer.close();
-        serverToClient.close();
-        manager.unregister(this);
-    }
-
-    void partClosed() {
-        if (partClosed) {
-            manager.unregister(this);
-        }
-        partClosed = true;
-    }
-
-    Direction otherDirection(final Direction direction) {
-        if (direction == clientToServer) {
-            return serverToClient;
-        }
-        else if (direction == serverToClient) {
-            return clientToServer;
-        }
-        else {
-            return null;
-        }
+        channel.close();
     }
 
     @Override
-    public String toString() {
-        return String.format("c - s : %s, s - c %s",
-                clientToServer,
-                serverToClient);
+    public IOSelectionKey register(IOSelector selector, int ops, Object att) throws ClosedChannelException {
+        final IOSelectorImpl selectorImpl = (IOSelectorImpl)selector;
+        return new IOSelectionKeyImpl(channel.register(selectorImpl.selector, ops, att));
+    }
+
+    @Override
+    public SocketAddress getRemoteAddress() throws IOException {
+        return channel.getRemoteAddress();
+    }
+
+    @Override
+    public SocketAddress getLocalAddress() throws IOException {
+        return channel.getLocalAddress();
     }
 }

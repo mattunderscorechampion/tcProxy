@@ -23,36 +23,17 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy;
-
-import com.mattunderscore.tcproxy.proxy.io.IOChannel;
+package com.mattunderscore.tcproxy.proxy.io;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
+import java.util.Set;
 
 /**
- * A direction.
- * @author Matt Champion on 18/02/14.
+ * @author matt on 12/03/14.
  */
-public interface Direction {
+public interface IOSelector {
 
-    IOChannel getFrom();
+    void selectNow() throws IOException;
 
-    IOChannel getTo();
-
-    Connection getConnection();
-
-    ActionQueue getQueue();
-
-    int read();
-
-    int written();
-
-    int write(ByteBuffer data) throws IOException;
-
-    int read(ByteBuffer data) throws IOException;
-
-    void close() throws IOException;
-
+    Set<IOSelectionKey> selectedKeys();
 }

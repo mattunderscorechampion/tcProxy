@@ -25,6 +25,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
+import com.mattunderscore.tcproxy.proxy.io.IOChannel;
+import com.mattunderscore.tcproxy.proxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.proxy.io.IOSelector;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,12 +46,12 @@ import java.util.concurrent.BlockingQueue;
 public class ReadSelector implements Runnable {
     public static final Logger LOG = LoggerFactory.getLogger("reader");
     private volatile boolean running = false;
-    private final Selector selector;
+    private final IOSelector selector;
     private final ReadSelectorSettings settings;
     private final BlockingQueue<Connection> newConnections;
     private final BlockingQueue<ActionQueue> newWrites;
 
-    public ReadSelector(final Selector selector, final ReadSelectorSettings settings, final BlockingQueue<Connection> newConnections, final BlockingQueue<ActionQueue> newWrites) {
+    public ReadSelector(final IOSelector selector, final ReadSelectorSettings settings, final BlockingQueue<Connection> newConnections, final BlockingQueue<ActionQueue> newWrites) {
         this.selector = selector;
         this.settings = settings;
         this.newConnections = newConnections;
@@ -79,17 +82,17 @@ public class ReadSelector implements Runnable {
         }
     }
 
-    private void registerKeys() {
+    void registerKeys() {
         final Set<Connection> connections = new HashSet<>();
         newConnections.drainTo(connections);
         for (final Connection connection : connections) {
             try {
                 final Direction cTs = connection.clientToServer();
-                final SocketChannel channel0 = cTs.getFrom();
+                final IOChannel channel0 = cTs.getFrom();
                 channel0.register(selector, SelectionKey.OP_READ, cTs);
 
                 final Direction sTc = connection.serverToClient();
-                final SocketChannel channel1 = sTc.getFrom();
+                final IOChannel channel1 = sTc.getFrom();
                 channel1.register(selector, SelectionKey.OP_READ, sTc);
             }
             catch (final IOException e) {
@@ -98,15 +101,15 @@ public class ReadSelector implements Runnable {
         }
     }
 
-    private void readBytes(final ByteBuffer buffer) {
-        final Set<SelectionKey> selectionKeys = selector.selectedKeys();
-        for (final SelectionKey key : selectionKeys) {
+    void readBytes(final ByteBuffer buffer) {
+        final Set<IOSelectionKey> selectionKeys = selector.selectedKeys();
+        for (final IOSelectionKey key : selectionKeys) {
             if (key.isValid() && key.isReadable()) {
                 final Direction direction = (Direction)key.attachment();
                 final ActionQueue queue = direction.getQueue();
                 if (!queue.queueFull()) {
                     buffer.position(0);
-                    final SocketChannel channel = (SocketChannel)key.channel();
+                    final ByteChannel channel = direction.getFrom();
                     try {
                         final int bytes = direction.read(buffer);
                         if (bytes > 0) {
@@ -138,17 +141,17 @@ public class ReadSelector implements Runnable {
         }
     }
 
-    private void informOfData(final ActionQueue writes, final ByteBuffer write) {
+    void informOfData(final ActionQueue writes, final ByteBuffer write) {
         LOG.trace("{} : Data read {} bytes", this, write.remaining());
         informOfWrite(writes, new Write(writes.getDirection(), write));
     }
 
-    private void informOfClose(final ActionQueue writes) {
+    void informOfClose(final ActionQueue writes) {
         LOG.trace("{} : Read close", this);
         informOfWrite(writes, new Close(writes.getDirection()));
     }
 
-    private void informOfWrite(final ActionQueue writes, final Action action) {
+    void informOfWrite(final ActionQueue writes, final Action action) {
         if (!writes.hasData()) {
             LOG.debug("{} : New actions queued", this);
             writes.add(action);
