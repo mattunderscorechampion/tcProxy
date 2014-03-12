@@ -50,6 +50,14 @@ public class Acceptor implements Runnable {
     private final Queue<Connection> newConnections;
     private volatile boolean running = false;
 
+    /**
+     * Constructor.
+     * @param settings The acceptor settings.
+     * @param inboundSettings The inbound socket settings.
+     * @param connectionFactory The connection factory.
+     * @param factory The outbound socket factory.
+     * @param newConnections Queue for new connections.
+     */
     public Acceptor(final AcceptorSettings settings,
                     final InboundSocketSettings inboundSettings,
                     final ConnectionFactory connectionFactory,
@@ -62,14 +70,27 @@ public class Acceptor implements Runnable {
         this.newConnections = newConnections;
     }
 
-    public ServerSocketChannel openServerSocket() throws IOException {
+    public void run() {
+        LOG.info("{} : Started", this);
+        running = true;
+        try {
+            final ServerSocketChannel channel = openServerSocket();
+            mainLoop(channel);
+        }
+        catch (final Exception e) {
+            running = false;
+            LOG.error("{} : Threw an exception it is not able to handle", this, e);
+        }
+    }
+
+    ServerSocketChannel openServerSocket() throws IOException {
         final ServerSocketChannel serverSocket = ServerSocketChannel.open();
         serverSocket.setOption(StandardSocketOptions.SO_RCVBUF, inboundSettings.getReceiveBufferSize());
         serverSocket.bind(new InetSocketAddress(settings.getPort()));
         return serverSocket;
     }
 
-    public void mainLoop(final ServerSocketChannel channel) {
+    void mainLoop(final ServerSocketChannel channel) {
         while (running) {
             try {
                 final SocketChannel clientSide = channel.accept();
@@ -86,21 +107,11 @@ public class Acceptor implements Runnable {
         }
     }
 
-    public void run() {
-        LOG.info("{} : Started", this);
-        running = true;
-        try {
-            final ServerSocketChannel channel = openServerSocket();
-            mainLoop(channel);
-        }
-        catch (final Exception e) {
-            running = false;
-            LOG.error("{} : Threw an exception it is not able to handle", this, e);
-        }
-    }
-
     @Override
     public String toString() {
-        return "Acceptor";
+        final StringBuilder sb = new StringBuilder(16);
+        sb.append("Acceptor - ");
+        sb.append(settings.getPort());
+        return sb.toString();
     }
 }
