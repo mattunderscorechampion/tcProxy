@@ -28,39 +28,38 @@ package com.mattunderscore.tcproxy.io;
 import java.nio.channels.SelectionKey;
 
 /**
- * Delegates to {@link SelectionKey}.
+ * Implementation of {@link com.mattunderscore.tcproxy.io.IOSelectionKey}. Delegates to {@link SelectionKey}.
  * @author matt on 12/03/14.
  */
-public class IOSelectionKeyImpl implements IOSelectionKey {
-    private final SelectionKey key;
+public final class IOSelectionKeyImpl implements IOSelectionKey {
+    private final SelectionKey keyDelegate;
 
-    public IOSelectionKeyImpl(final SelectionKey key) {
-
-        this.key = key;
+    IOSelectionKeyImpl(final SelectionKey keyDelegate) {
+        this.keyDelegate = keyDelegate;
     }
 
     @Override
     public boolean isValid() {
-        return key.isValid();
+        return keyDelegate.isValid();
     }
 
     @Override
     public boolean isReadable() {
-        return key.isReadable();
+        return keyDelegate.isReadable();
     }
 
     @Override
     public boolean isWritable() {
-        return key.isWritable();
+        return keyDelegate.isWritable();
     }
 
     @Override
     public void cancel() {
-        key.cancel();
+        keyDelegate.cancel();
     }
 
     @Override
     public Object attachment() {
-        return key.attachment();
+        return keyDelegate.attachment();
     }
 }

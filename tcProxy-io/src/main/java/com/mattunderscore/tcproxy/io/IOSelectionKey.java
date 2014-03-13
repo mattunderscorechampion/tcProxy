@@ -34,19 +34,52 @@ import java.util.Set;
  */
 public interface IOSelectionKey {
 
+    /**
+     * @return {@code true} if the key is valid.
+     */
     boolean isValid();
+
+    /**
+     * @return {@code true} if the keys channel is ready for reading.
+     */
     boolean isReadable();
+
+    /**
+     * @return {@code true} if the keys channel is ready for writing.
+     */
     boolean isWritable();
+
+    /**
+     * Request the keys channel is deregistered from its selector. The key set will be updated at the next selection
+     * operation.
+     */
     void cancel();
+
+    /**
+     * @return The object attached to the key when it was registered.
+     */
     Object attachment();
 
     /**
      * The available operations that a selection key may be interested in.
      */
     enum Op {
+        /**
+         * Selection operation for accepting new connections.
+         */
         ACCEPT(SelectionKey.OP_ACCEPT),
+        /**
+         *
+         * Selection operation for connecting.
+         */
         CONNECT(SelectionKey.OP_CONNECT),
+        /**
+         * Selection operation for reading.
+         */
         READ(SelectionKey.OP_READ),
+        /**
+         * Selection operation for writing.
+         */
         WRITE(SelectionKey.OP_WRITE);
 
         final int op;
@@ -56,10 +89,15 @@ public interface IOSelectionKey {
             this.op = op;
         }
 
+        /**
+         * Convert a set of ops to a bitmask.
+         * @param ops The set of ops.
+         * @return The bitmask,
+         */
         static int bitSet(Set<Op> ops) {
             int sum = 0;
             for (final Op op : ops) {
-                sum = op.op;
+                sum |= op.op;
             }
             return sum;
         }
