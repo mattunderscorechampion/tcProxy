@@ -25,13 +25,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.proxy.ActionQueue;
-import com.mattunderscore.tcproxy.proxy.Connection;
-import com.mattunderscore.tcproxy.proxy.Direction;
-import com.mattunderscore.tcproxy.proxy.ReadSelector;
-import com.mattunderscore.tcproxy.proxy.io.IOChannel;
-import com.mattunderscore.tcproxy.proxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.proxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.IOChannel;
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,9 +38,6 @@ import org.mockito.stubbing.Answer;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;

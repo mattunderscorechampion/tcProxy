@@ -23,24 +23,44 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy.io;
+package com.mattunderscore.tcproxy.io;
 
-import java.io.IOException;
-import java.net.SocketAddress;
-import java.nio.channels.*;
-import java.util.Set;
+import java.nio.channels.SelectionKey;
 
 /**
- * Provides a selectable {@link java.nio.channels.ByteChannel} for network operations.
+ * Delegates to {@link SelectionKey}.
  * @author matt on 12/03/14.
  */
-public interface IOChannel extends ByteChannel {
+public class IOSelectionKeyImpl implements IOSelectionKey {
+    private final SelectionKey key;
 
-    IOSelectionKey register(IOSelector selector, IOSelectionKey.Op op, Object att) throws ClosedChannelException;
+    public IOSelectionKeyImpl(final SelectionKey key) {
 
-    IOSelectionKey register(IOSelector selector, Set<IOSelectionKey.Op> ops, Object att) throws ClosedChannelException;
+        this.key = key;
+    }
 
-    SocketAddress getRemoteAddress() throws IOException;
+    @Override
+    public boolean isValid() {
+        return key.isValid();
+    }
 
-    SocketAddress getLocalAddress() throws IOException;
+    @Override
+    public boolean isReadable() {
+        return key.isReadable();
+    }
+
+    @Override
+    public boolean isWritable() {
+        return key.isWritable();
+    }
+
+    @Override
+    public void cancel() {
+        key.cancel();
+    }
+
+    @Override
+    public Object attachment() {
+        return key.attachment();
+    }
 }

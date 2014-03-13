@@ -23,44 +23,45 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy.io;
+package com.mattunderscore.tcproxy.io;
 
 import java.nio.channels.SelectionKey;
+import java.util.Set;
 
 /**
- * Delegates to {@link SelectionKey}.
+ * Provides a selection key for use with this package.
  * @author matt on 12/03/14.
  */
-public class IOSelectionKeyImpl implements IOSelectionKey {
-    private final SelectionKey key;
+public interface IOSelectionKey {
 
-    public IOSelectionKeyImpl(final SelectionKey key) {
+    boolean isValid();
+    boolean isReadable();
+    boolean isWritable();
+    void cancel();
+    Object attachment();
 
-        this.key = key;
-    }
+    /**
+     * The available operations that a selection key may be interested in.
+     */
+    enum Op {
+        ACCEPT(SelectionKey.OP_ACCEPT),
+        CONNECT(SelectionKey.OP_CONNECT),
+        READ(SelectionKey.OP_READ),
+        WRITE(SelectionKey.OP_WRITE);
 
-    @Override
-    public boolean isValid() {
-        return key.isValid();
-    }
+        final int op;
 
-    @Override
-    public boolean isReadable() {
-        return key.isReadable();
-    }
+        Op(final int op) {
 
-    @Override
-    public boolean isWritable() {
-        return key.isWritable();
-    }
+            this.op = op;
+        }
 
-    @Override
-    public void cancel() {
-        key.cancel();
-    }
-
-    @Override
-    public Object attachment() {
-        return key.attachment();
+        static int bitSet(Set<Op> ops) {
+            int sum = 0;
+            for (final Op op : ops) {
+                sum = op.op;
+            }
+            return sum;
+        }
     }
 }

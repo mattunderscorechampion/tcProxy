@@ -23,45 +23,18 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy.io;
+package com.mattunderscore.tcproxy.io;
 
-import java.nio.channels.SelectionKey;
+import java.io.IOException;
 import java.util.Set;
 
 /**
- * Provides a selection key for use with this package.
+ * Provides a selector that can be used with this package.
  * @author matt on 12/03/14.
  */
-public interface IOSelectionKey {
+public interface IOSelector {
 
-    boolean isValid();
-    boolean isReadable();
-    boolean isWritable();
-    void cancel();
-    Object attachment();
+    void selectNow() throws IOException;
 
-    /**
-     * The available operations that a selection key may be interested in.
-     */
-    enum Op {
-        ACCEPT(SelectionKey.OP_ACCEPT),
-        CONNECT(SelectionKey.OP_CONNECT),
-        READ(SelectionKey.OP_READ),
-        WRITE(SelectionKey.OP_WRITE);
-
-        final int op;
-
-        Op(final int op) {
-
-            this.op = op;
-        }
-
-        static int bitSet(Set<Op> ops) {
-            int sum = 0;
-            for (final Op op : ops) {
-                sum = op.op;
-            }
-            return sum;
-        }
-    }
+    Set<IOSelectionKey> selectedKeys();
 }

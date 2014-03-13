@@ -13,6 +13,7 @@
     <modules>
         <module>tcProxy-proxy</module>
         <module>tcProxy-gui</module>
+        <module>tcProxy-io</module>
     </modules>
 
     <build>
@@ -32,6 +33,11 @@
     </build>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.mattunderscore</groupId>
+                <artifactId>tcProxy-io</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>

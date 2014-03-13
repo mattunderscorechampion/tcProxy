@@ -28,4 +28,4 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
  * implementations generally delegate to the Java NIO API.
  * @author Matt Champion on 12/03/14.
  */
-package com.mattunderscore.tcproxy.proxy.io;
+package com.mattunderscore.tcproxy.io;

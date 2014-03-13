@@ -25,13 +25,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.proxy.io.IOChannel;
+import com.mattunderscore.tcproxy.io.IOChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 
 /**
  * Implementation of {@link com.mattunderscore.tcproxy.proxy.Direction}.

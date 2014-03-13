@@ -1,5 +1,6 @@
 tcProxy-gui/target/
 tcProxy-proxy/target/
+tcProxy-io/target/
 *.iml
 *.project
 *.classpath

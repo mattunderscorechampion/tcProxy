@@ -25,11 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.proxy.io.IOChannel;
-import com.mattunderscore.tcproxy.proxy.io.IOChannelImpl;
+import com.mattunderscore.tcproxy.io.IOChannel;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
-
-import java.nio.channels.SocketChannel;
 
 /**
  * Factory for connections.

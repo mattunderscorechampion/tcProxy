@@ -25,8 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.proxy.io.IOSelector;
-import com.mattunderscore.tcproxy.proxy.io.IOSelectorImpl;
+import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.IOSelectorImpl;
 import com.mattunderscore.tcproxy.proxy.settings.*;
 
 import java.io.IOException;
