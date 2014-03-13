@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.io.IOChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 import java.io.IOException;
 
@@ -39,7 +39,7 @@ public class ConnectionImpl implements Connection {
     private final ConnectionManager manager;
     private volatile boolean partClosed;
 
-    public ConnectionImpl(final ConnectionManager manager, final IOChannel clientSide, final IOChannel serverSide, final int queueSize) {
+    public ConnectionImpl(final ConnectionManager manager, final IOSocketChannel clientSide, final IOSocketChannel serverSide, final int queueSize) {
         this.manager = manager;
         clientToServer = new DirectionImpl(clientSide, serverSide, this, queueSize);
         serverToClient = new DirectionImpl(serverSide, clientSide, this, queueSize);

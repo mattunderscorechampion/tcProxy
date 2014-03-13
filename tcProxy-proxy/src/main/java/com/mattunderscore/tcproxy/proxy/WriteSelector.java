@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.io.IOChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import org.slf4j.Logger;
@@ -81,7 +81,7 @@ public class WriteSelector implements Runnable {
         for (final ActionQueue newWrite : writes)
         {
             final Direction direction = newWrite.getDirection();
-            final IOChannel channel = direction.getTo();
+            final IOSocketChannel channel = direction.getTo();
             try {
                 channel.register(selector, IOSelectionKey.Op.WRITE, newWrite);
             }

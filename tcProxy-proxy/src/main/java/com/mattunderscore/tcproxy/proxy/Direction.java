@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.io.IOChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -36,9 +36,9 @@ import java.nio.ByteBuffer;
  */
 public interface Direction {
 
-    IOChannel getFrom();
+    IOSocketChannel getFrom();
 
-    IOChannel getTo();
+    IOSocketChannel getTo();
 
     Connection getConnection();
 

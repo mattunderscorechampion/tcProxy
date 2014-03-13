@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.io.IOChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
@@ -88,11 +88,11 @@ public class ReadSelector implements Runnable {
         for (final Connection connection : connections) {
             try {
                 final Direction cTs = connection.clientToServer();
-                final IOChannel channel0 = cTs.getFrom();
+                final IOSocketChannel channel0 = cTs.getFrom();
                 channel0.register(selector, IOSelectionKey.Op.READ, cTs);
 
                 final Direction sTc = connection.serverToClient();
-                final IOChannel channel1 = sTc.getFrom();
+                final IOSocketChannel channel1 = sTc.getFrom();
                 channel1.register(selector, IOSelectionKey.Op.READ, sTc);
             }
             catch (final IOException e) {

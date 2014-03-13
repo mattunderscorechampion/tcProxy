@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.io.IOChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +38,8 @@ import java.nio.ByteBuffer;
  */
 public class DirectionImpl implements Direction {
     private static final Logger LOG = LoggerFactory.getLogger("direction");
-    private final IOChannel from;
-    private final IOChannel to;
+    private final IOSocketChannel from;
+    private final IOSocketChannel to;
     private final ConnectionImpl connection;
     private final ActionQueue queue;
     private final String stringValue;
@@ -47,7 +47,7 @@ public class DirectionImpl implements Direction {
     private volatile int written;
     private volatile boolean open;
 
-    public DirectionImpl(final IOChannel from, final IOChannel to, final ConnectionImpl connection, final int queueSize) {
+    public DirectionImpl(final IOSocketChannel from, final IOSocketChannel to, final ConnectionImpl connection, final int queueSize) {
         this.from = from;
         this.to = to;
         this.connection = connection;
@@ -59,12 +59,12 @@ public class DirectionImpl implements Direction {
     }
 
     @Override
-    public IOChannel getFrom() {
+    public IOSocketChannel getFrom() {
         return from;
     }
 
     @Override
-    public IOChannel getTo() {
+    public IOSocketChannel getTo() {
         return to;
     }
 

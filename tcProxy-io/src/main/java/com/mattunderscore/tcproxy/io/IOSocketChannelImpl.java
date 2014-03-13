@@ -37,10 +37,10 @@ import java.util.Set;
  * Delegates to {@link SocketChannel}.
  * @author matt on 12/03/14.
  */
-public final class IOChannelImpl implements IOChannel {
+public final class IOSocketChannelImpl implements IOSocketChannel {
     private final SocketChannel channel;
 
-    public IOChannelImpl(final SocketChannel channel) {
+    public IOSocketChannelImpl(final SocketChannel channel) {
         this.channel = channel;
     }
 

@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.io.IOChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
@@ -54,7 +54,7 @@ public class ReadSelectorTest {
     @Mock
     private IOSelectionKey key;
     @Mock
-    private IOChannel channel;
+    private IOSocketChannel channel;
     @Mock
     private Direction direction;
     @Mock

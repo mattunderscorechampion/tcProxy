@@ -34,7 +34,7 @@ import java.util.Set;
  * Provides a selectable {@link java.nio.channels.ByteChannel} for network operations.
  * @author matt on 12/03/14.
  */
-public interface IOChannel extends ByteChannel {
+public interface IOSocketChannel extends ByteChannel {
 
     IOSelectionKey register(IOSelector selector, IOSelectionKey.Op op, Object att) throws ClosedChannelException;
 
