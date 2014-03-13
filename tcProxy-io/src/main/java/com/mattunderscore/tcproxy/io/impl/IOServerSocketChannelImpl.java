@@ -23,43 +23,54 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.impl;
 
-import java.nio.channels.SelectionKey;
+import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
+
+import java.io.IOException;
+import java.net.SocketAddress;
+import java.net.SocketOption;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 
 /**
- * Implementation of {@link com.mattunderscore.tcproxy.io.IOSelectionKey}. Delegates to {@link SelectionKey}.
- * @author matt on 12/03/14.
+ * @author Matt Champion on 13/03/14.
  */
-public final class IOSelectionKeyImpl implements IOSelectionKey {
-    private final SelectionKey keyDelegate;
+final class IOServerSocketChannelImpl implements IOServerSocketChannel {
+    private final ServerSocketChannel socketDelegate;
 
-    IOSelectionKeyImpl(final SelectionKey keyDelegate) {
-        this.keyDelegate = keyDelegate;
+    IOServerSocketChannelImpl(final ServerSocketChannel socketDelegate) {
+        this.socketDelegate = socketDelegate;
     }
 
     @Override
-    public boolean isValid() {
-        return keyDelegate.isValid();
+    public IOSocketChannel accept() throws IOException {
+        return new IOSocketChannelImpl(socketDelegate.accept());
     }
 
     @Override
-    public boolean isReadable() {
-        return keyDelegate.isReadable();
+    public void bind(final SocketAddress localAddress) throws IOException {
+        socketDelegate.bind(localAddress);
     }
 
     @Override
-    public boolean isWritable() {
-        return keyDelegate.isWritable();
+    public SocketAddress getLocalAddress() throws IOException {
+        return socketDelegate.getLocalAddress();
     }
 
     @Override
-    public void cancel() {
-        keyDelegate.cancel();
+    public boolean isOpen() {
+        return socketDelegate.isOpen();
     }
 
     @Override
-    public Object attachment() {
-        return keyDelegate.attachment();
+    public void close() throws IOException {
+        socketDelegate.close();
+    }
+
+    @Override
+    public <T> void setOption(final IOSocketOption<T> option, final T value) throws IOException {
+        IOUtils.applySocketOption(socketDelegate, option, value);
     }
 }

@@ -23,69 +23,21 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.impl;
 
-import java.nio.channels.SelectionKey;
-import java.util.Set;
+import com.mattunderscore.tcproxy.io.IOSocket;
+
+import java.net.SocketOption;
+import java.net.StandardSocketOptions;
 
 /**
- * Provides a selection key for use with this package.
- * @author matt on 12/03/14.
+ * @author Matt Champion on 13/03/14.
  */
-public interface IOSelectionKey {
+public class IOSocketOption<T> {
+    public final static IOSocketOption<Integer> RECEIVE_BUFFER = new IOSocketOption<Integer>();
+    public final static IOSocketOption<Integer> SEND_BUFFER = new IOSocketOption<Integer>();
+    public final static IOSocketOption<Boolean> BLOCKING = new IOSocketOption<Boolean>();
 
-    /**
-     * @return {@code true} if the key is valid.
-     */
-    boolean isValid();
-
-    /**
-     * @return {@code true} if the keys channel is ready for reading.
-     */
-    boolean isReadable();
-
-    /**
-     * @return {@code true} if the keys channel is ready for writing.
-     */
-    boolean isWritable();
-
-    /**
-     * Request the keys channel is deregistered from its selector. The key set will be updated at the next selection
-     * operation.
-     */
-    void cancel();
-
-    /**
-     * @return The object attached to the key when it was registered.
-     */
-    Object attachment();
-
-    /**
-     * The available operations that a selection key may be interested in.
-     */
-    enum Op {
-        /**
-         * Selection operation for accepting new connections.
-         */
-        ACCEPT(SelectionKey.OP_ACCEPT),
-        /**
-         *
-         * Selection operation for connecting.
-         */
-        CONNECT(SelectionKey.OP_CONNECT),
-        /**
-         * Selection operation for reading.
-         */
-        READ(SelectionKey.OP_READ),
-        /**
-         * Selection operation for writing.
-         */
-        WRITE(SelectionKey.OP_WRITE);
-
-        final int op;
-
-        Op(final int op) {
-            this.op = op;
-        }
+    IOSocketOption() {
     }
 }

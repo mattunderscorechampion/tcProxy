@@ -25,6 +25,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.impl.IOFactory;
+import com.mattunderscore.tcproxy.io.impl.IOSocketOption;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 
 import java.io.IOException;
@@ -43,11 +46,11 @@ public class OutboundSocketFactory {
         this.settings = settings;
     }
 
-    public SocketChannel createSocket() throws IOException {
-        final SocketChannel channel = SocketChannel.open();
-        channel.configureBlocking(false);
-        channel.setOption(StandardSocketOptions.SO_RCVBUF, settings.getReceiveBuffer());
-        channel.setOption(StandardSocketOptions.SO_SNDBUF, settings.getSendBuffer());
+    public IOSocketChannel createSocket() throws IOException {
+        final IOSocketChannel channel = IOFactory.openSocket();
+        channel.setOption(IOSocketOption.SEND_BUFFER, settings.getSendBuffer());
+        channel.setOption(IOSocketOption.RECEIVE_BUFFER, settings.getReceiveBuffer());
+        channel.setOption(IOSocketOption.BLOCKING, false);
         final InetSocketAddress remote = new InetSocketAddress(settings.getHost(), settings.getPort());
         channel.bind(null);
         channel.connect(remote);

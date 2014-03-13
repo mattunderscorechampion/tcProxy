@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.io;
 
 import java.io.IOException;
+import java.nio.channels.Selector;
 import java.util.Set;
 
 /**
@@ -34,7 +35,14 @@ import java.util.Set;
  */
 public interface IOSelector {
 
+    /**
+     * Non-blocking selection operation. Updates the set of selected keys.
+     * @throws IOException
+     */
     void selectNow() throws IOException;
 
+    /**
+     * @return The set of selection keys provided by the last selection operation.
+     */
     Set<IOSelectionKey> selectedKeys();
 }

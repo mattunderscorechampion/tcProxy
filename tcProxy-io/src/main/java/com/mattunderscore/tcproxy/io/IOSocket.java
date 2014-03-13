@@ -25,67 +25,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io;
 
-import java.nio.channels.SelectionKey;
-import java.util.Set;
+import com.mattunderscore.tcproxy.io.impl.IOSocketOption;
+
+import java.io.IOException;
+import java.net.SocketAddress;
+import java.net.SocketOption;
+import java.net.StandardSocketOptions;
 
 /**
- * Provides a selection key for use with this package.
- * @author matt on 12/03/14.
+ * @author matt on 13/03/14.
  */
-public interface IOSelectionKey {
+public interface IOSocket {
 
-    /**
-     * @return {@code true} if the key is valid.
-     */
-    boolean isValid();
+    void bind(SocketAddress localAddress) throws IOException;
 
-    /**
-     * @return {@code true} if the keys channel is ready for reading.
-     */
-    boolean isReadable();
+    SocketAddress getLocalAddress() throws IOException;
 
-    /**
-     * @return {@code true} if the keys channel is ready for writing.
-     */
-    boolean isWritable();
+    boolean isOpen();
 
-    /**
-     * Request the keys channel is deregistered from its selector. The key set will be updated at the next selection
-     * operation.
-     */
-    void cancel();
+    void close() throws IOException;
 
-    /**
-     * @return The object attached to the key when it was registered.
-     */
-    Object attachment();
-
-    /**
-     * The available operations that a selection key may be interested in.
-     */
-    enum Op {
-        /**
-         * Selection operation for accepting new connections.
-         */
-        ACCEPT(SelectionKey.OP_ACCEPT),
-        /**
-         *
-         * Selection operation for connecting.
-         */
-        CONNECT(SelectionKey.OP_CONNECT),
-        /**
-         * Selection operation for reading.
-         */
-        READ(SelectionKey.OP_READ),
-        /**
-         * Selection operation for writing.
-         */
-        WRITE(SelectionKey.OP_WRITE);
-
-        final int op;
-
-        Op(final int op) {
-            this.op = op;
-        }
-    }
+    <T> void setOption(IOSocketOption<T> option, T value) throws IOException;
 }

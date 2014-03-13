@@ -23,69 +23,45 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.impl;
+
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
 
 import java.nio.channels.SelectionKey;
-import java.util.Set;
 
 /**
- * Provides a selection key for use with this package.
- * @author matt on 12/03/14.
+ * Implementation of {@link com.mattunderscore.tcproxy.io.IOSelectionKey}. Delegates to {@link SelectionKey}.
+ * @author Matt Champion on 12/03/14.
  */
-public interface IOSelectionKey {
+final class IOSelectionKeyImpl implements IOSelectionKey {
+    private final SelectionKey keyDelegate;
 
-    /**
-     * @return {@code true} if the key is valid.
-     */
-    boolean isValid();
+    IOSelectionKeyImpl(final SelectionKey keyDelegate) {
+        this.keyDelegate = keyDelegate;
+    }
 
-    /**
-     * @return {@code true} if the keys channel is ready for reading.
-     */
-    boolean isReadable();
+    @Override
+    public boolean isValid() {
+        return keyDelegate.isValid();
+    }
 
-    /**
-     * @return {@code true} if the keys channel is ready for writing.
-     */
-    boolean isWritable();
+    @Override
+    public boolean isReadable() {
+        return keyDelegate.isReadable();
+    }
 
-    /**
-     * Request the keys channel is deregistered from its selector. The key set will be updated at the next selection
-     * operation.
-     */
-    void cancel();
+    @Override
+    public boolean isWritable() {
+        return keyDelegate.isWritable();
+    }
 
-    /**
-     * @return The object attached to the key when it was registered.
-     */
-    Object attachment();
+    @Override
+    public void cancel() {
+        keyDelegate.cancel();
+    }
 
-    /**
-     * The available operations that a selection key may be interested in.
-     */
-    enum Op {
-        /**
-         * Selection operation for accepting new connections.
-         */
-        ACCEPT(SelectionKey.OP_ACCEPT),
-        /**
-         *
-         * Selection operation for connecting.
-         */
-        CONNECT(SelectionKey.OP_CONNECT),
-        /**
-         * Selection operation for reading.
-         */
-        READ(SelectionKey.OP_READ),
-        /**
-         * Selection operation for writing.
-         */
-        WRITE(SelectionKey.OP_WRITE);
-
-        final int op;
-
-        Op(final int op) {
-            this.op = op;
-        }
+    @Override
+    public Object attachment() {
+        return keyDelegate.attachment();
     }
 }

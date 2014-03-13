@@ -23,69 +23,33 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.impl;
 
-import java.nio.channels.SelectionKey;
-import java.util.Set;
+import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
+
+import java.io.IOException;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 
 /**
- * Provides a selection key for use with this package.
- * @author matt on 12/03/14.
+ * @author Matt Champion on 13/03/14.
  */
-public interface IOSelectionKey {
+public final class IOFactory {
+    private IOFactory() {
+    }
 
-    /**
-     * @return {@code true} if the key is valid.
-     */
-    boolean isValid();
+    public static IOSelector openSelector() throws IOException {
+        return new IOSelectorImpl(Selector.open());
+    }
 
-    /**
-     * @return {@code true} if the keys channel is ready for reading.
-     */
-    boolean isReadable();
+    public static IOSocketChannel openSocket() throws IOException {
+        return new IOSocketChannelImpl(SocketChannel.open());
+    }
 
-    /**
-     * @return {@code true} if the keys channel is ready for writing.
-     */
-    boolean isWritable();
-
-    /**
-     * Request the keys channel is deregistered from its selector. The key set will be updated at the next selection
-     * operation.
-     */
-    void cancel();
-
-    /**
-     * @return The object attached to the key when it was registered.
-     */
-    Object attachment();
-
-    /**
-     * The available operations that a selection key may be interested in.
-     */
-    enum Op {
-        /**
-         * Selection operation for accepting new connections.
-         */
-        ACCEPT(SelectionKey.OP_ACCEPT),
-        /**
-         *
-         * Selection operation for connecting.
-         */
-        CONNECT(SelectionKey.OP_CONNECT),
-        /**
-         * Selection operation for reading.
-         */
-        READ(SelectionKey.OP_READ),
-        /**
-         * Selection operation for writing.
-         */
-        WRITE(SelectionKey.OP_WRITE);
-
-        final int op;
-
-        Op(final int op) {
-            this.op = op;
-        }
+    public static IOServerSocketChannel openServerSocket() throws IOException {
+        return new IOServerSocketChannelImpl(ServerSocketChannel.open());
     }
 }

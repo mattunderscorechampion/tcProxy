@@ -25,7 +25,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.io.IOSocketChannelImpl;
+import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.impl.IOFactory;
+import com.mattunderscore.tcproxy.io.impl.IOSocketOption;
 import com.mattunderscore.tcproxy.proxy.settings.AcceptorSettings;
 import com.mattunderscore.tcproxy.proxy.settings.InboundSocketSettings;
 import org.slf4j.Logger;
@@ -33,9 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.StandardSocketOptions;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
 import java.util.Queue;
 
 /**
@@ -75,7 +75,7 @@ public class Acceptor implements Runnable {
         LOG.info("{} : Started", this);
         running = true;
         try {
-            final ServerSocketChannel channel = openServerSocket();
+            final IOServerSocketChannel channel = openServerSocket();
             mainLoop(channel);
         }
         catch (final Exception e) {
@@ -84,23 +84,23 @@ public class Acceptor implements Runnable {
         }
     }
 
-    ServerSocketChannel openServerSocket() throws IOException {
-        final ServerSocketChannel serverSocket = ServerSocketChannel.open();
-        serverSocket.setOption(StandardSocketOptions.SO_RCVBUF, inboundSettings.getReceiveBufferSize());
+    IOServerSocketChannel openServerSocket() throws IOException {
+        final IOServerSocketChannel serverSocket = IOFactory.openServerSocket();;
+        serverSocket.setOption(IOSocketOption.RECEIVE_BUFFER, inboundSettings.getReceiveBufferSize());
         serverSocket.bind(new InetSocketAddress(settings.getPort()));
         return serverSocket;
     }
 
-    void mainLoop(final ServerSocketChannel channel) {
+    void mainLoop(final IOServerSocketChannel channel) {
         while (running) {
             try {
-                final SocketChannel clientSide = channel.accept();
-                clientSide.setOption(StandardSocketOptions.SO_SNDBUF, inboundSettings.getSendBufferSize());
-                clientSide.configureBlocking(false);
+                final IOSocketChannel clientSide = channel.accept();
+                clientSide.setOption(IOSocketOption.SEND_BUFFER, inboundSettings.getReceiveBufferSize());
+                clientSide.setOption(IOSocketOption.BLOCKING, false);
                 LOG.info("{} : Accepted {}", this, clientSide);
-                final SocketChannel serverSide = factory.createSocket();
+                final IOSocketChannel serverSide = factory.createSocket();
                 LOG.info("{} : Opened {}", this, serverSide);
-                newConnections.add(connectionFactory.create(new IOSocketChannelImpl(clientSide), new IOSocketChannelImpl(serverSide)));
+                newConnections.add(connectionFactory.create(clientSide, serverSide));
             }
             catch (final IOException e) {
                 LOG.warn("{} : There was an unhandled exception in the main loop - continuing", this, e);

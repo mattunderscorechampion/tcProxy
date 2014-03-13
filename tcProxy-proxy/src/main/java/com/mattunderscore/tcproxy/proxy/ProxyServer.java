@@ -26,11 +26,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy;
 
 import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOSelectorImpl;
+import com.mattunderscore.tcproxy.io.impl.IOFactory;
 import com.mattunderscore.tcproxy.proxy.settings.*;
 
 import java.io.IOException;
-import java.nio.channels.Selector;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -56,8 +55,8 @@ public class ProxyServer {
         final BlockingQueue<ActionQueue> newWrites = new ArrayBlockingQueue<>(5000);
         final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
         final ConnectionFactory connectionFactory = new ConnectionFactory(connectionSettings, manager);
-        final IOSelector readSelector = new IOSelectorImpl(Selector.open());
-        final IOSelector writeSelector = new IOSelectorImpl(Selector.open());
+        final IOSelector readSelector = IOFactory.openSelector();
+        final IOSelector writeSelector = IOFactory.openSelector();
 
         acceptor = new Acceptor(acceptorSettings, inboundSocketSettings, connectionFactory, socketFactory, newConnections);
         proxy = new ReadSelector(readSelector,readSelectorSettings, newConnections, newWrites);

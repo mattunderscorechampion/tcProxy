@@ -23,10 +23,15 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.impl;
+
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 import java.io.IOException;
 import java.net.SocketAddress;
+import java.net.SocketOption;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
@@ -35,15 +40,14 @@ import java.util.Set;
 
 /**
  * Delegates to {@link SocketChannel}.
- * @author matt on 12/03/14.
+ * @author Matt Champion on 12/03/14.
  */
-public final class IOSocketChannelImpl implements IOSocketChannel {
+final class IOSocketChannelImpl implements IOSocketChannel {
     private final SocketChannel channel;
 
-    public IOSocketChannelImpl(final SocketChannel channel) {
+    IOSocketChannelImpl(final SocketChannel channel) {
         this.channel = channel;
     }
-
 
     @Override
     public int read(final ByteBuffer dst) throws IOException {
@@ -66,14 +70,34 @@ public final class IOSocketChannelImpl implements IOSocketChannel {
     }
 
     @Override
-    public IOSelectionKey register(IOSelector selector, IOSelectionKey.Op op, Object att) throws ClosedChannelException {
+    public <T> void setOption(final IOSocketOption<T> option, final T value) throws IOException {
+        IOUtils.applySocketOption(channel, option, value);
+    }
+
+    @Override
+    public void bind(final SocketAddress localAddress) throws IOException {
+        channel.bind(localAddress);
+    }
+
+    @Override
+    public boolean connect(final SocketAddress remoteAddress) throws IOException {
+        return channel.connect(remoteAddress);
+    }
+
+    @Override
+    public boolean finishConnect() throws IOException {
+        return channel.finishConnect();
+    }
+
+    @Override
+    public IOSelectionKey register(final IOSelector selector, final IOSelectionKey.Op op, final Object att) throws ClosedChannelException {
         return register(selector, EnumSet.of(op), att);
     }
 
     @Override
-    public IOSelectionKey register(IOSelector selector, Set<IOSelectionKey.Op> ops, Object att) throws ClosedChannelException {
+    public IOSelectionKey register(final IOSelector selector, final Set<IOSelectionKey.Op> ops, final Object att) throws ClosedChannelException {
         final IOSelectorImpl selectorImpl = (IOSelectorImpl)selector;
-        return new IOSelectionKeyImpl(channel.register(selectorImpl.selector, IOSelectionKey.Op.bitSet(ops), att));
+        return new IOSelectionKeyImpl(channel.register(selectorImpl.selectorDelegate, IOUtils.convertToBitSet(ops), att));
     }
 
     @Override

@@ -25,67 +25,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io;
 
-import java.nio.channels.SelectionKey;
-import java.util.Set;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
+
+import java.io.IOException;
 
 /**
- * Provides a selection key for use with this package.
- * @author matt on 12/03/14.
+ * @author matt on 13/03/14.
  */
-public interface IOSelectionKey {
-
-    /**
-     * @return {@code true} if the key is valid.
-     */
-    boolean isValid();
-
-    /**
-     * @return {@code true} if the keys channel is ready for reading.
-     */
-    boolean isReadable();
-
-    /**
-     * @return {@code true} if the keys channel is ready for writing.
-     */
-    boolean isWritable();
-
-    /**
-     * Request the keys channel is deregistered from its selector. The key set will be updated at the next selection
-     * operation.
-     */
-    void cancel();
-
-    /**
-     * @return The object attached to the key when it was registered.
-     */
-    Object attachment();
-
-    /**
-     * The available operations that a selection key may be interested in.
-     */
-    enum Op {
-        /**
-         * Selection operation for accepting new connections.
-         */
-        ACCEPT(SelectionKey.OP_ACCEPT),
-        /**
-         *
-         * Selection operation for connecting.
-         */
-        CONNECT(SelectionKey.OP_CONNECT),
-        /**
-         * Selection operation for reading.
-         */
-        READ(SelectionKey.OP_READ),
-        /**
-         * Selection operation for writing.
-         */
-        WRITE(SelectionKey.OP_WRITE);
-
-        final int op;
-
-        Op(final int op) {
-            this.op = op;
-        }
-    }
+public interface IOServerSocketChannel extends IOSocket {
+    IOSocketChannel accept() throws IOException;
 }

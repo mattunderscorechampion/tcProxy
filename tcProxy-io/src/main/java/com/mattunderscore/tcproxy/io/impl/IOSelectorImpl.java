@@ -23,7 +23,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.impl;
+
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.IOSelector;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
@@ -33,25 +36,24 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Delegates to {@link Selector}.
- * @author matt on 12/03/14.
+ * Implements {@link com.mattunderscore.tcproxy.io.IOSelector}. Delegates to {@link Selector}.
+ * @author Matt Champion on 12/03/14.
  */
-public final class IOSelectorImpl implements IOSelector {
-    final Selector selector;
+final class IOSelectorImpl implements IOSelector {
+    final Selector selectorDelegate;
 
-    public IOSelectorImpl(final Selector selector) {
-
-        this.selector = selector;
+    IOSelectorImpl(final Selector selectorDelegate) {
+        this.selectorDelegate = selectorDelegate;
     }
 
     @Override
     public void selectNow() throws IOException {
-        selector.selectNow();
+        selectorDelegate.selectNow();
     }
 
     @Override
     public Set<IOSelectionKey> selectedKeys() {
-        final Set<SelectionKey> keys = selector.selectedKeys();
+        final Set<SelectionKey> keys = selectorDelegate.selectedKeys();
         final Set<IOSelectionKey> ioKeys = new HashSet<>();
         for (final SelectionKey key : keys) {
             ioKeys.add(new IOSelectionKeyImpl(key));
