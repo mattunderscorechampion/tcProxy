@@ -26,14 +26,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.io.impl;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 import java.io.IOException;
-import java.net.SocketOption;
 import java.net.StandardSocketOptions;
 import java.nio.channels.NetworkChannel;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.SocketChannel;
 import java.util.Set;
 
 /**
@@ -69,15 +68,6 @@ final class IOUtils {
             sum |= mapToIntFromOp(op);
         }
         return sum;
-    }
-
-    static SocketOption mapToSocketOptionFromIOSocketOption(final IOSocketOption<?> option) {
-        if (option == IOSocketOption.RECEIVE_BUFFER) {
-            return StandardSocketOptions.SO_RCVBUF;
-        }
-        else {
-            throw new IllegalStateException("Unknown socket option");
-        }
     }
 
     static void applySocketOption(final Object channel, IOSocketOption<?> option, Object value) throws IOException {

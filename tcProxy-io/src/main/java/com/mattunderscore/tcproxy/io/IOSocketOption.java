@@ -23,21 +23,26 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io.impl;
-
-import com.mattunderscore.tcproxy.io.IOSocket;
-
-import java.net.SocketOption;
-import java.net.StandardSocketOptions;
+package com.mattunderscore.tcproxy.io;
 
 /**
+ * The available socket options.
  * @author Matt Champion on 13/03/14.
  */
-public class IOSocketOption<T> {
+public final class IOSocketOption<T> {
+    /**
+     * Socket option for SO_RCVBUF.
+     */
     public final static IOSocketOption<Integer> RECEIVE_BUFFER = new IOSocketOption<Integer>();
+    /**
+     * Socket option for SO_SNDBUF.
+     */
     public final static IOSocketOption<Integer> SEND_BUFFER = new IOSocketOption<Integer>();
+    /**
+     * Socket option blocking socket.
+     */
     public final static IOSocketOption<Boolean> BLOCKING = new IOSocketOption<Boolean>();
 
-    IOSocketOption() {
+    private IOSocketOption() {
     }
 }

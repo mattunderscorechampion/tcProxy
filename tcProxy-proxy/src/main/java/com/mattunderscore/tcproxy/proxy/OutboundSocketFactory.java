@@ -27,13 +27,11 @@ package com.mattunderscore.tcproxy.proxy;
 
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.impl.IOFactory;
-import com.mattunderscore.tcproxy.io.impl.IOSocketOption;
+import com.mattunderscore.tcproxy.io.IOSocketOption;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.StandardSocketOptions;
-import java.nio.channels.SocketChannel;
 
 /**
  * Factory for outbound sockets.

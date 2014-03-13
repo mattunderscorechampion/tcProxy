@@ -28,7 +28,7 @@ package com.mattunderscore.tcproxy.proxy;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.impl.IOFactory;
-import com.mattunderscore.tcproxy.io.impl.IOSocketOption;
+import com.mattunderscore.tcproxy.io.IOSocketOption;
 import com.mattunderscore.tcproxy.proxy.settings.AcceptorSettings;
 import com.mattunderscore.tcproxy.proxy.settings.InboundSocketSettings;
 import org.slf4j.Logger;

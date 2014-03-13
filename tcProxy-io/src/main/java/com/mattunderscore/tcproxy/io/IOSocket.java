@@ -25,15 +25,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io;
 
-import com.mattunderscore.tcproxy.io.impl.IOSocketOption;
-
 import java.io.IOException;
 import java.net.SocketAddress;
-import java.net.SocketOption;
-import java.net.StandardSocketOptions;
 
 /**
- * @author matt on 13/03/14.
+ * @author Matt Champion on 13/03/14.
  */
 public interface IOSocket {
 

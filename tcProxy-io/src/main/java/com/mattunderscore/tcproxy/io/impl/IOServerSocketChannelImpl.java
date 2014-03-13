@@ -27,12 +27,11 @@ package com.mattunderscore.tcproxy.io.impl;
 
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 import java.io.IOException;
 import java.net.SocketAddress;
-import java.net.SocketOption;
 import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
 
 /**
  * @author Matt Champion on 13/03/14.

@@ -28,10 +28,10 @@ package com.mattunderscore.tcproxy.io.impl;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 import java.io.IOException;
 import java.net.SocketAddress;
-import java.net.SocketOption;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
