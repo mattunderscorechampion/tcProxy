@@ -41,14 +41,26 @@ public final class IOFactory {
     private IOFactory() {
     }
 
+    /**
+     * @return A new selector.
+     * @throws IOException
+     */
     public static IOSelector openSelector() throws IOException {
         return new IOSelectorImpl(Selector.open());
     }
 
+    /**
+     * @return A new, unbound socket.
+     * @throws IOException
+     */
     public static IOSocketChannel openSocket() throws IOException {
         return new IOSocketChannelImpl(SocketChannel.open());
     }
 
+    /**
+     * @return A new server socket.
+     * @throws IOException
+     */
     public static IOServerSocketChannel openServerSocket() throws IOException {
         return new IOServerSocketChannelImpl(ServerSocketChannel.open());
     }

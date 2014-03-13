@@ -36,13 +36,44 @@ import java.util.Set;
  */
 public interface IOSocketChannel extends ByteChannel, IOSocket {
 
+    /**
+     * Connect the socket to a remote address.
+     * @param remoteAddress
+     * @return
+     * @throws IOException
+     */
     boolean connect(SocketAddress remoteAddress) throws IOException;
 
+    /**
+     * Finish the connection.
+     * @return
+     * @throws IOException
+     */
     boolean finishConnect() throws IOException;
 
+    /**
+     * Register the channel with a selector.
+     * @param selector
+     * @param op
+     * @param att
+     * @return
+     * @throws ClosedChannelException
+     */
     IOSelectionKey register(IOSelector selector, IOSelectionKey.Op op, Object att) throws ClosedChannelException;
 
+    /**
+     * Register the channel with a selector.
+     * @param selector
+     * @param ops
+     * @param att
+     * @return
+     * @throws ClosedChannelException
+     */
     IOSelectionKey register(IOSelector selector, Set<IOSelectionKey.Op> ops, Object att) throws ClosedChannelException;
 
+    /**
+     * @return The address of the remote socket.
+     * @throws IOException
+     */
     SocketAddress getRemoteAddress() throws IOException;
 }

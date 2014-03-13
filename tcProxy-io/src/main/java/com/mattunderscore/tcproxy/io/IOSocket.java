@@ -33,13 +33,36 @@ import java.net.SocketAddress;
  */
 public interface IOSocket {
 
+    /**
+     * Bind the socket to a local address.
+     * @param localAddress
+     * @throws IOException
+     */
     void bind(SocketAddress localAddress) throws IOException;
 
+    /**
+     * @return The address of the lcoal socket.
+     * @throws IOException
+     */
     SocketAddress getLocalAddress() throws IOException;
 
+    /**
+     * @return {@code true} If the socket is open.
+     */
     boolean isOpen();
 
+    /**
+     * Closes the socket.
+     * @throws IOException
+     */
     void close() throws IOException;
 
+    /**
+     * Sets an option on the socket.
+     * @param option The option.
+     * @param value The value of the option.
+     * @param <T> The type of the value.
+     * @throws IOException
+     */
     <T> void setOption(IOSocketOption<T> option, T value) throws IOException;
 }

@@ -33,5 +33,9 @@ import java.io.IOException;
  * @author matt on 13/03/14.
  */
 public interface IOServerSocketChannel extends IOSocket {
+    /**
+     * @return An inbound IOSocketChannel attempting to connect to the server.
+     * @throws IOException
+     */
     IOSocketChannel accept() throws IOException;
 }
