@@ -50,7 +50,7 @@ public final class IOFactory {
     }
 
     /**
-     * @return A new, unbound socket.
+     * @return A new unbound socket.
      * @throws IOException
      */
     public static IOSocketChannel openSocket() throws IOException {

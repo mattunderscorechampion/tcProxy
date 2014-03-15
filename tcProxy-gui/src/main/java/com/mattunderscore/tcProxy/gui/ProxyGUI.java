@@ -23,19 +23,14 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy;
-
-import java.io.IOException;
+package com.mattunderscore.tcProxy.gui;
 
 /**
- * A connection.
- * @author Matt Champion on 21/02/14.
+ * @author matt on 15/03/14.
  */
-public interface Connection {
-    Direction clientToServer();
-
-    Direction serverToClient();
-
-    void close() throws IOException;
-
+public final class ProxyGUI {
+    public static void main(String[] args) {
+        final MainFrame frame = new MainFrame();
+        frame.setVisible(true);
+    }
 }

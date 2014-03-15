@@ -76,7 +76,7 @@ final class IOUtils {
         if (option == IOSocketOption.RECEIVE_BUFFER) {
             networkChannel.setOption(StandardSocketOptions.SO_RCVBUF, (Integer) value);
         }
-        if (option == IOSocketOption.SEND_BUFFER) {
+        else if (option == IOSocketOption.SEND_BUFFER) {
             networkChannel.setOption(StandardSocketOptions.SO_SNDBUF, (Integer) value);
         }
         else if (option == IOSocketOption.BLOCKING) {

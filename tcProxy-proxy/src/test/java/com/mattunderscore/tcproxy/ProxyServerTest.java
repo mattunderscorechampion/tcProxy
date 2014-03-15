@@ -43,7 +43,6 @@ import java.util.logging.LogManager;
 /**
  * @author matt on 18/02/14.
  */
-@Ignore
 public class ProxyServerTest {
     public static final Logger LOG = LoggerFactory.getLogger("test");
     @Test
