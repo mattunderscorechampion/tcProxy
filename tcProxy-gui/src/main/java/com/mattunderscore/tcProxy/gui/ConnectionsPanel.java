@@ -33,10 +33,13 @@ import org.slf4j.LoggerFactory;
 import sun.awt.VerticalBagLayout;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author matt on 15/03/14.
@@ -80,8 +83,10 @@ public final class ConnectionsPanel extends JPanel {
         private JLabel clientWritten;
         private JLabel serverRead;
         private JLabel serverWritten;
+        private JButton close;
+        private AtomicBoolean isClosed = new AtomicBoolean(false);
 
-        private ConnectionPanel(Connection connection) throws IOException {
+        private ConnectionPanel(final Connection connection) throws IOException {
             this.connection = connection;
             clientRead = new JLabel("0 read");
             clientWritten = new JLabel("0 written");
@@ -119,16 +124,32 @@ public final class ConnectionsPanel extends JPanel {
                     add(new JLabel(targetAddress.toString()));
                     add(serverRead);
                     add(serverWritten);
+
+                    close = new JButton("Close");
+                    close.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            try {
+                                connection.close();
+                            } catch (IOException e1) {
+                                LOG.info("Unable to close connection");
+                            }
+                        }
+                    });
+                    add(close);
                 }
             });
         }
 
         public void setClosed() {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    add(new JLabel("Closed"));
-                }
-            });
+            if (isClosed.compareAndSet(false, true)) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        add(new JLabel("Closed"));
+                    }
+                });
+                remove(close);
+            }
         }
 
         public void updateWritten() {
