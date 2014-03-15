@@ -27,6 +27,7 @@ package com.mattunderscore.tcProxy.gui;
 
 import com.mattunderscore.tcproxy.proxy.Connection;
 import com.mattunderscore.tcproxy.proxy.ConnectionManager;
+import com.mattunderscore.tcproxy.proxy.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.awt.VerticalBagLayout;
@@ -73,25 +74,51 @@ public final class ConnectionsPanel extends JPanel {
     }
 
     private final class ConnectionPanel extends JPanel {
+        private Direction.Listener listener;
         private Connection connection;
-        private JLabel read;
-        private JLabel written;
+        private JLabel clientRead;
+        private JLabel clientWritten;
+        private JLabel serverRead;
+        private JLabel serverWritten;
 
         private ConnectionPanel(Connection connection) throws IOException {
             this.connection = connection;
-            read = new JLabel("0 read");
-            written = new JLabel("0 written");
+            clientRead = new JLabel("0 read");
+            clientWritten = new JLabel("0 written");
+            serverRead = new JLabel("0 read");
+            serverWritten = new JLabel("0 written");
+
+            listener = new Direction.Listener() {
+                @Override
+                public void dataRead(Direction direction, int bytesRead) {
+                    updateRead();
+                }
+
+                @Override
+                public void dataWritten(Direction direction, int bytesWritten) {
+                    updateWritten();
+                }
+
+                @Override
+                public void closed(Direction direction) {
+
+                }
+            };
 
             final SocketAddress clientAddress = connection.clientToServer().getFrom().getRemoteAddress();
             final SocketAddress targetAddress = connection.clientToServer().getTo().getRemoteAddress();
+            connection.clientToServer().addListener(listener);
+            connection.serverToClient().addListener(listener);
 
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     add(new JLabel(clientAddress.toString()));
-                    add(new JLabel(targetAddress.toString()));
+                    add(clientRead);
+                    add(clientWritten);
 
-                    add(read);
-                    add(written);
+                    add(new JLabel(targetAddress.toString()));
+                    add(serverRead);
+                    add(serverWritten);
                 }
             });
         }
@@ -107,7 +134,8 @@ public final class ConnectionsPanel extends JPanel {
         public void updateWritten() {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    written.setText("" + connection.clientToServer().written() + " written");
+                    clientWritten.setText("" + connection.serverToClient().written() + " written");
+                    serverWritten.setText("" + connection.clientToServer().written() + " written");
                     validate();
                 }
             });
@@ -116,7 +144,8 @@ public final class ConnectionsPanel extends JPanel {
         public void updateRead() {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    read.setText("" + connection.clientToServer().read() + " read");
+                    clientRead.setText("" + connection.clientToServer().read() + " read");
+                    serverRead.setText("" + connection.serverToClient().read() + " read");
                     validate();
                 }
             });

@@ -54,4 +54,13 @@ public interface Direction {
 
     void close() throws IOException;
 
+    void addListener(Listener listener);
+
+    interface Listener {
+        void dataRead(Direction direction, int bytesRead);
+
+        void dataWritten(Direction direction, int bytesWritten);
+
+        void closed(Direction direction);
+    }
 }

@@ -37,5 +37,4 @@ public interface Connection {
     Direction serverToClient();
 
     void close() throws IOException;
-
 }

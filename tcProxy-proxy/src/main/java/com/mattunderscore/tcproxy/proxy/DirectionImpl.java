@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Implementation of {@link com.mattunderscore.tcproxy.proxy.Direction}.
@@ -43,6 +45,7 @@ public class DirectionImpl implements Direction {
     private final ConnectionImpl connection;
     private final ActionQueue queue;
     private final String stringValue;
+    private final Set<Listener> listeners = new CopyOnWriteArraySet<>();
     private volatile int read;
     private volatile int written;
     private volatile boolean open;
@@ -91,14 +94,24 @@ public class DirectionImpl implements Direction {
     @Override
     public int write(final ByteBuffer destination) throws IOException {
         final int newlyWritten = to.write(destination);
-        written += newlyWritten;
+        if (newlyWritten > 0) {
+            written += newlyWritten;
+            for (final Listener listener : listeners) {
+                listener.dataWritten(this, newlyWritten);
+            }
+        }
         return newlyWritten;
     }
 
     @Override
     public int read(final ByteBuffer source) throws IOException {
         final int newlyRead = from.read(source);
-        read += newlyRead;
+        if (newlyRead > 0) {
+            read += newlyRead;
+            for (final Listener listener : listeners) {
+                listener.dataRead(this, newlyRead);
+            }
+        }
         return newlyRead;
     }
 
@@ -109,7 +122,15 @@ public class DirectionImpl implements Direction {
             to.close();
             open = false;
             connection.partClosed();
+            for (final Listener listener : listeners) {
+                listener.closed(this);
+            }
         }
+    }
+
+    @Override
+    public void addListener(final Listener listener) {
+        listeners.add(listener);
     }
 
     private String asString() {
