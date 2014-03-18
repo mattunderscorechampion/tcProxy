@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import sun.awt.VerticalBagLayout;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -57,7 +58,8 @@ public final class ConnectionsPanel extends JPanel {
                     final ConnectionPanel panel = new ConnectionPanel(connection);
                     add(panel);
                     connections.put(connection, panel);
-                    validate();
+                    revalidate();
+                    doLayout();
                 }
                 catch (final IOException e) {
                     LOG.warn("Unable to create panel", e);
@@ -70,7 +72,7 @@ public final class ConnectionsPanel extends JPanel {
                 final ConnectionPanel panel = connections.remove(connection);
                 if (panel != null) {
                     panel.setClosed();
-                    validate();
+                    revalidate();
                 }
             }
         });
@@ -84,6 +86,7 @@ public final class ConnectionsPanel extends JPanel {
         private JLabel serverRead;
         private JLabel serverWritten;
         private JButton close;
+        private JButton remove;
         private AtomicBoolean isClosed = new AtomicBoolean(false);
 
         private ConnectionPanel(final Connection connection) throws IOException {
@@ -106,7 +109,6 @@ public final class ConnectionsPanel extends JPanel {
 
                 @Override
                 public void closed(Direction direction) {
-
                 }
             };
 
@@ -137,18 +139,37 @@ public final class ConnectionsPanel extends JPanel {
                         }
                     });
                     add(close);
+                    ConnectionsPanel.this.revalidate();
                 }
             });
         }
 
         public void setClosed() {
             if (isClosed.compareAndSet(false, true)) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        add(new JLabel("Closed"));
+                remove = new JButton("Remove");
+                remove.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(final ActionEvent e) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                final Container container = ConnectionsPanel.this;
+                                container.remove(ConnectionPanel.this);
+                                container.revalidate();
+                                container.doLayout();
+                                container.repaint();
+                            }
+                        });
                     }
                 });
-                remove(close);
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        remove(close);
+                        add(new JLabel("Closed"));
+                        add(remove);
+                        ConnectionsPanel.this.revalidate();
+                    }
+                });
             }
         }
 
@@ -157,7 +178,7 @@ public final class ConnectionsPanel extends JPanel {
                 public void run() {
                     clientWritten.setText("" + connection.serverToClient().written() + " written");
                     serverWritten.setText("" + connection.clientToServer().written() + " written");
-                    validate();
+                    revalidate();
                 }
             });
         }
@@ -167,7 +188,7 @@ public final class ConnectionsPanel extends JPanel {
                 public void run() {
                     clientRead.setText("" + connection.clientToServer().read() + " read");
                     serverRead.setText("" + connection.serverToClient().read() + " read");
-                    validate();
+                    revalidate();
                 }
             });
         }
