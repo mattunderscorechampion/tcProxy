@@ -23,66 +23,29 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy;
+package com.mattunderscore.tcproxy.proxy.action.queue;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import com.mattunderscore.tcproxy.proxy.action.Action;
+import com.mattunderscore.tcproxy.proxy.Connection;
+import com.mattunderscore.tcproxy.proxy.Direction;
 
 /**
- * Implementation of {@link com.mattunderscore.tcproxy.proxy.ActionQueue}.
+ * The queue of actions for a single direction.
  * @author Matt Champion on 19/02/14.
  */
-public class ActionQueueImpl implements ActionQueue {
-    private final Direction direction;
-    private final Connection connection;
-    private final BlockingQueue<Action> actions;
+public interface ActionQueue {
 
-    public ActionQueueImpl(final Direction direction, final Connection connection, final int queueSize) {
-        this.direction = direction;
-        this.connection = connection;
-        this.actions = new ArrayBlockingQueue<>(queueSize);
-    }
+    boolean queueFull();
 
-    public boolean queueFull() {
-        return actions.remainingCapacity() == 0;
-    }
+    void add(final Action action);
 
-    public int opsPending() {
-        return actions.size();
-    }
+    Action current();
 
-    @Override
-    public void add(final Action action) {
-        actions.add(action);
-    }
+    boolean hasData();
 
-    @Override
-    public Action current() {
-        final Action action = actions.peek();
-        if (action == null) {
-            return null;
-        }
-        else if (!action.writeComplete()) {
-            return action;
-        }
-        else {
-            actions.remove(action);
-            return current();
-        }
-    }
+    Connection getConnection();
 
-    @Override
-    public boolean hasData() {
-        return current() != null;
-    }
+    Direction getDirection();
 
-    @Override
-    public Connection getConnection() {
-        return connection;
-    }
-
-    @Override
-    public Direction getDirection() {
-        return direction;
-    }
+    int opsPending();
 }

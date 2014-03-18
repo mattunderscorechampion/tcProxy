@@ -26,6 +26,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy;
 
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
+import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueueImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

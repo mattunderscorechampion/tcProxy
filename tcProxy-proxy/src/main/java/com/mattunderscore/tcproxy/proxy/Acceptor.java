@@ -48,7 +48,6 @@ public class Acceptor implements Runnable {
     private final InboundSocketSettings inboundSettings;
     private final ConnectionFactory connectionFactory;
     private final OutboundSocketFactory factory;
-    private final Queue<Connection> newConnections;
     private volatile boolean running = false;
 
     /**
@@ -62,13 +61,11 @@ public class Acceptor implements Runnable {
     public Acceptor(final AcceptorSettings settings,
                     final InboundSocketSettings inboundSettings,
                     final ConnectionFactory connectionFactory,
-                    final OutboundSocketFactory factory,
-                    final Queue<Connection> newConnections) {
+                    final OutboundSocketFactory factory) {
         this.settings = settings;
         this.inboundSettings = inboundSettings;
         this.connectionFactory = connectionFactory;
         this.factory = factory;
-        this.newConnections = newConnections;
     }
 
     public void run() {
@@ -100,7 +97,7 @@ public class Acceptor implements Runnable {
                 LOG.info("{} : Accepted {}", this, clientSide);
                 final IOSocketChannel serverSide = factory.createSocket();
                 LOG.info("{} : Opened {}", this, serverSide);
-                newConnections.add(connectionFactory.create(clientSide, serverSide));
+                connectionFactory.create(clientSide, serverSide);
             }
             catch (final IOException e) {
                 LOG.warn("{} : There was an unhandled exception in the main loop - continuing", this, e);

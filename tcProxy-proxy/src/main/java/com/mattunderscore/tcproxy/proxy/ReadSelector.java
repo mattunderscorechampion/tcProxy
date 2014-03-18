@@ -28,6 +28,11 @@ package com.mattunderscore.tcproxy.proxy;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.proxy.action.Action;
+import com.mattunderscore.tcproxy.proxy.action.ActionNotifier;
+import com.mattunderscore.tcproxy.proxy.action.Close;
+import com.mattunderscore.tcproxy.proxy.action.Write;
+import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,13 +54,13 @@ public class ReadSelector implements Runnable {
     private final IOSelector selector;
     private final ReadSelectorSettings settings;
     private final BlockingQueue<Connection> newConnections;
-    private final BlockingQueue<ActionQueue> newWrites;
+    private final ActionNotifier actionNotifier;
 
-    public ReadSelector(final IOSelector selector, final ReadSelectorSettings settings, final BlockingQueue<Connection> newConnections, final BlockingQueue<ActionQueue> newWrites) {
+    public ReadSelector(final IOSelector selector, final ReadSelectorSettings settings, final BlockingQueue<Connection> newConnections, final ActionNotifier actionNotifier) {
         this.selector = selector;
         this.settings = settings;
         this.newConnections = newConnections;
-        this.newWrites = newWrites;
+        this.actionNotifier = actionNotifier;
     }
 
     public void stop() {
@@ -118,11 +123,11 @@ public class ReadSelector implements Runnable {
                             writeBuffer.put(buffer);
                             writeBuffer.flip();
 
-                            informOfData(queue, writeBuffer);
+                            informOfData(direction, writeBuffer);
                         }
                         else if (bytes == -1) {
                             key.cancel();
-                            informOfClose(queue);
+                            informOfClose(direction);
                             final ConnectionImpl conn = (ConnectionImpl) direction.getConnection();
                             final Direction otherDirection = conn.otherDirection(direction);
                             LOG.info("{} : Closed {} ", this, otherDirection);
@@ -141,25 +146,18 @@ public class ReadSelector implements Runnable {
         }
     }
 
-    void informOfData(final ActionQueue writes, final ByteBuffer write) {
+    void informOfData(final Direction direction, final ByteBuffer write) {
         LOG.trace("{} : Data read {} bytes", this, write.remaining());
-        informOfWrite(writes, new Write(writes.getDirection(), write));
+        informOfAction(direction, new Write(direction, write));
     }
 
-    void informOfClose(final ActionQueue writes) {
+    void informOfClose(final Direction direction) {
         LOG.trace("{} : Read close", this);
-        informOfWrite(writes, new Close(writes.getDirection()));
+        informOfAction(direction, new Close(direction));
     }
 
-    void informOfWrite(final ActionQueue writes, final Action action) {
-        if (!writes.hasData()) {
-            LOG.debug("{} : New actions queued", this);
-            writes.add(action);
-            newWrites.add(writes);
-        }
-        else {
-            writes.add(action);
-        }
+    void informOfAction(final Direction direction, final Action action) {
+        actionNotifier.notify(direction, action);
     }
 
     @Override

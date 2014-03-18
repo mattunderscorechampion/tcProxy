@@ -25,40 +25,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import java.io.IOException;
-
 /**
- * The close action.
- * @author Matt Champion on 19/02/14.
+ * @author matt on 18/03/14.
  */
-public class Close implements Action {
-    public final Direction direction;
-    public volatile boolean written;
-
-    public Close(final Direction direction) {
-        this.direction = direction;
-        this.written = false;
-    }
-
-    @Override
-    public int writeToSocket() throws IOException {
-        if (written) {
-            return 0;
-        }
-        else {
-            direction.close();
-            written = true;
-            return -1;
-        }
-    }
-
-    @Override
-    public boolean writeComplete() {
-        return written;
-    }
-
-    @Override
-    public int dataPending() {
-        return 0;
-    }
+public interface Notifier<T> {
+    void notify(T v);
 }

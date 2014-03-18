@@ -23,36 +23,15 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy;
+package com.mattunderscore.tcproxy.proxy.action;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import com.mattunderscore.tcproxy.proxy.Direction;
+import com.mattunderscore.tcproxy.proxy.action.Action;
 
 /**
- * The write action.
- * @author Matt Champion on 19/02/14.
+ * @author matt on 18/03/14.
  */
-public class Write implements Action {
-    private Direction direction;
-    private final ByteBuffer data;
+public interface ActionNotifier {
 
-    public Write(final Direction direction, final ByteBuffer data) {
-        this.direction = direction;
-        this.data = data;
-    }
-
-    @Override
-    public int writeToSocket() throws IOException {
-        return direction.write(data);
-    }
-
-    @Override
-    public boolean writeComplete() {
-        return data.remaining() == 0;
-    }
-
-    @Override
-    public int dataPending() {
-        return data.remaining();
-    }
+    void notify(Direction direction, Action action);
 }

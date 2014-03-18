@@ -23,45 +23,32 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy;
+package com.mattunderscore.tcproxy.proxy.action;
 
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.proxy.Direction;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.util.concurrent.BlockingQueue;
 
 /**
- * A direction.
- * @author Matt Champion on 18/02/14.
+ * @author matt on 18/03/14.
  */
-public interface Direction {
+public class ActionNotifierImpl implements ActionNotifier {
+    private final BlockingQueue<ActionQueue> queue;
 
-    IOSocketChannel getFrom();
+    public ActionNotifierImpl(final BlockingQueue<ActionQueue> queue) {
+        this.queue = queue;
+    }
 
-    IOSocketChannel getTo();
-
-    Connection getConnection();
-
-    ActionQueue getQueue();
-
-    int read();
-
-    int written();
-
-    int write(ByteBuffer data) throws IOException;
-
-    int read(ByteBuffer data) throws IOException;
-
-    void close() throws IOException;
-
-    void addListener(Listener listener);
-
-    interface Listener {
-        void dataRead(Direction direction, int bytesRead);
-
-        void dataWritten(Direction direction, int bytesWritten);
-
-        void closed(Direction direction);
+    @Override
+    public void notify(final Direction direction, final Action action) {
+        final ActionQueue actionQueue = direction.getQueue();
+        synchronized (actionQueue) {
+            final boolean hasData = actionQueue.hasData();
+            actionQueue.add(action);
+            if (!hasData) {
+                queue.add(actionQueue);
+            }
+        }
     }
 }

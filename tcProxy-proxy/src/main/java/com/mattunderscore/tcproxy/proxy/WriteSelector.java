@@ -28,6 +28,8 @@ package com.mattunderscore.tcproxy.proxy;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.proxy.action.Action;
+import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -23,25 +23,44 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy;
+package com.mattunderscore.tcproxy.proxy.action;
+
+import com.mattunderscore.tcproxy.proxy.Direction;
+
+import java.io.IOException;
 
 /**
- * The queue of actions for a single direction.
+ * The close action.
  * @author Matt Champion on 19/02/14.
  */
-public interface ActionQueue {
+public class Close implements Action {
+    public final Direction direction;
+    public volatile boolean written;
 
-    boolean queueFull();
+    public Close(final Direction direction) {
+        this.direction = direction;
+        this.written = false;
+    }
 
-    void add(final Action action);
+    @Override
+    public int writeToSocket() throws IOException {
+        if (written) {
+            return 0;
+        }
+        else {
+            direction.close();
+            written = true;
+            return -1;
+        }
+    }
 
-    Action current();
+    @Override
+    public boolean writeComplete() {
+        return written;
+    }
 
-    boolean hasData();
-
-    Connection getConnection();
-
-    Direction getDirection();
-
-    int opsPending();
+    @Override
+    public int dataPending() {
+        return 0;
+    }
 }

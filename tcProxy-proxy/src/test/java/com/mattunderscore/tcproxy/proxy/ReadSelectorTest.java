@@ -28,6 +28,9 @@ package com.mattunderscore.tcproxy.proxy;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.proxy.action.ActionNotifier;
+import com.mattunderscore.tcproxy.proxy.action.ActionNotifierImpl;
+import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,14 +71,16 @@ public class ReadSelectorTest {
     private BlockingQueue<Connection> newConnections;
     private BlockingQueue<ActionQueue> newWrites;
     private ReadSelector readSelector;
+    private ActionNotifier actions;
 
     @Before
     public void setUp() {
         initMocks(this);
         newConnections = new ArrayBlockingQueue<>(5);
         newWrites = new ArrayBlockingQueue<>(5);
+        actions = new ActionNotifierImpl(newWrites);
         settings = new ReadSelectorSettings(16);
-        readSelector = new ReadSelector(selector, settings, newConnections, newWrites);
+        readSelector = new ReadSelector(selector, settings, newConnections, actions);
 
         when(connection.clientToServer()).thenReturn(direction);
         when(connection.serverToClient()).thenReturn(direction);
