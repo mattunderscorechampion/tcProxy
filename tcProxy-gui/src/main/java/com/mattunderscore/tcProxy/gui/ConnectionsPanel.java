@@ -79,69 +79,26 @@ public final class ConnectionsPanel extends JPanel {
     }
 
     private final class ConnectionPanel extends JPanel {
-        private Direction.Listener listener;
-        private Connection connection;
-        private JLabel clientRead;
-        private JLabel clientWritten;
-        private JLabel serverRead;
-        private JLabel serverWritten;
         private JButton close;
         private JButton remove;
         private AtomicBoolean isClosed = new AtomicBoolean(false);
 
         private ConnectionPanel(final Connection connection) throws IOException {
-            this.connection = connection;
-            clientRead = new JLabel("0 read");
-            clientWritten = new JLabel("0 written");
-            serverRead = new JLabel("0 read");
-            serverWritten = new JLabel("0 written");
+            add(new EndpointPanel(connection.clientToServer(), connection.serverToClient()));
+            add(new EndpointPanel(connection.serverToClient(), connection.clientToServer()));
 
-            listener = new Direction.Listener() {
+            close = new JButton("Close");
+            close.addActionListener(new ActionListener() {
                 @Override
-                public void dataRead(Direction direction, int bytesRead) {
-                    updateRead();
-                }
-
-                @Override
-                public void dataWritten(Direction direction, int bytesWritten) {
-                    updateWritten();
-                }
-
-                @Override
-                public void closed(Direction direction) {
-                }
-            };
-
-            final SocketAddress clientAddress = connection.clientToServer().getFrom().getRemoteAddress();
-            final SocketAddress targetAddress = connection.clientToServer().getTo().getRemoteAddress();
-            connection.clientToServer().addListener(listener);
-            connection.serverToClient().addListener(listener);
-
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    add(new JLabel(clientAddress.toString()));
-                    add(clientRead);
-                    add(clientWritten);
-
-                    add(new JLabel(targetAddress.toString()));
-                    add(serverRead);
-                    add(serverWritten);
-
-                    close = new JButton("Close");
-                    close.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            try {
-                                connection.close();
-                            } catch (IOException e1) {
-                                LOG.info("Unable to close connection");
-                            }
-                        }
-                    });
-                    add(close);
-                    ConnectionsPanel.this.revalidate();
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        connection.close();
+                    } catch (IOException e1) {
+                        LOG.info("Unable to close connection");
+                    }
                 }
             });
+            add(close);
         }
 
         public void setClosed() {
@@ -172,25 +129,62 @@ public final class ConnectionsPanel extends JPanel {
                 });
             }
         }
+    }
 
-        public void updateWritten() {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    clientWritten.setText("" + connection.serverToClient().written() + " written");
-                    serverWritten.setText("" + connection.clientToServer().written() + " written");
-                    revalidate();
-                }
-            });
-        }
+    private final class EndpointPanel extends JPanel {
+        private JLabel read;
+        private JLabel written;
 
-        public void updateRead() {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    clientRead.setText("" + connection.clientToServer().read() + " read");
-                    serverRead.setText("" + connection.serverToClient().read() + " read");
-                    revalidate();
+        private EndpointPanel(final Direction source, final Direction destination) throws IOException {
+            read = new JLabel("0 read");
+            written = new JLabel("0 written");
+
+            final SocketAddress address = source.getFrom().getRemoteAddress();
+
+            add(new JLabel(address.toString()));
+            add(read);
+            add(written);
+
+            final Direction.Listener readListener = new Direction.Listener() {
+                @Override
+                public void dataRead(Direction direction, int bytesRead) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            read.setText("" + source.read() + " read");
+                            revalidate();
+                        }
+                    });
                 }
-            });
+
+                @Override
+                public void dataWritten(Direction direction, int bytesWritten) {
+                }
+
+                @Override
+                public void closed(Direction direction) {
+                }
+            };
+            source.addListener(readListener);
+            final Direction.Listener writeListener = new Direction.Listener() {
+                @Override
+                public void dataRead(Direction direction, int bytesRead) {
+                }
+
+                @Override
+                public void dataWritten(Direction direction, int bytesWritten) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            written.setText("" + destination.written() + " written");
+                            revalidate();
+                        }
+                    });
+                }
+
+                @Override
+                public void closed(Direction direction) {
+                }
+            };
+            destination.addListener(writeListener);
         }
     }
 }
