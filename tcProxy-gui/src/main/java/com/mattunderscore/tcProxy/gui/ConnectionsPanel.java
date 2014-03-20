@@ -71,7 +71,7 @@ public final class ConnectionsPanel extends JPanel {
                 LOG.info("Removing connection {}", connection);
                 final ConnectionPanel panel = connections.remove(connection);
                 if (panel != null) {
-                    panel.setClosed();
+                    panel.setComplete();
                     revalidate();
                 }
             }
@@ -84,14 +84,16 @@ public final class ConnectionsPanel extends JPanel {
         private AtomicBoolean isClosed = new AtomicBoolean(false);
 
         private ConnectionPanel(final Connection connection) throws IOException {
-            add(new EndpointPanel(connection.clientToServer(), connection.serverToClient()));
-            add(new EndpointPanel(connection.serverToClient(), connection.clientToServer()));
+            setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
+            add(new EndpointPanel("Client:", connection.clientToServer(), connection.serverToClient()));
+            add(new EndpointPanel("Server:", connection.serverToClient(), connection.clientToServer()));
 
             close = new JButton("Close");
             close.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
+                        setClosed();
                         connection.close();
                     } catch (IOException e1) {
                         LOG.info("Unable to close connection");
@@ -129,13 +131,44 @@ public final class ConnectionsPanel extends JPanel {
                 });
             }
         }
+
+        public void setComplete() {
+            if (isClosed.compareAndSet(false, true)) {
+                remove = new JButton("Remove");
+                remove.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(final ActionEvent e) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                final Container container = ConnectionsPanel.this;
+                                container.remove(ConnectionPanel.this);
+                                container.revalidate();
+                                container.doLayout();
+                                container.repaint();
+                            }
+                        });
+                    }
+                });
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        remove(close);
+                        add(new JLabel("Complete"));
+                        add(remove);
+                        ConnectionsPanel.this.revalidate();
+                    }
+                });
+            }
+        }
     }
 
     private final class EndpointPanel extends JPanel {
         private JLabel read;
         private JLabel written;
 
-        private EndpointPanel(final Direction source, final Direction destination) throws IOException {
+        private EndpointPanel(final String title, final Direction source, final Direction destination) throws IOException {
+            setBorder(BorderFactory.createLineBorder(Color.black));
+            add(new JLabel(title));
             read = new JLabel("0 read");
             written = new JLabel("0 written");
 
