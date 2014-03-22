@@ -169,8 +169,8 @@ public final class ConnectionsPanel extends JPanel {
         private EndpointPanel(final String title, final Direction source, final Direction destination) throws IOException {
             setBorder(BorderFactory.createLineBorder(Color.black));
             add(new JLabel(title));
-            read = new JLabel("0 read");
-            written = new JLabel("0 written");
+            read = new JLabel("0 read from");
+            written = new JLabel("0 written to");
 
             final SocketAddress address = source.getFrom().getRemoteAddress();
 
@@ -183,7 +183,7 @@ public final class ConnectionsPanel extends JPanel {
                 public void dataRead(Direction direction, int bytesRead) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            read.setText("" + source.read() + " read");
+                            read.setText("" + source.read() + " read from");
                             revalidate();
                         }
                     });
@@ -207,7 +207,7 @@ public final class ConnectionsPanel extends JPanel {
                 public void dataWritten(Direction direction, int bytesWritten) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            written.setText("" + destination.written() + " written");
+                            written.setText("" + destination.written() + " written to");
                             revalidate();
                         }
                     });
