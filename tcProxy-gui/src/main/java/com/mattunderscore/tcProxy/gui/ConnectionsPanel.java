@@ -192,6 +192,7 @@ public final class ConnectionsPanel extends JPanel {
                         public void run() {
                             remove(restoreButton);
                             add(dropButton);
+                            revalidate();
                         }
                     });
                 }
@@ -205,6 +206,7 @@ public final class ConnectionsPanel extends JPanel {
                         public void run() {
                             remove(dropButton);
                             add(restoreButton);
+                            revalidate();
                         }
                     });
                 }
