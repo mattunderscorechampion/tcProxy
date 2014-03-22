@@ -69,7 +69,7 @@ public class ReadSelectorTest {
 
     private ReadSelectorSettings settings;
     private BlockingQueue<Connection> newConnections;
-    private BlockingQueue<ActionQueue> newWrites;
+    private BlockingQueue<Direction> newDirections;
     private ReadSelector readSelector;
     private ActionNotifier actions;
 
@@ -77,8 +77,8 @@ public class ReadSelectorTest {
     public void setUp() {
         initMocks(this);
         newConnections = new ArrayBlockingQueue<>(5);
-        newWrites = new ArrayBlockingQueue<>(5);
-        actions = new ActionNotifierImpl(newWrites);
+        newDirections = new ArrayBlockingQueue<>(5);
+        actions = new ActionNotifierImpl(newDirections);
         settings = new ReadSelectorSettings(16);
         readSelector = new ReadSelector(selector, settings, newConnections, actions);
 
@@ -133,6 +133,6 @@ public class ReadSelectorTest {
 
         readSelector.readBytes(buffer);
 
-        assertEquals(1, newWrites.size());
+        assertEquals(1, newDirections.size());
     }
 }

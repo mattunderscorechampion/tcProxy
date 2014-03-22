@@ -55,16 +55,16 @@ public class ProxyServer {
                        final ReadSelectorSettings readSelectorSettings,
                        final ConnectionManager manager) throws IOException {
         final BlockingQueue<Connection> newConnections = new ArrayBlockingQueue<>(5000);
-        final BlockingQueue<ActionQueue> newWrites = new ArrayBlockingQueue<>(5000);
+        final BlockingQueue<Direction> newDirections = new ArrayBlockingQueue<>(5000);
         final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
         final ConnectionFactory connectionFactory = new ConnectionFactory(connectionSettings, manager);
         final IOSelector readSelector = IOFactory.openSelector();
         final IOSelector writeSelector = IOFactory.openSelector();
-        final ActionNotifier actions = new ActionNotifierImpl(newWrites);
+        final ActionNotifier actions = new ActionNotifierImpl(newDirections);
 
         acceptor = new Acceptor(acceptorSettings, inboundSocketSettings, connectionFactory, socketFactory);
         proxy = new ReadSelector(readSelector,readSelectorSettings, newConnections, actions);
-        writer = new WriteSelector(writeSelector, newWrites);
+        writer = new WriteSelector(writeSelector, newDirections);
         manager.addListener(new ConnectionManager.Listener() {
             @Override
             public void newConnection(final Connection connection) {

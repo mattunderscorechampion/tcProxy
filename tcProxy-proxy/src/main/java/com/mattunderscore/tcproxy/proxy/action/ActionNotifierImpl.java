@@ -34,9 +34,9 @@ import java.util.concurrent.BlockingQueue;
  * @author matt on 18/03/14.
  */
 public class ActionNotifierImpl implements ActionNotifier {
-    private final BlockingQueue<ActionQueue> queue;
+    private final BlockingQueue<Direction> queue;
 
-    public ActionNotifierImpl(final BlockingQueue<ActionQueue> queue) {
+    public ActionNotifierImpl(final BlockingQueue<Direction> queue) {
         this.queue = queue;
     }
 
@@ -47,7 +47,7 @@ public class ActionNotifierImpl implements ActionNotifier {
             final boolean hasData = actionQueue.hasData();
             actionQueue.add(action);
             if (!hasData) {
-                queue.add(actionQueue);
+                queue.add(direction);
             }
         }
     }

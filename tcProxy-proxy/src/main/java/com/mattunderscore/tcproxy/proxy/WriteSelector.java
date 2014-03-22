@@ -46,12 +46,12 @@ import java.util.concurrent.BlockingQueue;
 public class WriteSelector implements Runnable {
     public static final Logger LOG = LoggerFactory.getLogger("writer");
     private final IOSelector selector;
-    private final BlockingQueue<ActionQueue> newWrites;
+    private final BlockingQueue<Direction> newDirections;
     private volatile boolean running = false;
 
-    public WriteSelector(final IOSelector selector, final BlockingQueue<ActionQueue> newWrites) {
+    public WriteSelector(final IOSelector selector, final BlockingQueue<Direction> newDirections) {
         this.selector = selector;
-        this.newWrites = newWrites;
+        this.newDirections = newDirections;
     }
 
     @Override
@@ -78,14 +78,13 @@ public class WriteSelector implements Runnable {
     }
 
     private void registerKeys() {
-        final Set<ActionQueue> writes = new HashSet<>();
-        newWrites.drainTo(writes);
-        for (final ActionQueue newWrite : writes)
+        final Set<Direction> directions = new HashSet<>();
+        newDirections.drainTo(directions);
+        for (final Direction direction : directions)
         {
-            final Direction direction = newWrite.getDirection();
             final IOSocketChannel channel = direction.getTo();
             try {
-                channel.register(selector, IOSelectionKey.Op.WRITE, newWrite);
+                channel.register(selector, IOSelectionKey.Op.WRITE, direction);
             }
             catch (final ClosedChannelException e) {
                 LOG.debug("{} : The destination of {} is already closed", this, direction);
@@ -97,7 +96,8 @@ public class WriteSelector implements Runnable {
         final Set<IOSelectionKey> keys = selector.selectedKeys();
         for (final IOSelectionKey key : keys) {
             if (key.isWritable()) {
-                final ActionQueue write = (ActionQueue)key.attachment();
+                final Direction direction = (Direction)key.attachment();
+                final ActionQueue write = direction.getQueue();
 
                 try {
                     if (write.hasData()) {
@@ -109,7 +109,7 @@ public class WriteSelector implements Runnable {
                         key.cancel();
                         if (write.hasData()) {
                             LOG.debug("{} : Actions queued, requeue for key registration", this);
-                            newWrites.add(write);
+                            newDirections.add(direction);
                         }
                     }
                 }
