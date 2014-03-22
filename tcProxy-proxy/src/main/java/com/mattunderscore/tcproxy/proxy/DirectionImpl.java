@@ -26,6 +26,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy;
 
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.proxy.action.Action;
+import com.mattunderscore.tcproxy.proxy.action.ActionProcessor;
+import com.mattunderscore.tcproxy.proxy.action.ActionProcessorFactory;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueueImpl;
 import org.slf4j.Logger;
@@ -34,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
@@ -48,11 +52,12 @@ public class DirectionImpl implements Direction {
     private final ActionQueue queue;
     private final String stringValue;
     private final Set<Listener> listeners = new CopyOnWriteArraySet<>();
+    private final Stack<ActionProcessor> processorChain;
     private volatile int read;
     private volatile int written;
     private volatile boolean open;
 
-    public DirectionImpl(final IOSocketChannel from, final IOSocketChannel to, final ConnectionImpl connection, final int queueSize) {
+    public DirectionImpl(final IOSocketChannel from, final IOSocketChannel to, final ConnectionImpl connection, final int queueSize, final ActionProcessorFactory actionProcessorFactory) {
         this.from = from;
         this.to = to;
         this.connection = connection;
@@ -61,6 +66,8 @@ public class DirectionImpl implements Direction {
         this.written = 0;
         this.open = true;
         this.stringValue = asString();
+        processorChain = new Stack<>();
+        processorChain.push(actionProcessorFactory.create(this));
     }
 
     @Override
@@ -81,6 +88,29 @@ public class DirectionImpl implements Direction {
     @Override
     public ActionQueue getQueue() {
         return queue;
+    }
+
+    @Override
+    public ActionProcessor getProcessor() {
+        synchronized (processorChain) {
+            return processorChain.peek();
+        }
+    }
+
+    @Override
+    public void chainProcessor(final ActionProcessorFactory processorFactory) {
+        synchronized (processorChain) {
+            processorChain.push(processorFactory.create(this));
+        }
+    }
+
+    @Override
+    public void unchainProcessor() {
+        synchronized (processorChain) {
+            if (processorChain.size() > 1) {
+                processorChain.pop();
+            }
+        }
     }
 
     @Override

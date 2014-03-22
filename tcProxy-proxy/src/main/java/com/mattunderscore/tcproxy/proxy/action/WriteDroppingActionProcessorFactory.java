@@ -26,29 +26,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy.action;
 
 import com.mattunderscore.tcproxy.proxy.Direction;
-import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
-
-import java.util.concurrent.BlockingQueue;
 
 /**
- * @author matt on 18/03/14.
+ * @author matt on 22/03/14.
  */
-public class ActionNotifierImpl implements ActionNotifier {
-    private final BlockingQueue<Direction> queue;
-
-    public ActionNotifierImpl(final BlockingQueue<Direction> queue) {
-        this.queue = queue;
-    }
-
+public class WriteDroppingActionProcessorFactory implements ActionProcessorFactory {
     @Override
-    public void notify(final Direction direction, final Action action) {
-        final ActionQueue actionQueue = direction.getQueue();
-        synchronized (actionQueue) {
-            final boolean hasData = actionQueue.hasData();
-            actionQueue.add(action);
-            if (!hasData) {
-                queue.add(direction);
-            }
-        }
+    public ActionProcessor create(final Direction direction) {
+        return new WriteDroppingActionProcessor(direction.getProcessor());
     }
 }

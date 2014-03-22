@@ -28,8 +28,6 @@ package com.mattunderscore.tcproxy.proxy;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.proxy.action.Action;
-import com.mattunderscore.tcproxy.proxy.action.ActionNotifier;
 import com.mattunderscore.tcproxy.proxy.action.Close;
 import com.mattunderscore.tcproxy.proxy.action.Write;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
@@ -54,13 +52,11 @@ public class ReadSelector implements Runnable {
     private final IOSelector selector;
     private final ReadSelectorSettings settings;
     private final BlockingQueue<Connection> newConnections;
-    private final ActionNotifier actionNotifier;
 
-    public ReadSelector(final IOSelector selector, final ReadSelectorSettings settings, final BlockingQueue<Connection> newConnections, final ActionNotifier actionNotifier) {
+    public ReadSelector(final IOSelector selector, final ReadSelectorSettings settings, final BlockingQueue<Connection> newConnections) {
         this.selector = selector;
         this.settings = settings;
         this.newConnections = newConnections;
-        this.actionNotifier = actionNotifier;
     }
 
     public void stop() {
@@ -148,16 +144,12 @@ public class ReadSelector implements Runnable {
 
     void informOfData(final Direction direction, final ByteBuffer write) {
         LOG.trace("{} : Data read {} bytes", this, write.remaining());
-        informOfAction(direction, new Write(direction, write));
+        direction.getProcessor().process(new Write(direction, write));
     }
 
     void informOfClose(final Direction direction) {
         LOG.trace("{} : Read close", this);
-        informOfAction(direction, new Close(direction));
-    }
-
-    void informOfAction(final Direction direction, final Action action) {
-        actionNotifier.notify(direction, action);
+        direction.getProcessor().process(new Close(direction));
     }
 
     @Override

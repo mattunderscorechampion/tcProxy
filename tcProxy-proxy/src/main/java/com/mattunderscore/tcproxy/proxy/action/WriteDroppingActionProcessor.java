@@ -23,53 +23,23 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy;
-
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.proxy.action.ActionProcessor;
-import com.mattunderscore.tcproxy.proxy.action.ActionProcessorFactory;
-import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
+package com.mattunderscore.tcproxy.proxy.action;
 
 /**
- * A direction.
- * @author Matt Champion on 18/02/14.
+ * @author matt on 22/03/14.
  */
-public interface Direction {
+public class WriteDroppingActionProcessor implements ActionProcessor {
+    private final ActionProcessor processor;
 
-    IOSocketChannel getFrom();
+    public WriteDroppingActionProcessor(final ActionProcessor processor) {
+        this.processor = processor;
 
-    IOSocketChannel getTo();
+    }
 
-    Connection getConnection();
-
-    ActionQueue getQueue();
-
-    ActionProcessor getProcessor();
-
-    void chainProcessor(ActionProcessorFactory processorFactory);
-
-    void unchainProcessor();
-
-    int read();
-
-    int written();
-
-    int write(ByteBuffer data) throws IOException;
-
-    int read(ByteBuffer data) throws IOException;
-
-    void close() throws IOException;
-
-    void addListener(Listener listener);
-
-    interface Listener {
-        void dataRead(Direction direction, int bytesRead);
-
-        void dataWritten(Direction direction, int bytesWritten);
-
-        void closed(Direction direction);
+    @Override
+    public void process(final Action action) {
+        if (!(action instanceof Write)) {
+            processor.process(action);
+        }
     }
 }

@@ -28,6 +28,9 @@ package com.mattunderscore.tcProxy.gui;
 import com.mattunderscore.tcproxy.proxy.Connection;
 import com.mattunderscore.tcproxy.proxy.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.Direction;
+import com.mattunderscore.tcproxy.proxy.action.ActionProcessorFactory;
+import com.mattunderscore.tcproxy.proxy.action.WriteDroppingActionProcessor;
+import com.mattunderscore.tcproxy.proxy.action.WriteDroppingActionProcessorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.awt.VerticalBagLayout;
@@ -47,6 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public final class ConnectionsPanel extends JPanel {
     private static final Logger LOG = LoggerFactory.getLogger("gui");
+    private static final ActionProcessorFactory dropActionProcessorFactory = new WriteDroppingActionProcessorFactory();
     final Map<Connection, ConnectionPanel> connections = new HashMap<>();
     public ConnectionsPanel(final ConnectionManager manager) {
         setLayout(new VerticalBagLayout());
@@ -177,6 +181,35 @@ public final class ConnectionsPanel extends JPanel {
             add(new JLabel(address.toString()));
             add(read);
             add(written);
+            final JButton dropButton = new JButton("Drop writes");
+            final JButton restoreButton = new JButton("Restore writes");
+            restoreButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    destination.unchainProcessor();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            remove(restoreButton);
+                            add(dropButton);
+                        }
+                    });
+                }
+            });
+            dropButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(final ActionEvent e) {
+                    destination.chainProcessor(dropActionProcessorFactory);
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            remove(dropButton);
+                            add(restoreButton);
+                        }
+                    });
+                }
+            });
+            add(dropButton);
 
             final Direction.Listener readListener = new Direction.Listener() {
                 @Override

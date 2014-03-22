@@ -26,12 +26,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy.action;
 
 import com.mattunderscore.tcproxy.proxy.Direction;
-import com.mattunderscore.tcproxy.proxy.action.Action;
 
 /**
- * @author matt on 18/03/14.
+ * @author matt on 22/03/14.
  */
-public interface ActionNotifier {
-
-    void notify(Direction direction, Action action);
+public interface ActionProcessorFactory {
+    ActionProcessor create(Direction direction);
 }

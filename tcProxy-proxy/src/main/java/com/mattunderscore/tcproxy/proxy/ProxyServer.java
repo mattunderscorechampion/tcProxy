@@ -27,9 +27,7 @@ package com.mattunderscore.tcproxy.proxy;
 
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.impl.IOFactory;
-import com.mattunderscore.tcproxy.proxy.action.ActionNotifier;
-import com.mattunderscore.tcproxy.proxy.action.ActionNotifierImpl;
-import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
+import com.mattunderscore.tcproxy.proxy.action.DefaultActionProcessorFactory;
 import com.mattunderscore.tcproxy.proxy.settings.*;
 
 import java.io.IOException;
@@ -57,13 +55,12 @@ public class ProxyServer {
         final BlockingQueue<Connection> newConnections = new ArrayBlockingQueue<>(5000);
         final BlockingQueue<Direction> newDirections = new ArrayBlockingQueue<>(5000);
         final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
-        final ConnectionFactory connectionFactory = new ConnectionFactory(connectionSettings, manager);
+        final ConnectionFactory connectionFactory = new ConnectionFactory(connectionSettings, manager, new DefaultActionProcessorFactory(newDirections));
         final IOSelector readSelector = IOFactory.openSelector();
         final IOSelector writeSelector = IOFactory.openSelector();
-        final ActionNotifier actions = new ActionNotifierImpl(newDirections);
 
         acceptor = new Acceptor(acceptorSettings, inboundSocketSettings, connectionFactory, socketFactory);
-        proxy = new ReadSelector(readSelector,readSelectorSettings, newConnections, actions);
+        proxy = new ReadSelector(readSelector,readSelectorSettings, newConnections);
         writer = new WriteSelector(writeSelector, newDirections);
         manager.addListener(new ConnectionManager.Listener() {
             @Override

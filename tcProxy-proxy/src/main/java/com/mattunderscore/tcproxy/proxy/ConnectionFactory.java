@@ -26,6 +26,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy;
 
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.proxy.action.ActionProcessor;
+import com.mattunderscore.tcproxy.proxy.action.ActionProcessorFactory;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 
 /**
@@ -36,15 +38,17 @@ public class ConnectionFactory {
 
     private final ConnectionSettings settings;
     private final ConnectionManager manager;
+    private final ActionProcessorFactory processorFactory;
 
-    public ConnectionFactory(final ConnectionSettings settings, final ConnectionManager manager) {
+    public ConnectionFactory(final ConnectionSettings settings, final ConnectionManager manager, final ActionProcessorFactory processorFactory) {
 
         this.settings = settings;
         this.manager = manager;
+        this.processorFactory = processorFactory;
     }
 
     public Connection create(final IOSocketChannel clientSide, final IOSocketChannel serverSide) {
-        final Connection conn = new ConnectionImpl(manager, clientSide, serverSide, settings.getWriteQueueSize());
+        final Connection conn = new ConnectionImpl(manager, clientSide, serverSide, settings.getWriteQueueSize(), processorFactory);
         manager.register(conn);
         return conn;
     }
