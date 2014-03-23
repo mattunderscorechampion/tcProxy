@@ -29,11 +29,9 @@ import com.mattunderscore.tcproxy.proxy.Connection;
 import com.mattunderscore.tcproxy.proxy.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.Direction;
 import com.mattunderscore.tcproxy.proxy.action.ActionProcessorFactory;
-import com.mattunderscore.tcproxy.proxy.action.WriteDroppingActionProcessor;
 import com.mattunderscore.tcproxy.proxy.action.WriteDroppingActionProcessorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.awt.VerticalBagLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,7 +51,6 @@ public final class ConnectionsPanel extends JPanel {
     private static final ActionProcessorFactory dropActionProcessorFactory = new WriteDroppingActionProcessorFactory();
     final Map<Connection, ConnectionPanel> connections = new HashMap<>();
     public ConnectionsPanel(final ConnectionManager manager) {
-        setLayout(new VerticalBagLayout());
         manager.addListener(new ConnectionManager.Listener() {
             @Override
             public void newConnection(final Connection connection) {

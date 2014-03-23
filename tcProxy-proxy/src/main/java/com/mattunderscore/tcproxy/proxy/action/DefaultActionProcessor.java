@@ -47,7 +47,6 @@ public class DefaultActionProcessor implements ActionProcessor {
 
     @Override
     public void process(final Action action) {
-        final ActionQueue actionQueue = direction.getQueue();
         synchronized (actionQueue) {
             final boolean hasData = actionQueue.hasData();
             actionQueue.add(action);

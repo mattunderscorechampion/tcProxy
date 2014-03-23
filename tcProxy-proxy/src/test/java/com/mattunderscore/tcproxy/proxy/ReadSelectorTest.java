@@ -28,6 +28,8 @@ package com.mattunderscore.tcproxy.proxy;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.proxy.action.ActionProcessor;
+import com.mattunderscore.tcproxy.proxy.action.DefaultActionProcessor;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import org.junit.Before;
@@ -65,6 +67,7 @@ public class ReadSelectorTest {
     @Mock
     private ActionQueue queue;
 
+    private ActionProcessor processor;
     private ReadSelectorSettings settings;
     private BlockingQueue<Connection> newConnections;
     private BlockingQueue<Direction> newDirections;
@@ -84,6 +87,8 @@ public class ReadSelectorTest {
         when(direction.getFrom()).thenReturn(channel);
         when(direction.getTo()).thenReturn(channel);
         when(direction.getQueue()).thenReturn(queue);
+        processor = new DefaultActionProcessor(direction, newDirections);
+        when(direction.getProcessor()).thenReturn(processor);
 
         when(queue.getConnection()).thenReturn(connection);
         when(queue.getDirection()).thenReturn(direction);
