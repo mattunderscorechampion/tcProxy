@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Queue;
 
 /**
  * The acceptor.
@@ -56,7 +55,6 @@ public class Acceptor implements Runnable {
      * @param inboundSettings The inbound socket settings.
      * @param connectionFactory The connection factory.
      * @param factory The outbound socket factory.
-     * @param newConnections Queue for new connections.
      */
     public Acceptor(final AcceptorSettings settings,
                     final InboundSocketSettings inboundSettings,
@@ -81,13 +79,22 @@ public class Acceptor implements Runnable {
         }
     }
 
+    /**
+     * Open a server socket that listens for new connections.
+     * @return
+     * @throws IOException
+     */
     IOServerSocketChannel openServerSocket() throws IOException {
-        final IOServerSocketChannel serverSocket = IOFactory.openServerSocket();;
+        final IOServerSocketChannel serverSocket = IOFactory.openServerSocket();
         serverSocket.setOption(IOSocketOption.RECEIVE_BUFFER, inboundSettings.getReceiveBufferSize());
         serverSocket.bind(new InetSocketAddress(settings.getPort()));
         return serverSocket;
     }
 
+    /**
+     * Loop that accepts new inbound connections.
+     * @param channel
+     */
     void mainLoop(final IOServerSocketChannel channel) {
         while (running) {
             try {
@@ -107,9 +114,6 @@ public class Acceptor implements Runnable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder(16);
-        sb.append("Acceptor - ");
-        sb.append(settings.getPort());
-        return sb.toString();
+        return "Acceptor - " + settings.getPort();
     }
 }

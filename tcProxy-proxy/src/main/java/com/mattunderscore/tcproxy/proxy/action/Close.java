@@ -59,8 +59,4 @@ public class Close implements Action {
         return written;
     }
 
-    @Override
-    public int dataPending() {
-        return 0;
-    }
 }

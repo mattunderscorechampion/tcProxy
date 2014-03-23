@@ -75,6 +75,9 @@ public interface Direction {
 
     void addListener(Listener listener);
 
+    /**
+     * Listener for direction events.
+     */
     interface Listener {
         void dataRead(Direction direction, int bytesRead);
 

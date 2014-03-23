@@ -37,5 +37,4 @@ public interface Action {
 
     boolean writeComplete();
 
-    int dataPending();
 }

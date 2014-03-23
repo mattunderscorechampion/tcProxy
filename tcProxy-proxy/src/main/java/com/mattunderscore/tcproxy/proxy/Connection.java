@@ -32,9 +32,19 @@ import java.io.IOException;
  * @author Matt Champion on 21/02/14.
  */
 public interface Connection {
+    /**
+     * @return The direction that reads from the client and writes to the server.
+     */
     Direction clientToServer();
 
+    /**
+     * @return The direction that reads from the server and writes to the client.
+     */
     Direction serverToClient();
 
+    /**
+     * Close the connection.
+     * @throws IOException
+     */
     void close() throws IOException;
 }
