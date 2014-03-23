@@ -23,27 +23,54 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy.action;
+package com.mattunderscore.tcproxy.proxy.action.processor;
+
+import com.mattunderscore.tcproxy.proxy.action.Action;
+
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Action processor that drops all write actions. Closed actions are passed on to the next processor in the chain,
+ * ActionProcessor that delays calling the next processor in the chain.
  * @author Matt Champion on 22/03/14.
  */
-public class WriteDroppingActionProcessor implements ActionProcessor {
+public class DelayingActionProcessor implements ActionProcessor {
     private final ActionProcessor processor;
+    private final ScheduledExecutorService executorService;
+    private final long delay;
+    private final TimeUnit delayUnits;
 
     /**
-     * Create a write dropping action processor.
-     * @param processor The next processor in the chain
+     *
+     * @param processor The next processor in the chain.
+     * @param executorService The executor that is used to call the next action processor after the delay
+     * @param delay The magnitude of the delay
+     * @param delayUnits The unit of the delay
      */
-    public WriteDroppingActionProcessor(final ActionProcessor processor) {
+    public DelayingActionProcessor(ActionProcessor processor, ScheduledExecutorService executorService, long delay, TimeUnit delayUnits) {
         this.processor = processor;
-
+        this.executorService = executorService;
+        this.delay = delay;
+        this.delayUnits = delayUnits;
     }
 
     @Override
     public void process(final Action action) {
-        if (!(action instanceof Write)) {
+        executorService.schedule(new DelayedTask(action), delay, delayUnits);
+    }
+
+    /**
+     * Task for calling the next processor.
+     */
+    private final class DelayedTask implements Runnable {
+        private final Action action;
+
+        public DelayedTask(final Action action) {
+            this.action = action;
+        }
+
+        @Override
+        public void run() {
             processor.process(action);
         }
     }

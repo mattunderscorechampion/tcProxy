@@ -28,8 +28,8 @@ package com.mattunderscore.tcProxy.gui;
 import com.mattunderscore.tcproxy.proxy.Connection;
 import com.mattunderscore.tcproxy.proxy.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.Direction;
-import com.mattunderscore.tcproxy.proxy.action.ActionProcessorFactory;
-import com.mattunderscore.tcproxy.proxy.action.WriteDroppingActionProcessorFactory;
+import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
+import com.mattunderscore.tcproxy.proxy.action.processor.WriteDroppingActionProcessorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

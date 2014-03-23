@@ -23,20 +23,25 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy.action;
+package com.mattunderscore.tcproxy.proxy.action.processor;
 
 import com.mattunderscore.tcproxy.proxy.Direction;
 
+import java.util.Queue;
+
 /**
- * Factory for {@link com.mattunderscore.tcproxy.proxy.action.ActionProcessor} object. These objects are intended to be
- * for individual {@link Direction}s.
+ * Factory for default action processors.
  * @author Matt Champion on 22/03/14.
  */
-public interface ActionProcessorFactory {
-    /**
-     * Create a new {@link ActionProcessor} for a Direction.
-     * @param direction The Direction
-     * @return The ActionProcessor
-     */
-    ActionProcessor create(Direction direction);
+public class DefaultActionProcessorFactory implements ActionProcessorFactory {
+    private final Queue<Direction> directions;
+
+    public DefaultActionProcessorFactory(final Queue<Direction> directions) {
+        this.directions = directions;
+    }
+
+    @Override
+    public ActionProcessor create(final Direction direction) {
+        return new DefaultActionProcessor(direction, directions);
+    }
 }

@@ -27,7 +27,7 @@ package com.mattunderscore.tcproxy.proxy;
 
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.impl.IOFactory;
-import com.mattunderscore.tcproxy.proxy.action.DefaultActionProcessorFactory;
+import com.mattunderscore.tcproxy.proxy.action.processor.DefaultActionProcessorFactory;
 import com.mattunderscore.tcproxy.proxy.settings.*;
 
 import java.io.IOException;

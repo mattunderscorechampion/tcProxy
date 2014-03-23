@@ -23,53 +23,17 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy.action;
+package com.mattunderscore.tcproxy.proxy.action.processor;
 
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import com.mattunderscore.tcproxy.proxy.Direction;
 
 /**
- * ActionProcessor that delays calling the next processor in the chain.
+ * Factory for write dropping processors.
  * @author Matt Champion on 22/03/14.
  */
-public class DelayingActionProcessor implements ActionProcessor {
-    private final ActionProcessor processor;
-    private final ScheduledExecutorService executorService;
-    private final long delay;
-    private final TimeUnit delayUnits;
-
-    /**
-     *
-     * @param processor The next processor in the chain.
-     * @param executorService The executor that is used to call the next action processor after the delay
-     * @param delay The magnitude of the delay
-     * @param delayUnits The unit of the delay
-     */
-    public DelayingActionProcessor(ActionProcessor processor, ScheduledExecutorService executorService, long delay, TimeUnit delayUnits) {
-        this.processor = processor;
-        this.executorService = executorService;
-        this.delay = delay;
-        this.delayUnits = delayUnits;
-    }
-
+public class WriteDroppingActionProcessorFactory implements ActionProcessorFactory {
     @Override
-    public void process(final Action action) {
-        executorService.schedule(new DelayedTask(action), delay, delayUnits);
-    }
-
-    /**
-     * Task for calling the next processor.
-     */
-    private final class DelayedTask implements Runnable {
-        private final Action action;
-
-        public DelayedTask(final Action action) {
-            this.action = action;
-        }
-
-        @Override
-        public void run() {
-            processor.process(action);
-        }
+    public ActionProcessor create(final Direction direction) {
+        return new WriteDroppingActionProcessor(direction.getProcessor());
     }
 }

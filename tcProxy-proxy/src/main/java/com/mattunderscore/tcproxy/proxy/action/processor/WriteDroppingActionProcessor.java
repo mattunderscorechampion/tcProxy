@@ -23,17 +23,31 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy.action;
+package com.mattunderscore.tcproxy.proxy.action.processor;
+
+import com.mattunderscore.tcproxy.proxy.action.Action;
+import com.mattunderscore.tcproxy.proxy.action.Write;
 
 /**
- * Processor for actions. Allows the handling of an action to be abstracted. An ActionProcessor provides the action
- * handling for a given direction.
+ * Action processor that drops all write actions. Closed actions are passed on to the next processor in the chain,
  * @author Matt Champion on 22/03/14.
  */
-public interface ActionProcessor {
+public class WriteDroppingActionProcessor implements ActionProcessor {
+    private final ActionProcessor processor;
+
     /**
-     * Process an action.
-     * @param action The action to process
+     * Create a write dropping action processor.
+     * @param processor The next processor in the chain
      */
-    void process(Action action);
+    public WriteDroppingActionProcessor(final ActionProcessor processor) {
+        this.processor = processor;
+
+    }
+
+    @Override
+    public void process(final Action action) {
+        if (!(action instanceof Write)) {
+            processor.process(action);
+        }
+    }
 }
