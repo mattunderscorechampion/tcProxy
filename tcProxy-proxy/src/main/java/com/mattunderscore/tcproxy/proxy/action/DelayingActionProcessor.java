@@ -29,7 +29,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author matt on 22/03/14.
+ * ActionProcessor that delays calling the next processor in the chain.
+ * @author Matt Champion on 22/03/14.
  */
 public class DelayingActionProcessor implements ActionProcessor {
     private final ActionProcessor processor;
@@ -37,8 +38,14 @@ public class DelayingActionProcessor implements ActionProcessor {
     private final long delay;
     private final TimeUnit delayUnits;
 
+    /**
+     *
+     * @param processor The next processor in the chain.
+     * @param executorService The executor that is used to call the next action processor after the delay
+     * @param delay The magnitude of the delay
+     * @param delayUnits The unit of the delay
+     */
     public DelayingActionProcessor(ActionProcessor processor, ScheduledExecutorService executorService, long delay, TimeUnit delayUnits) {
-
         this.processor = processor;
         this.executorService = executorService;
         this.delay = delay;
@@ -50,6 +57,9 @@ public class DelayingActionProcessor implements ActionProcessor {
         executorService.schedule(new DelayedTask(action), delay, delayUnits);
     }
 
+    /**
+     * Task for calling the next processor.
+     */
     private final class DelayedTask implements Runnable {
         private final Action action;
 

@@ -30,7 +30,8 @@ import com.mattunderscore.tcproxy.proxy.Direction;
 import java.util.Queue;
 
 /**
- * @author matt on 22/03/14.
+ * Factory for default action processors.
+ * @author Matt Champion on 22/03/14.
  */
 public class DefaultActionProcessorFactory implements ActionProcessorFactory {
     private final Queue<Direction> directions;

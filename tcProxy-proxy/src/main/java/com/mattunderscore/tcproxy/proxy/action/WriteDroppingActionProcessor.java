@@ -26,11 +26,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy.action;
 
 /**
- * @author matt on 22/03/14.
+ * Action processor that drops all write actions. Closed actions are passed on to the next processor in the chain,
+ * @author Matt Champion on 22/03/14.
  */
 public class WriteDroppingActionProcessor implements ActionProcessor {
     private final ActionProcessor processor;
 
+    /**
+     * Create a write dropping action processor.
+     * @param processor The next processor in the chain
+     */
     public WriteDroppingActionProcessor(final ActionProcessor processor) {
         this.processor = processor;
 

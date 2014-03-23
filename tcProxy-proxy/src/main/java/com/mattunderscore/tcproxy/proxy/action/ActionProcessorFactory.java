@@ -28,8 +28,15 @@ package com.mattunderscore.tcproxy.proxy.action;
 import com.mattunderscore.tcproxy.proxy.Direction;
 
 /**
- * @author matt on 22/03/14.
+ * Factory for {@link com.mattunderscore.tcproxy.proxy.action.ActionProcessor} object. These objects are intended to be
+ * for individual {@link Direction}s.
+ * @author Matt Champion on 22/03/14.
  */
 public interface ActionProcessorFactory {
+    /**
+     * Create a new {@link ActionProcessor} for a Direction.
+     * @param direction The Direction
+     * @return The ActionProcessor
+     */
     ActionProcessor create(Direction direction);
 }

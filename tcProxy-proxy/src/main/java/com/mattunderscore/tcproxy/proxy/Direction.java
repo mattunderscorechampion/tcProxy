@@ -47,10 +47,20 @@ public interface Direction {
 
     ActionQueue getQueue();
 
+    /**
+     * @return The first action processor in the chain to call.
+     */
     ActionProcessor getProcessor();
 
+    /**
+     * Chain a new action processor.
+     * @param processorFactory Factory for the action processor,
+     */
     void chainProcessor(ActionProcessorFactory processorFactory);
 
+    /**
+     * Removes the last chained action processor.
+     */
     void unchainProcessor();
 
     int read();

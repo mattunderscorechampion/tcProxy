@@ -32,14 +32,21 @@ import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * @author matt on 22/03/14.
+ * ActionProcessor that puts the action on the directions action queue and the direction on the new direction queue if
+ * the action queue is empty.
+ * @author Matt Champion on 22/03/14.
  */
 public class DefaultActionProcessor implements ActionProcessor {
     private final Direction direction;
     private final ActionQueue actionQueue;
     private final Queue<Direction> directions;
 
-    public DefaultActionProcessor(Direction direction, Queue<Direction> directions) {
+    /**
+     * Constructor for the default behaviour.
+     * @param direction The direction the processor is for.
+     * @param directions The queue of new directions.
+     */
+    public DefaultActionProcessor(final Direction direction, final Queue<Direction> directions) {
         this.direction = direction;
         this.actionQueue = direction.getQueue();
         this.directions = directions;

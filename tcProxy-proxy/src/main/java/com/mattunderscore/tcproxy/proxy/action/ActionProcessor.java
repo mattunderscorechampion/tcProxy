@@ -26,8 +26,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy.action;
 
 /**
- * @author matt on 22/03/14.
+ * Processor for actions. Allows the handling of an action to be abstracted. An ActionProcessor provides the action
+ * handling for a given direction.
+ * @author Matt Champion on 22/03/14.
  */
 public interface ActionProcessor {
+    /**
+     * Process an action.
+     * @param action The action to process
+     */
     void process(Action action);
 }
