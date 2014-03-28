@@ -34,7 +34,7 @@ import java.nio.channels.SelectionKey;
  * @author Matt Champion on 12/03/14.
  */
 final class IOSelectionKeyImpl implements IOSelectionKey {
-    private final SelectionKey keyDelegate;
+    final SelectionKey keyDelegate;
 
     IOSelectionKeyImpl(final SelectionKey keyDelegate) {
         this.keyDelegate = keyDelegate;
@@ -63,5 +63,21 @@ final class IOSelectionKeyImpl implements IOSelectionKey {
     @Override
     public Object attachment() {
         return keyDelegate.attachment();
+    }
+
+    @Override
+    public int hashCode() {
+        return keyDelegate.hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o != null && o instanceof IOSelectionKeyImpl) {
+            final IOSelectionKeyImpl key = (IOSelectionKeyImpl)o;
+            return keyDelegate.equals(key.keyDelegate);
+        }
+        else {
+            return false;
+        }
     }
 }

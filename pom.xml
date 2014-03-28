@@ -14,6 +14,7 @@
         <module>tcProxy-proxy</module>
         <module>tcProxy-gui</module>
         <module>tcProxy-io</module>
+        <module>tcProxy-cli</module>
     </modules>
 
     <build>

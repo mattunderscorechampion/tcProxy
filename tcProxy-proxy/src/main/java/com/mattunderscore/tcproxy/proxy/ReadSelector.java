@@ -126,7 +126,7 @@ public class ReadSelector implements Runnable {
                             informOfClose(direction);
                             final ConnectionImpl conn = (ConnectionImpl) direction.getConnection();
                             final Direction otherDirection = conn.otherDirection(direction);
-                            LOG.info("{} : Closed {} ", this, otherDirection);
+                            LOG.debug("{} : Closed {} ", this, otherDirection);
                             otherDirection.close();
                         }
                     }
@@ -143,12 +143,10 @@ public class ReadSelector implements Runnable {
     }
 
     void informOfData(final Direction direction, final ByteBuffer write) {
-        LOG.trace("{} : Data read {} bytes", this, write.remaining());
         direction.getProcessor().process(new Write(direction, write));
     }
 
     void informOfClose(final Direction direction) {
-        LOG.trace("{} : Read close", this);
         direction.getProcessor().process(new Close(direction));
     }
 

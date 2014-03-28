@@ -53,11 +53,6 @@ final class IOSelectorImpl implements IOSelector {
 
     @Override
     public Set<IOSelectionKey> selectedKeys() {
-        final Set<SelectionKey> keys = selectorDelegate.selectedKeys();
-        final Set<IOSelectionKey> ioKeys = new HashSet<>();
-        for (final SelectionKey key : keys) {
-            ioKeys.add(new IOSelectionKeyImpl(key));
-        }
-        return Collections.unmodifiableSet(ioKeys);
+        return new IOSelectionKeyImplSet(selectorDelegate.selectedKeys());
     }
 }

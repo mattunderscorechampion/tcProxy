@@ -38,12 +38,13 @@ import java.nio.ByteBuffer;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Implementation of {@link com.mattunderscore.tcproxy.proxy.Direction}.
  * @author Matt Champion on 19/02/14.
  */
-public class DirectionImpl implements Direction {
+public final class DirectionImpl implements Direction {
     private static final Logger LOG = LoggerFactory.getLogger("direction");
     private final IOSocketChannel from;
     private final IOSocketChannel to;
@@ -52,6 +53,7 @@ public class DirectionImpl implements Direction {
     private final String stringValue;
     private final Set<Listener> listeners = new CopyOnWriteArraySet<>();
     private final Stack<ActionProcessor> processorChain;
+    private final ReentrantReadWriteLock chainLock;
     private volatile int read;
     private volatile int written;
     private volatile boolean open;
@@ -60,13 +62,14 @@ public class DirectionImpl implements Direction {
         this.from = from;
         this.to = to;
         this.connection = connection;
-        this.queue = new ActionQueueImpl(this, connection, queueSize);
-        this.read = 0;
-        this.written = 0;
-        this.open = true;
-        this.stringValue = asString();
+        queue = new ActionQueueImpl(this, connection, queueSize);
+        read = 0;
+        written = 0;
+        open = true;
+        stringValue = asString();
         processorChain = new Stack<>();
         processorChain.push(actionProcessorFactory.create(this));
+        chainLock = new ReentrantReadWriteLock();
     }
 
     @Override
@@ -91,24 +94,36 @@ public class DirectionImpl implements Direction {
 
     @Override
     public ActionProcessor getProcessor() {
-        synchronized (processorChain) {
+        chainLock.readLock().lock();
+        try {
             return processorChain.peek();
+        }
+        finally {
+            chainLock.readLock().unlock();
         }
     }
 
     @Override
     public void chainProcessor(final ActionProcessorFactory processorFactory) {
-        synchronized (processorChain) {
+        chainLock.writeLock().lock();
+        try {
             processorChain.push(processorFactory.create(this));
+        }
+        finally {
+            chainLock.writeLock().unlock();
         }
     }
 
     @Override
     public void unchainProcessor() {
-        synchronized (processorChain) {
+        chainLock.writeLock().lock();
+        try {
             if (processorChain.size() > 1) {
                 processorChain.pop();
             }
+        }
+        finally {
+            chainLock.writeLock().unlock();
         }
     }
 
