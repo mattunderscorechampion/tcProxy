@@ -62,23 +62,27 @@ public final class ProxyServerMain {
                 @Override
                 public void newConnection(final Connection connection) {
                     LOG.info("New connection");
-                    tasks.put(connection, executor.scheduleAtFixedRate(new Runnable() {
-                        @Override
-                        public void run() {
-                            final Direction clientToServer = connection.clientToServer();
-                            final Direction serverToClient = connection.serverToClient();
-                            LOG.info(String.format("Read %d bytes from %s", clientToServer.read(), clientToServer.getFrom()));
-                            LOG.info(String.format("Wrote %d bytes to %s %d ops queued", clientToServer.written(), clientToServer.getTo(), clientToServer.getQueue().opsPending()));
-                            LOG.info(String.format("Read %d bytes from %s", serverToClient.read(), serverToClient.getFrom()));
-                            LOG.info(String.format("Wrote %d bytes to %s %d ops queued", serverToClient.written(), serverToClient.getTo(), serverToClient.getQueue().opsPending()));
-                        }
-                    }, 1, 5, TimeUnit.SECONDS));
+                    if (LOG.isInfoEnabled()) {
+                        tasks.put(connection, executor.scheduleAtFixedRate(new Runnable() {
+                            @Override
+                            public void run() {
+                                final Direction clientToServer = connection.clientToServer();
+                                final Direction serverToClient = connection.serverToClient();
+                                LOG.info(String.format("Read %d bytes from %s", clientToServer.read(), clientToServer.getFrom()));
+                                LOG.info(String.format("Wrote %d bytes to %s %d ops queued", clientToServer.written(), clientToServer.getTo(), clientToServer.getQueue().opsPending()));
+                                LOG.info(String.format("Read %d bytes from %s", serverToClient.read(), serverToClient.getFrom()));
+                                LOG.info(String.format("Wrote %d bytes to %s %d ops queued", serverToClient.written(), serverToClient.getTo(), serverToClient.getQueue().opsPending()));
+                            }
+                        }, 1, 5, TimeUnit.SECONDS));
+                    }
                 }
 
                 @Override
                 public void closedConnection(final Connection connection) {
                     final Future<?> task = tasks.get(connection);
-                    task.cancel(true);
+                    if (task != null) {
+                        task.cancel(true);
+                    }
                     LOG.info("Connection closed");
                     final Direction clientToServer = connection.clientToServer();
                     final Direction serverToClient = connection.serverToClient();
