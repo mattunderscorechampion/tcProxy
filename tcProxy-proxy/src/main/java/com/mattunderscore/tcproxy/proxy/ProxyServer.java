@@ -42,9 +42,6 @@ public class ProxyServer {
     private final Acceptor acceptor;
     private final WriteSelector writer;
     private final ReadSelector proxy;
-    private Thread t0;
-    private Thread t1;
-    private Thread t2;
 
     public ProxyServer(final AcceptorSettings acceptorSettings,
                        final ConnectionSettings connectionSettings,
@@ -75,32 +72,35 @@ public class ProxyServer {
     }
 
     public void start() {
-        t0 = new Thread(acceptor);
-        t1 = new Thread(proxy);
-        t2 = new Thread(writer);
-        t0.setDaemon(false);
-        t1.setDaemon(false);
-        t2.setDaemon(false);
-        t0.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+        final Thread acceptorThread = new Thread(acceptor);
+        final Thread readerThread = new Thread(proxy);
+        final Thread writerThread = new Thread(writer);
+        acceptorThread.setName("tcProxy - Acceptor Thread");
+        readerThread.setName("tcProxy - Reader Thread");
+        writerThread.setName("tcProxy - Writer Thread");
+        acceptorThread.setDaemon(false);
+        readerThread.setDaemon(false);
+        writerThread.setDaemon(false);
+        acceptorThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
                 e.printStackTrace();
             }
         });
-        t1.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+        readerThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
                 e.printStackTrace();
             }
         });
-        t2.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+        writerThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
                 e.printStackTrace();
             }
         });
-        t0.start();
-        t1.start();
-        t2.start();
+        acceptorThread.start();
+        readerThread.start();
+        writerThread.start();
     }
 }
