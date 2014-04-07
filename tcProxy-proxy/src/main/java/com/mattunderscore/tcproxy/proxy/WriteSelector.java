@@ -107,9 +107,11 @@ public class WriteSelector implements Runnable {
                     else {
                         LOG.debug("{} : Finished queued actions, cancel key", this);
                         key.cancel();
-                        if (write.hasData()) {
-                            LOG.debug("{} : Actions queued, requeue for key registration", this);
-                            newDirections.add(direction);
+                        synchronized (write) {
+                            if (write.hasData()) {
+                                LOG.debug("{} : Actions queued, requeue for key registration", this);
+                                newDirections.add(direction);
+                            }
                         }
                     }
                 }
