@@ -53,10 +53,10 @@ public class ProxyServer {
                        final ReadSelectorSettings readSelectorSettings,
                        final ConnectionManager manager) throws IOException {
         final BlockingQueue<Connection> newConnections = new ArrayBlockingQueue<>(5000);
-        final BlockingQueue<Direction> newDirections = new ArrayBlockingQueue<>(5000);
+        final BlockingQueue<DirectionAndConnection> newDirections = new ArrayBlockingQueue<>(5000);
         final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
         final ConnectionFactory connectionFactory =
-                new ConnectionFactory(connectionSettings, manager, new DefaultActionProcessorFactory(newDirections));
+                new ConnectionFactory(connectionSettings, manager, newDirections);
         final IOSelector readSelector = IOFactory.openSelector();
         final IOSelector writeSelector = IOFactory.openSelector();
 

@@ -48,7 +48,6 @@ public final class DirectionImpl implements Direction {
     private static final Logger LOG = LoggerFactory.getLogger("direction");
     private final IOSocketChannel from;
     private final IOSocketChannel to;
-    private final ConnectionImpl connection;
     private final ActionQueue queue;
     private final String stringValue;
     private final Set<Listener> listeners = new CopyOnWriteArraySet<>();
@@ -58,18 +57,15 @@ public final class DirectionImpl implements Direction {
     private volatile int written;
     private volatile boolean open;
 
-    public DirectionImpl(final IOSocketChannel from, final IOSocketChannel to, final ConnectionImpl connection,
-                         final int queueSize, final ActionProcessorFactory actionProcessorFactory, int batchSize) {
+    public DirectionImpl(final IOSocketChannel from, final IOSocketChannel to, final ActionQueue queue) {
         this.from = from;
         this.to = to;
-        this.connection = connection;
-        queue = new ActionQueueImpl(queueSize, batchSize);
+        this.queue = queue;
         read = 0;
         written = 0;
         open = true;
         stringValue = asString();
         processorChain = new Stack<>();
-        processorChain.push(actionProcessorFactory.create(this));
         chainLock = new ReentrantReadWriteLock();
     }
 
@@ -81,11 +77,6 @@ public final class DirectionImpl implements Direction {
     @Override
     public IOSocketChannel getTo() {
         return to;
-    }
-
-    @Override
-    public Connection getConnection() {
-        return connection;
     }
 
     @Override
@@ -168,7 +159,7 @@ public final class DirectionImpl implements Direction {
             LOG.info("{} : Closed", this);
             to.close();
             open = false;
-            connection.partClosed();
+            //connection.partClosed();
             for (final Listener listener : listeners) {
                 listener.closed(this);
             }

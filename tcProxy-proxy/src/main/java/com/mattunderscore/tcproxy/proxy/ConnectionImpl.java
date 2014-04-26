@@ -40,12 +40,10 @@ public class ConnectionImpl implements Connection {
     private final ConnectionManager manager;
     private volatile boolean partClosed;
 
-    public ConnectionImpl(final ConnectionManager manager, final IOSocketChannel clientSide,
-                          final IOSocketChannel serverSide, final int queueSize,
-                          final ActionProcessorFactory actionProcessorFactory, int batchSize) {
+    public ConnectionImpl(final ConnectionManager manager, final Direction clientToServer, final Direction serverToClient) {
         this.manager = manager;
-        clientToServer = new DirectionImpl(clientSide, serverSide, this, queueSize, actionProcessorFactory, batchSize);
-        serverToClient = new DirectionImpl(serverSide, clientSide, this, queueSize, actionProcessorFactory, batchSize);
+        this.clientToServer = clientToServer;
+        this.serverToClient = serverToClient;
         partClosed = false;
     }
 

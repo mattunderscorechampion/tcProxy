@@ -46,10 +46,10 @@ import java.util.concurrent.BlockingQueue;
 public class WriteSelector implements Runnable {
     public static final Logger LOG = LoggerFactory.getLogger("writer");
     private final IOSelector selector;
-    private final BlockingQueue<Direction> newDirections;
+    private final BlockingQueue<DirectionAndConnection> newDirections;
     private volatile boolean running = false;
 
-    public WriteSelector(final IOSelector selector, final BlockingQueue<Direction> newDirections) {
+    public WriteSelector(final IOSelector selector, final BlockingQueue<DirectionAndConnection> newDirections) {
         this.selector = selector;
         this.newDirections = newDirections;
     }
@@ -77,13 +77,14 @@ public class WriteSelector implements Runnable {
     }
 
     private void registerKeys() {
-        final Set<Direction> directions = new HashSet<>();
+        final Set<DirectionAndConnection> directions = new HashSet<>();
         newDirections.drainTo(directions);
-        for (final Direction direction : directions)
+        for (final DirectionAndConnection dc : directions)
         {
+            final Direction direction = dc.getDirection();
             final IOSocketChannel channel = direction.getTo();
             try {
-                channel.register(selector, IOSelectionKey.Op.WRITE, direction);
+                channel.register(selector, IOSelectionKey.Op.WRITE, dc);
             }
             catch (final ClosedChannelException e) {
                 LOG.debug("{} : The destination of {} is already closed", this, direction);
@@ -95,7 +96,8 @@ public class WriteSelector implements Runnable {
         final Set<IOSelectionKey> keys = selector.selectedKeys();
         for (final IOSelectionKey key : keys) {
             if (key.isWritable()) {
-                final Direction direction = (Direction) key.attachment();
+                final DirectionAndConnection dc = (DirectionAndConnection) key.attachment();
+                final Direction direction = dc.getDirection();
                 final ActionQueue write = direction.getQueue();
 
                 synchronized (write) {
@@ -112,7 +114,7 @@ public class WriteSelector implements Runnable {
                         LOG.warn("{} : Error writing", this, e);
                         key.cancel();
                         try {
-                            direction.getConnection().close();
+                            dc.getConnection().close();
                         } catch (IOException e1) {
                             LOG.warn("{} : Error closing connection", this, e);
                         }

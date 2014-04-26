@@ -27,7 +27,12 @@ package com.mattunderscore.tcproxy.proxy;
 
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
+import com.mattunderscore.tcproxy.proxy.action.processor.DefaultActionProcessorFactory;
+import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
+import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueueImpl;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
+
+import java.util.Queue;
 
 /**
  * Factory for connections.
@@ -37,20 +42,26 @@ public class ConnectionFactory {
 
     private final ConnectionSettings settings;
     private final ConnectionManager manager;
-    private final ActionProcessorFactory processorFactory;
+    private final Queue<DirectionAndConnection> directions;
 
     public ConnectionFactory(final ConnectionSettings settings, final ConnectionManager manager,
-                             final ActionProcessorFactory processorFactory) {
+                             final Queue<DirectionAndConnection> directions) {
 
         this.settings = settings;
         this.manager = manager;
-        this.processorFactory = processorFactory;
+        this.directions = directions;
     }
 
     public Connection create(final IOSocketChannel clientSide, final IOSocketChannel serverSide) {
-        final Connection conn = new ConnectionImpl(manager, clientSide, serverSide, settings.getWriteQueueSize(),
-                processorFactory, settings.getBatchSize());
+        final ActionQueue actionQueue0 = new ActionQueueImpl(settings.getWriteQueueSize(), settings.getBatchSize());
+        final ActionQueue actionQueue1 = new ActionQueueImpl(settings.getWriteQueueSize(), settings.getBatchSize());
+        final Direction direction0 = new DirectionImpl(clientSide, serverSide, actionQueue0);
+        final Direction direction1 = new DirectionImpl(serverSide, clientSide, actionQueue1);
+        final Connection conn = new ConnectionImpl(manager, direction0, direction1);
+        final ActionProcessorFactory processorFactory = new DefaultActionProcessorFactory(conn, directions);
         manager.register(conn);
+        direction0.chainProcessor(processorFactory);
+        direction1.chainProcessor(processorFactory);
         return conn;
     }
 }

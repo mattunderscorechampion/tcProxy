@@ -43,8 +43,6 @@ public interface Direction {
 
     IOSocketChannel getTo();
 
-    Connection getConnection();
-
     ActionQueue getQueue();
 
     /**

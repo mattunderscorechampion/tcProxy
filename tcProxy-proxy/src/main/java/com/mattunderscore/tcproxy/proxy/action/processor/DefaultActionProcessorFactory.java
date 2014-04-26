@@ -25,7 +25,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.action.processor;
 
+import com.mattunderscore.tcproxy.proxy.Connection;
 import com.mattunderscore.tcproxy.proxy.Direction;
+import com.mattunderscore.tcproxy.proxy.DirectionAndConnection;
 
 import java.util.Queue;
 
@@ -34,14 +36,16 @@ import java.util.Queue;
  * @author Matt Champion on 22/03/14.
  */
 public class DefaultActionProcessorFactory implements ActionProcessorFactory {
-    private final Queue<Direction> directions;
+    private final Connection connection;
+    private final Queue<DirectionAndConnection> directions;
 
-    public DefaultActionProcessorFactory(final Queue<Direction> directions) {
+    public DefaultActionProcessorFactory(final Connection connection, final Queue<DirectionAndConnection> directions) {
+        this.connection = connection;
         this.directions = directions;
     }
 
     @Override
     public ActionProcessor create(final Direction direction) {
-        return new DefaultActionProcessor(direction, directions);
+        return new DefaultActionProcessor(new DirectionAndConnection(direction, connection), directions);
     }
 }

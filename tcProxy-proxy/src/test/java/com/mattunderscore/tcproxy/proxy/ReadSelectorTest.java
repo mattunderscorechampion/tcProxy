@@ -67,10 +67,11 @@ public class ReadSelectorTest {
     @Mock
     private ActionQueue queue;
 
+    private DirectionAndConnection dc;
     private ActionProcessor processor;
     private ReadSelectorSettings settings;
     private BlockingQueue<Connection> newConnections;
-    private BlockingQueue<Direction> newDirections;
+    private BlockingQueue<DirectionAndConnection> newDirections;
     private ReadSelector readSelector;
 
     @Before
@@ -81,33 +82,35 @@ public class ReadSelectorTest {
         settings = new ReadSelectorSettings(16);
         readSelector = new ReadSelector(selector, settings, newConnections);
 
+        dc = new DirectionAndConnection(direction, connection);
+
         when(connection.clientToServer()).thenReturn(direction);
         when(connection.serverToClient()).thenReturn(direction);
 
         when(direction.getFrom()).thenReturn(channel);
         when(direction.getTo()).thenReturn(channel);
         when(direction.getQueue()).thenReturn(queue);
-        processor = new DefaultActionProcessor(direction, newDirections);
+        processor = new DefaultActionProcessor(dc, newDirections);
         when(direction.getProcessor()).thenReturn(processor);
 
-        when(key.attachment()).thenReturn(direction);
+        when(key.attachment()).thenReturn(dc);
     }
 
     @Test
     public void registerKeys0() throws ClosedChannelException {
         readSelector.registerKeys();
 
-        verify(channel, never()).register(selector, IOSelectionKey.Op.READ, direction);
+        verify(channel, never()).register(selector, IOSelectionKey.Op.READ, dc);
     }
 
     @Test
     public void registerKeys1() throws ClosedChannelException {
-        when(channel.register(selector, IOSelectionKey.Op.READ, direction)).thenReturn(key);
+        when(channel.register(selector, IOSelectionKey.Op.READ, dc)).thenReturn(key);
         newConnections.add(connection);
 
         readSelector.registerKeys();
 
-        verify(channel, times(2)).register(selector, IOSelectionKey.Op.READ, direction);
+        verify(channel, times(2)).register(selector, IOSelectionKey.Op.READ, dc);
         assertEquals(0, newConnections.size());
     }
 

@@ -89,12 +89,14 @@ public class ReadSelector implements Runnable {
         for (final Connection connection : connections) {
             try {
                 final Direction cTs = connection.clientToServer();
+                final DirectionAndConnection dc0 = new DirectionAndConnection(cTs, connection);
                 final IOSocketChannel channel0 = cTs.getFrom();
-                channel0.register(selector, IOSelectionKey.Op.READ, cTs);
+                channel0.register(selector, IOSelectionKey.Op.READ, dc0);
 
                 final Direction sTc = connection.serverToClient();
+                final DirectionAndConnection dc1 = new DirectionAndConnection(sTc, connection);
                 final IOSocketChannel channel1 = sTc.getFrom();
-                channel1.register(selector, IOSelectionKey.Op.READ, sTc);
+                channel1.register(selector, IOSelectionKey.Op.READ, dc1);
             }
             catch (final IOException e) {
                 LOG.debug("{} : Error registering", this, e);
@@ -106,7 +108,8 @@ public class ReadSelector implements Runnable {
         final Set<IOSelectionKey> selectionKeys = selector.selectedKeys();
         for (final IOSelectionKey key : selectionKeys) {
             if (key.isValid() && key.isReadable()) {
-                final Direction direction = (Direction)key.attachment();
+                final DirectionAndConnection dc = (DirectionAndConnection)key.attachment();
+                final Direction direction = dc.getDirection();
                 final ActionQueue queue = direction.getQueue();
                 if (!queue.queueFull()) {
                     buffer.position(0);
@@ -124,7 +127,7 @@ public class ReadSelector implements Runnable {
                         else if (bytes == -1) {
                             key.cancel();
                             informOfClose(direction);
-                            final ConnectionImpl conn = (ConnectionImpl) direction.getConnection();
+                            final ConnectionImpl conn = (ConnectionImpl) dc.getConnection();
                             final Direction otherDirection = conn.otherDirection(direction);
                             LOG.debug("{} : Closed {} ", this, otherDirection);
                             otherDirection.close();

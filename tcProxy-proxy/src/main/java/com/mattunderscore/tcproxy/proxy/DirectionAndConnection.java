@@ -23,45 +23,46 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy.action.processor;
-
-import com.mattunderscore.tcproxy.proxy.Connection;
-import com.mattunderscore.tcproxy.proxy.Direction;
-import com.mattunderscore.tcproxy.proxy.DirectionAndConnection;
-import com.mattunderscore.tcproxy.proxy.action.Action;
-import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
-
-import java.util.Queue;
+package com.mattunderscore.tcproxy.proxy;
 
 /**
- * ActionProcessor that puts the action on the directions action queue and the direction on the new direction queue if
- * the action queue is empty.
- * @author Matt Champion on 22/03/14.
+ * Tuple of the direction and connection.
+ * @author matt on 26/04/14.
  */
-public class DefaultActionProcessor implements ActionProcessor {
-    private final DirectionAndConnection direction;
-    private final ActionQueue actionQueue;
-    private final Queue<DirectionAndConnection> directions;
+public final class DirectionAndConnection {
+    private final Direction direction;
+    private final Connection connection;
 
-    /**
-     * Constructor for the default behaviour.
-     * @param direction The direction the processor is for.
-     * @param directions The queue of new directions.
-     */
-    public DefaultActionProcessor(final DirectionAndConnection direction, final Queue<DirectionAndConnection> directions) {
+    public DirectionAndConnection(Direction direction, Connection connection) {
+
         this.direction = direction;
-        this.actionQueue = direction.getDirection().getQueue();
-        this.directions = directions;
+        this.connection = connection;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public Connection getConnection() {
+        return connection;
     }
 
     @Override
-    public void process(final Action action) {
-        synchronized (actionQueue) {
-            final boolean hasData = actionQueue.hasData();
-            actionQueue.add(action);
-            if (!hasData) {
-                directions.add(direction);
-            }
+    public boolean equals(Object object) {
+        if (object != null && object instanceof DirectionAndConnection) {
+            final DirectionAndConnection dc = (DirectionAndConnection)object;
+            return direction.equals(dc.getDirection()) && connection.equals(dc.getConnection());
         }
+        else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 31;
+        hash = (hash * 15) + direction.hashCode();
+        hash = (hash * 15) + connection.hashCode();
+        return hash;
     }
 }
