@@ -43,7 +43,5 @@ public interface ActionQueue {
 
     boolean hasData();
 
-    Connection getConnection();
-
     int opsPending();
 }

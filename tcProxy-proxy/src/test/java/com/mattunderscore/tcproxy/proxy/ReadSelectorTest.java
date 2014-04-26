@@ -90,8 +90,6 @@ public class ReadSelectorTest {
         processor = new DefaultActionProcessor(direction, newDirections);
         when(direction.getProcessor()).thenReturn(processor);
 
-        when(queue.getConnection()).thenReturn(connection);
-
         when(key.attachment()).thenReturn(direction);
     }
 

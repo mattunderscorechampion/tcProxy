@@ -85,7 +85,7 @@ public final class ActionQueueImplTest {
 
     @Test
     public void batch() throws IOException {
-        final ActionQueueImpl queue = new ActionQueueImpl(connection, 5, 64);
+        final ActionQueueImpl queue = new ActionQueueImpl(5, 64);
         queue.add(write0);
         queue.add(write1);
         queue.add(write2);
@@ -120,7 +120,7 @@ public final class ActionQueueImplTest {
 
     @Test
     public void full() throws IOException {
-        final ActionQueueImpl queue = new ActionQueueImpl(connection, 3, 64);
+        final ActionQueueImpl queue = new ActionQueueImpl(3, 64);
         queue.add(write0);
         queue.add(write1);
         queue.add(write2);
@@ -155,7 +155,7 @@ public final class ActionQueueImplTest {
 
     @Test
     public void write() throws IOException {
-        final ActionQueueImpl queue = new ActionQueueImpl(connection, 3, 64);
+        final ActionQueueImpl queue = new ActionQueueImpl(3, 64);
         queue.add(write0);
         final Action action = queue.current();
         final Action duplicateAction = queue.current();

@@ -37,13 +37,11 @@ import java.util.concurrent.BlockingQueue;
  * @author Matt Champion on 19/02/14.
  */
 public class ActionQueueImpl implements ActionQueue {
-    private final Connection connection;
     private final int batchSize;
     private final BlockingQueue<Action> actions;
     private volatile Action current = null;
 
-    public ActionQueueImpl(final Connection connection, final int queueSize, final int batchSize) {
-        this.connection = connection;
+    public ActionQueueImpl(final int queueSize, final int batchSize) {
         this.batchSize = batchSize;
         this.actions = new ArrayBlockingQueue<>(queueSize);
     }
@@ -102,11 +100,6 @@ public class ActionQueueImpl implements ActionQueue {
     @Override
     public boolean hasData() {
         return current() != null;
-    }
-
-    @Override
-    public Connection getConnection() {
-        return connection;
     }
 
 }

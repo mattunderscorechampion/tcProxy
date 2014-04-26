@@ -63,7 +63,7 @@ public final class DirectionImpl implements Direction {
         this.from = from;
         this.to = to;
         this.connection = connection;
-        queue = new ActionQueueImpl(connection, queueSize, batchSize);
+        queue = new ActionQueueImpl(queueSize, batchSize);
         read = 0;
         written = 0;
         open = true;
