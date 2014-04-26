@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.mattunderscore</groupId>
+    <groupId>com.mattunderscore.tcproxy</groupId>
     <artifactId>tcProxy-parent</artifactId>
     <version>0.0.0-SNAPSHOT</version>
     <name>tcProxy-parent</name>
@@ -35,8 +35,13 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.mattunderscore</groupId>
+                <groupId>com.mattunderscore.tcproxy</groupId>
                 <artifactId>tcProxy-io</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mattunderscore.tcproxy</groupId>
+                <artifactId>tcProxy-proxy</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

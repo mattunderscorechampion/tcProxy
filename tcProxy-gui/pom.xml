@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.mattunderscore</groupId>
+        <groupId>com.mattunderscore.tcproxy</groupId>
         <artifactId>tcProxy-parent</artifactId>
         <version>0.0.0-SNAPSHOT</version>
     </parent>
@@ -19,9 +19,8 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.mattunderscore</groupId>
+            <groupId>com.mattunderscore.tcproxy</groupId>
             <artifactId>tcProxy-proxy</artifactId>
-            <version>0.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
