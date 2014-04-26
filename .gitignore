@@ -1,4 +1,5 @@
 tcProxy-gui/target/
+tcProxy-gui/dependency-reduced-pom.xml
 tcProxy-proxy/target/
 tcProxy-io/target/
 tcProxy-cli/target/
