@@ -60,7 +60,7 @@ public class Write implements Action, IWrite {
 
     @Override
     public ByteBuffer getData() {
-        return data.asReadOnlyBuffer();
+        return data;
     }
 
     @Override

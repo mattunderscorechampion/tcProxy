@@ -95,32 +95,27 @@ public class WriteSelector implements Runnable {
         final Set<IOSelectionKey> keys = selector.selectedKeys();
         for (final IOSelectionKey key : keys) {
             if (key.isWritable()) {
-                final Direction direction = (Direction)key.attachment();
+                final Direction direction = (Direction) key.attachment();
                 final ActionQueue write = direction.getQueue();
 
-                try {
-                    if (write.hasData()) {
-                        final Action data = write.current();
-                        data.writeToSocket();
-                    }
-                    else {
-                        LOG.debug("{} : Finished queued actions, cancel key", this);
-                        key.cancel();
-                        synchronized (write) {
-                            if (write.hasData()) {
-                                LOG.debug("{} : Actions queued, requeue for key registration", this);
-                                newDirections.add(direction);
-                            }
+                synchronized (write) {
+                    try {
+                        if (write.hasData()) {
+                            final Action data = write.current();
+                            data.writeToSocket();
+                        } else {
+                            LOG.debug("{} : Finished queued actions, cancel key", this);
+                            key.cancel();
                         }
                     }
-                }
-                catch (final IOException e) {
-                    LOG.warn("{} : Error writing", this, e);
-                    key.cancel();
-                    try {
-                        direction.getConnection().close();
-                    } catch (IOException e1) {
-                        LOG.warn("{} : Error closing connection", this, e);
+                    catch( final IOException e){
+                        LOG.warn("{} : Error writing", this, e);
+                        key.cancel();
+                        try {
+                            direction.getConnection().close();
+                        } catch (IOException e1) {
+                            LOG.warn("{} : Error closing connection", this, e);
+                        }
                     }
                 }
             }

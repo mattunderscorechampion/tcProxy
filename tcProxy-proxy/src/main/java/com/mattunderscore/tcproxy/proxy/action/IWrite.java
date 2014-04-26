@@ -30,6 +30,7 @@ import com.mattunderscore.tcproxy.proxy.Direction;
 import java.nio.ByteBuffer;
 
 /**
+ * Internal write action.
  * @author matt on 21/04/14.
  */
 public interface IWrite extends Action {
