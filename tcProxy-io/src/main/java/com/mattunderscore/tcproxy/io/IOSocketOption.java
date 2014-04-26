@@ -33,15 +33,15 @@ public final class IOSocketOption<T> {
     /**
      * Socket option for SO_RCVBUF.
      */
-    public final static IOSocketOption<Integer> RECEIVE_BUFFER = new IOSocketOption<Integer>();
+    public final static IOSocketOption<Integer> RECEIVE_BUFFER = new IOSocketOption<>();
     /**
      * Socket option for SO_SNDBUF.
      */
-    public final static IOSocketOption<Integer> SEND_BUFFER = new IOSocketOption<Integer>();
+    public final static IOSocketOption<Integer> SEND_BUFFER = new IOSocketOption<>();
     /**
      * Socket option blocking socket.
      */
-    public final static IOSocketOption<Boolean> BLOCKING = new IOSocketOption<Boolean>();
+    public final static IOSocketOption<Boolean> BLOCKING = new IOSocketOption<>();
 
     private IOSocketOption() {
     }
