@@ -139,11 +139,11 @@ public final class SettingsPanel extends JPanel {
     }
 
     public ConnectionSettings getConnectionSettings() {
-        return new ConnectionSettings(parseInt(readBufferSize.getText()));
+        return new ConnectionSettings(parseInt(writeQueueBound.getText()));
     }
 
     public InboundSocketSettings getInboundSocketSettings() {
-        return new InboundSocketSettings(parseInt(outboundReceiveBufferSize.getText()), parseInt(inboundSendBufferSize.getText()));
+        return new InboundSocketSettings(parseInt(inboundReceiveBufferSize.getText()), parseInt(inboundSendBufferSize.getText()));
     }
 
     public OutboundSocketSettings getOutboundSocketSettings() {
