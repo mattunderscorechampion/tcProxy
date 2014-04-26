@@ -10,6 +10,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>tcProxy-cli</artifactId>
+    <name>tcProxy Command Line Interface</name>
+    <description>A simple command line interface that allow the proxy to be run from the command line.</description>
 
     <dependencies>
         <dependency>

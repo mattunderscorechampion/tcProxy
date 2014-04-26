@@ -11,7 +11,8 @@
     </parent>
 
     <artifactId>tcProxy-gui</artifactId>
-    <name>tcProxy-gui</name>
+    <name>tcProxy Graphical User Interface</name>
+    <description>A simple GUI that allow the proxy to be run interactively.</description>
 
     <dependencies>
         <dependency>

@@ -10,6 +10,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>tcProxy-io</artifactId>
+    <name>tcProxy IO</name>
+    <description>An IO API that wraps the Java Standard Library to provide interfaces for all components making it more
+        testable.</description>
 
 
 </project>
