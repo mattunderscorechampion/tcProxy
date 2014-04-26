@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 /**

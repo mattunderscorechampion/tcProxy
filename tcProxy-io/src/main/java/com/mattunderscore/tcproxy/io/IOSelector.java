@@ -26,7 +26,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.io;
 
 import java.io.IOException;
-import java.nio.channels.Selector;
 import java.util.Set;
 
 /**

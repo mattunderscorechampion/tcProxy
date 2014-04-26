@@ -26,7 +26,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.io;
 
 import java.nio.channels.SelectionKey;
-import java.util.Set;
 
 /**
  * Provides a selection key for use with this package.
