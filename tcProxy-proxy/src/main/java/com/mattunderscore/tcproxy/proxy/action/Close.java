@@ -59,4 +59,8 @@ public class Close implements Action {
         return written;
     }
 
+    @Override
+    public boolean isBatchable() {
+        return false;
+    }
 }

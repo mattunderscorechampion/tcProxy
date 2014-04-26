@@ -37,4 +37,5 @@ public interface Action {
 
     boolean writeComplete();
 
+    boolean isBatchable();
 }

@@ -27,44 +27,13 @@ package com.mattunderscore.tcproxy.proxy.action;
 
 import com.mattunderscore.tcproxy.proxy.Direction;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
- * The write action.
- * @author Matt Champion on 19/02/14.
+ * @author matt on 21/04/14.
  */
-public class Write implements Action, IWrite {
-    final Direction direction;
-    final ByteBuffer data;
+public interface IWrite extends Action {
+    ByteBuffer getData();
 
-    public Write(final Direction direction, final ByteBuffer data) {
-        this.direction = direction;
-        this.data = data;
-    }
-
-    @Override
-    public int writeToSocket() throws IOException {
-        return direction.write(data);
-    }
-
-    @Override
-    public boolean writeComplete() {
-        return data.remaining() == 0;
-    }
-
-    @Override
-    public boolean isBatchable() {
-        return true;
-    }
-
-    @Override
-    public ByteBuffer getData() {
-        return data.asReadOnlyBuffer();
-    }
-
-    @Override
-    public Direction getDirection() {
-        return direction;
-    }
+    Direction getDirection();
 }

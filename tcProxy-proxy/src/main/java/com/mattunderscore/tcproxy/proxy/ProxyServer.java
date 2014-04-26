@@ -29,6 +29,8 @@ import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.impl.IOFactory;
 import com.mattunderscore.tcproxy.proxy.action.processor.DefaultActionProcessorFactory;
 import com.mattunderscore.tcproxy.proxy.settings.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -39,6 +41,7 @@ import java.util.concurrent.BlockingQueue;
  * @author Matt Champion on 18/02/14.
  */
 public class ProxyServer {
+    private static final Logger LOG = LoggerFactory.getLogger("proxy");
     private final Acceptor acceptor;
     private final WriteSelector writer;
     private final ReadSelector proxy;
@@ -81,26 +84,27 @@ public class ProxyServer {
         acceptorThread.setDaemon(false);
         readerThread.setDaemon(false);
         writerThread.setDaemon(false);
-        acceptorThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                e.printStackTrace();
-            }
-        });
-        readerThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                e.printStackTrace();
-            }
-        });
-        writerThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                e.printStackTrace();
-            }
-        });
+        final ExceptionHandler handler = new ExceptionHandler();
+        acceptorThread.setUncaughtExceptionHandler(handler);
+        readerThread.setUncaughtExceptionHandler(handler);
+        writerThread.setUncaughtExceptionHandler(handler);
         acceptorThread.start();
         readerThread.start();
         writerThread.start();
+    }
+
+    public void stop() {
+        writer.stop();
+        proxy.stop();
+        acceptor.stop();
+    }
+
+    private final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
+
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+            LOG.error("Uncaught exception in thread '{}'", t, e);
+            stop();
+        }
     }
 }

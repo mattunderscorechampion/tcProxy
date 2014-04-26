@@ -28,6 +28,7 @@ package com.mattunderscore.tcproxy.proxy.action.queue;
 import com.mattunderscore.tcproxy.proxy.action.Action;
 import com.mattunderscore.tcproxy.proxy.Connection;
 import com.mattunderscore.tcproxy.proxy.Direction;
+import com.mattunderscore.tcproxy.proxy.action.BatchedWrite;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -40,6 +41,7 @@ public class ActionQueueImpl implements ActionQueue {
     private final Direction direction;
     private final Connection connection;
     private final BlockingQueue<Action> actions;
+    private volatile Action current = null;
 
     public ActionQueueImpl(final Direction direction, final Connection connection, final int queueSize) {
         this.direction = direction;
@@ -62,16 +64,39 @@ public class ActionQueueImpl implements ActionQueue {
 
     @Override
     public Action current() {
-        final Action action = actions.peek();
-        if (action == null) {
-            return null;
-        }
-        else if (!action.writeComplete()) {
-            return action;
+        final Action currentAction = current;
+        if (currentAction != null && !currentAction.writeComplete()) {
+            return currentAction;
         }
         else {
-            actions.remove(action);
-            return current();
+            final Action batchedAction = batchActions();
+            current = batchedAction;
+            return batchedAction;
+        }
+    }
+
+    private Action batchActions() {
+        final BatchedWrite batchedWrite = new BatchedWrite();
+        boolean batchedData = false;
+        while (true) {
+            final Action nextAction = actions.peek();
+            if (nextAction != null && nextAction.isBatchable()) {
+                if (batchedWrite.batch(nextAction)) {
+                    batchedData = true;
+                    actions.poll();
+                }
+                else {
+                    return batchedWrite;
+                }
+            }
+            else {
+                if (batchedData) {
+                    return batchedWrite;
+                }
+                else {
+                    return actions.poll();
+                }
+            }
         }
     }
 

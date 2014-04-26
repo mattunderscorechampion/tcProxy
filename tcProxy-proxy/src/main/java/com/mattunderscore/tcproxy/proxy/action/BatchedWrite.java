@@ -31,20 +31,25 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
- * The write action.
- * @author Matt Champion on 19/02/14.
+ * Batched write action.
+ * @author matt on 20/04/14.
  */
-public class Write implements Action, IWrite {
-    final Direction direction;
-    final ByteBuffer data;
+public class BatchedWrite implements Action {
+    private final ByteBuffer data;
+    private volatile boolean flipped;
+    private volatile Direction direction;
 
-    public Write(final Direction direction, final ByteBuffer data) {
-        this.direction = direction;
-        this.data = data;
+    public BatchedWrite() {
+        flipped = false;
+        data = ByteBuffer.allocate(2048);
     }
 
     @Override
     public int writeToSocket() throws IOException {
+        if (!flipped) {
+            flipped = true;
+            data.flip();
+        }
         return direction.write(data);
     }
 
@@ -55,16 +60,32 @@ public class Write implements Action, IWrite {
 
     @Override
     public boolean isBatchable() {
-        return true;
+        return false;
     }
 
-    @Override
-    public ByteBuffer getData() {
-        return data.asReadOnlyBuffer();
-    }
-
-    @Override
-    public Direction getDirection() {
-        return direction;
+    /**
+     * Add the action to the batch.
+     * @param action The action
+     * @return {@code true} if the action fits completely into the batch
+     */
+    public boolean batch(Action action) {
+        if (flipped) {
+            return false;
+        }
+        else if (action.isBatchable() && action instanceof IWrite) {
+            final IWrite write = (IWrite)action;
+            final ByteBuffer batchData = write.getData();
+            if (batchData.remaining() < data.remaining()) {
+                data.put(batchData);
+                direction = write.getDirection();
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            throw new IllegalArgumentException("Must be a write");
+        }
     }
 }

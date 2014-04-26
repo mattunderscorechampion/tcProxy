@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.channels.ClosedByInterruptException;
 
 /**
  * The acceptor.
@@ -48,6 +49,7 @@ public class Acceptor implements Runnable {
     private final ConnectionFactory connectionFactory;
     private final OutboundSocketFactory factory;
     private volatile boolean running = false;
+    private volatile Thread acceptorThread;
 
     /**
      * Constructor.
@@ -96,6 +98,7 @@ public class Acceptor implements Runnable {
      * @param channel
      */
     void mainLoop(final IOServerSocketChannel channel) {
+        acceptorThread = Thread.currentThread();
         while (running) {
             try {
                 final IOSocketChannel clientSide = channel.accept();
@@ -106,6 +109,9 @@ public class Acceptor implements Runnable {
                 LOG.info("{} : Opened {}", this, serverSide);
                 connectionFactory.create(clientSide, serverSide);
             }
+            catch (final ClosedByInterruptException e) {
+                running = false;
+            }
             catch (final IOException e) {
                 LOG.warn("{} : There was an unhandled exception in the main loop - continuing", this, e);
             }
@@ -115,5 +121,10 @@ public class Acceptor implements Runnable {
     @Override
     public String toString() {
         return "Acceptor - " + settings.getPort();
+    }
+
+    public void stop() {
+        running = false;
+        acceptorThread.interrupt();
     }
 }

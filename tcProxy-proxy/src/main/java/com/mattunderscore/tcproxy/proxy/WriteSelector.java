@@ -61,8 +61,7 @@ public class WriteSelector implements Runnable {
         while (running) {
             try {
                 selector.selectNow();
-            }
-            catch (final IOException e) {
+            } catch (final IOException e) {
                 LOG.debug("{} : Error selecting keys", this, e);
             }
 
@@ -118,6 +117,11 @@ public class WriteSelector implements Runnable {
                 catch (final IOException e) {
                     LOG.warn("{} : Error writing", this, e);
                     key.cancel();
+                    try {
+                        direction.getConnection().close();
+                    } catch (IOException e1) {
+                        LOG.warn("{} : Error closing connection", this, e);
+                    }
                 }
             }
         }

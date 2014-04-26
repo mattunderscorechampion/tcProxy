@@ -52,9 +52,9 @@ public final class ProxyServerMain {
             final com.mattunderscore.tcproxy.proxy.ProxyServer server = new com.mattunderscore.tcproxy.proxy.ProxyServer(
                     new AcceptorSettings(8085),
                     new ConnectionSettings(10000),
-                    new InboundSocketSettings(8192, 8192),
-                    new OutboundSocketSettings(8080, "localhost", 8192, 8192),
-                    new ReadSelectorSettings(2048),
+                    new InboundSocketSettings(10240, 10240),
+                    new OutboundSocketSettings(8080, "localhost", 10240, 10240),
+                    new ReadSelectorSettings(10240),
                     manager);
 
             manager.addListener(new ConnectionManager.Listener() {
