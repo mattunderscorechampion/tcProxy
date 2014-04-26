@@ -45,7 +45,5 @@ public interface ActionQueue {
 
     Connection getConnection();
 
-    Direction getDirection();
-
     int opsPending();
 }

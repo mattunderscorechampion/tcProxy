@@ -27,7 +27,6 @@ package com.mattunderscore.tcproxy.proxy.action.queue;
 
 import com.mattunderscore.tcproxy.proxy.action.Action;
 import com.mattunderscore.tcproxy.proxy.Connection;
-import com.mattunderscore.tcproxy.proxy.Direction;
 import com.mattunderscore.tcproxy.proxy.action.BatchedWrite;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -38,15 +37,12 @@ import java.util.concurrent.BlockingQueue;
  * @author Matt Champion on 19/02/14.
  */
 public class ActionQueueImpl implements ActionQueue {
-    private final Direction direction;
     private final Connection connection;
     private final int batchSize;
     private final BlockingQueue<Action> actions;
     private volatile Action current = null;
 
-    public ActionQueueImpl(final Direction direction, final Connection connection, final int queueSize,
-                           final int batchSize) {
-        this.direction = direction;
+    public ActionQueueImpl(final Connection connection, final int queueSize, final int batchSize) {
         this.connection = connection;
         this.batchSize = batchSize;
         this.actions = new ArrayBlockingQueue<>(queueSize);
@@ -113,8 +109,4 @@ public class ActionQueueImpl implements ActionQueue {
         return connection;
     }
 
-    @Override
-    public Direction getDirection() {
-        return direction;
-    }
 }

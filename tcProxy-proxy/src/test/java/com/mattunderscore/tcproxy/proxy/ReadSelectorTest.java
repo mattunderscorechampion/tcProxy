@@ -91,7 +91,6 @@ public class ReadSelectorTest {
         when(direction.getProcessor()).thenReturn(processor);
 
         when(queue.getConnection()).thenReturn(connection);
-        when(queue.getDirection()).thenReturn(direction);
 
         when(key.attachment()).thenReturn(direction);
     }
