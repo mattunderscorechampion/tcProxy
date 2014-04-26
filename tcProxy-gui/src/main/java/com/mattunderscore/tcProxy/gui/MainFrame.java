@@ -43,7 +43,7 @@ public final class MainFrame extends JFrame {
 
     public MainFrame() {
         setTitle("tcProxy");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         settingsPanel = new SettingsPanel(new Runnable() {
             @Override
             public void run() {
