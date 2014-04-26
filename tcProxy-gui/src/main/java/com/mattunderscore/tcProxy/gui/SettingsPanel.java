@@ -50,6 +50,7 @@ public final class SettingsPanel extends JPanel {
     private final JTextField targetPort;
     private final JTextField readBufferSize;
     private final JTextField writeQueueBound;
+    private final JTextField batchSize;
 
     public SettingsPanel(final Runnable callback) {
         listeningPort = new JTextField("8085", 8);
@@ -61,6 +62,7 @@ public final class SettingsPanel extends JPanel {
         targetPort = new JTextField("8080", 8);
         readBufferSize = new JTextField("1024", 8);
         writeQueueBound = new JTextField("5000", 8);
+        batchSize = new JTextField("2048", 8);
 
         setLayout(new GridBagLayout());
         final GridBagConstraints c = new GridBagConstraints();
@@ -139,7 +141,7 @@ public final class SettingsPanel extends JPanel {
     }
 
     public ConnectionSettings getConnectionSettings() {
-        return new ConnectionSettings(parseInt(writeQueueBound.getText()));
+        return new ConnectionSettings(parseInt(writeQueueBound.getText()), parseInt(batchSize.getText()));
     }
 
     public InboundSocketSettings getInboundSocketSettings() {

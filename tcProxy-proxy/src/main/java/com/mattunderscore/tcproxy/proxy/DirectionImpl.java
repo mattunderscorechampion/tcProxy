@@ -58,11 +58,12 @@ public final class DirectionImpl implements Direction {
     private volatile int written;
     private volatile boolean open;
 
-    public DirectionImpl(final IOSocketChannel from, final IOSocketChannel to, final ConnectionImpl connection, final int queueSize, final ActionProcessorFactory actionProcessorFactory) {
+    public DirectionImpl(final IOSocketChannel from, final IOSocketChannel to, final ConnectionImpl connection,
+                         final int queueSize, final ActionProcessorFactory actionProcessorFactory, int batchSize) {
         this.from = from;
         this.to = to;
         this.connection = connection;
-        queue = new ActionQueueImpl(this, connection, queueSize);
+        queue = new ActionQueueImpl(this, connection, queueSize, batchSize);
         read = 0;
         written = 0;
         open = true;

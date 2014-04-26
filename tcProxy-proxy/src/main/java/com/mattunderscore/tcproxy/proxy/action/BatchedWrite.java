@@ -39,9 +39,9 @@ public class BatchedWrite implements Action {
     private volatile boolean flipped;
     private volatile Direction direction;
 
-    public BatchedWrite() {
+    public BatchedWrite(final int batchCapacity) {
         flipped = false;
-        data = ByteBuffer.allocate(2048);
+        data = ByteBuffer.allocate(batchCapacity);
     }
 
     @Override

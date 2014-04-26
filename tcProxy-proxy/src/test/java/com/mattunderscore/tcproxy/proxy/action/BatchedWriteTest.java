@@ -72,7 +72,7 @@ public class BatchedWriteTest {
 
     @Test
     public void batch() throws IOException {
-        final BatchedWrite batchWrite = new BatchedWrite();
+        final BatchedWrite batchWrite = new BatchedWrite(64);
         batchWrite.batch(write0);
         batchWrite.batch(write1);
         batchWrite.writeToSocket();

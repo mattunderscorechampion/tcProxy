@@ -39,7 +39,8 @@ public class ConnectionFactory {
     private final ConnectionManager manager;
     private final ActionProcessorFactory processorFactory;
 
-    public ConnectionFactory(final ConnectionSettings settings, final ConnectionManager manager, final ActionProcessorFactory processorFactory) {
+    public ConnectionFactory(final ConnectionSettings settings, final ConnectionManager manager,
+                             final ActionProcessorFactory processorFactory) {
 
         this.settings = settings;
         this.manager = manager;
@@ -47,7 +48,8 @@ public class ConnectionFactory {
     }
 
     public Connection create(final IOSocketChannel clientSide, final IOSocketChannel serverSide) {
-        final Connection conn = new ConnectionImpl(manager, clientSide, serverSide, settings.getWriteQueueSize(), processorFactory);
+        final Connection conn = new ConnectionImpl(manager, clientSide, serverSide, settings.getWriteQueueSize(),
+                processorFactory, settings.getBatchSize());
         manager.register(conn);
         return conn;
     }

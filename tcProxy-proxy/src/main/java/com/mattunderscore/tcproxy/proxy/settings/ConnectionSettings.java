@@ -31,12 +31,18 @@ package com.mattunderscore.tcproxy.proxy.settings;
  */
 public final class ConnectionSettings {
     private final int writeQueueSize;
+    private final int batchSize;
 
-    public ConnectionSettings(final int writeQueueSize) {
+    public ConnectionSettings(final int writeQueueSize, int batchSize) {
         this.writeQueueSize = writeQueueSize;
+        this.batchSize = batchSize;
     }
 
     public int getWriteQueueSize() {
         return writeQueueSize;
+    }
+
+    public int getBatchSize() {
+        return batchSize;
     }
 }

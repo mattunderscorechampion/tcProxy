@@ -40,12 +40,15 @@ import java.util.concurrent.BlockingQueue;
 public class ActionQueueImpl implements ActionQueue {
     private final Direction direction;
     private final Connection connection;
+    private final int batchSize;
     private final BlockingQueue<Action> actions;
     private volatile Action current = null;
 
-    public ActionQueueImpl(final Direction direction, final Connection connection, final int queueSize) {
+    public ActionQueueImpl(final Direction direction, final Connection connection, final int queueSize,
+                           final int batchSize) {
         this.direction = direction;
         this.connection = connection;
+        this.batchSize = batchSize;
         this.actions = new ArrayBlockingQueue<>(queueSize);
     }
 
@@ -76,7 +79,7 @@ public class ActionQueueImpl implements ActionQueue {
     }
 
     private Action batchActions() {
-        final BatchedWrite batchedWrite = new BatchedWrite();
+        final BatchedWrite batchedWrite = new BatchedWrite(batchSize);
         boolean batchedData = false;
         while (true) {
             final Action nextAction = actions.peek();

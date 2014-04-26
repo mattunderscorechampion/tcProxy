@@ -55,7 +55,8 @@ public class ProxyServer {
         final BlockingQueue<Connection> newConnections = new ArrayBlockingQueue<>(5000);
         final BlockingQueue<Direction> newDirections = new ArrayBlockingQueue<>(5000);
         final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
-        final ConnectionFactory connectionFactory = new ConnectionFactory(connectionSettings, manager, new DefaultActionProcessorFactory(newDirections));
+        final ConnectionFactory connectionFactory =
+                new ConnectionFactory(connectionSettings, manager, new DefaultActionProcessorFactory(newDirections));
         final IOSelector readSelector = IOFactory.openSelector();
         final IOSelector writeSelector = IOFactory.openSelector();
 
