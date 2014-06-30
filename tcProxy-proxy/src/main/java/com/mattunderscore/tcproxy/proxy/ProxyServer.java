@@ -26,8 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy;
 
 import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.impl.IOFactory;
-import com.mattunderscore.tcproxy.proxy.action.processor.DefaultActionProcessorFactory;
+import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
 import com.mattunderscore.tcproxy.proxy.settings.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,8 +56,8 @@ public class ProxyServer {
         final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
         final ConnectionFactory connectionFactory =
                 new ConnectionFactory(connectionSettings, manager, newDirections);
-        final IOSelector readSelector = IOFactory.openSelector();
-        final IOSelector writeSelector = IOFactory.openSelector();
+        final IOSelector readSelector = StaticIOFactory.openSelector();
+        final IOSelector writeSelector = StaticIOFactory.openSelector();
 
         acceptor = new Acceptor(acceptorSettings, inboundSocketSettings, connectionFactory, socketFactory);
         proxy = new ReadSelector(readSelector,readSelectorSettings, newConnections);

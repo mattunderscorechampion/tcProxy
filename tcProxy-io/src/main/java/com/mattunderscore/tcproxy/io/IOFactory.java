@@ -23,45 +23,30 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io.impl;
-
-import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+package com.mattunderscore.tcproxy.io;
 
 import java.io.IOException;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
 
 /**
- * @author Matt Champion on 13/03/14.
+ * @author matt on 30/06/14.
  */
-public final class IOFactory {
-    private IOFactory() {
-    }
+public interface IOFactory {
 
     /**
      * @return A new selector.
      * @throws IOException
      */
-    public static IOSelector openSelector() throws IOException {
-        return new IOSelectorImpl(Selector.open());
-    }
+    IOSelector openSelector() throws IOException;
 
     /**
      * @return A new unbound socket.
      * @throws IOException
      */
-    public static IOSocketChannel openSocket() throws IOException {
-        return new IOSocketChannelImpl(SocketChannel.open());
-    }
+    IOSocketChannel openSocket() throws IOException;
 
     /**
      * @return A new server socket.
      * @throws IOException
      */
-    public static IOServerSocketChannel openServerSocket() throws IOException {
-        return new IOServerSocketChannelImpl(ServerSocketChannel.open());
-    }
+    IOServerSocketChannel openServerSocket() throws IOException;
 }

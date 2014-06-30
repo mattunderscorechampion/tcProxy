@@ -23,36 +23,34 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy;
+package com.mattunderscore.tcproxy.io.impl;
 
+import com.mattunderscore.tcproxy.io.IOFactory;
+import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
-import com.mattunderscore.tcproxy.io.IOSocketOption;
-import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 
 /**
- * Factory for outbound sockets.
- * @author Matt Champion on 18/02/14.
+ * @author matt on 30/06/14.
  */
-public class OutboundSocketFactory {
-    private final OutboundSocketSettings settings;
-
-    public OutboundSocketFactory(final OutboundSocketSettings settings) {
-        this.settings = settings;
+public final class IOFactoryImpl implements IOFactory {
+    @Override
+    public IOSelector openSelector() throws IOException {
+        return new IOSelectorImpl(Selector.open());
     }
 
-    public IOSocketChannel createSocket() throws IOException {
-        final IOSocketChannel channel = StaticIOFactory.openSocket();
-        channel.setOption(IOSocketOption.SEND_BUFFER, settings.getSendBuffer());
-        channel.setOption(IOSocketOption.RECEIVE_BUFFER, settings.getReceiveBuffer());
-        channel.setOption(IOSocketOption.BLOCKING, false);
-        final InetSocketAddress remote = new InetSocketAddress(settings.getHost(), settings.getPort());
-        channel.bind(null);
-        channel.connect(remote);
-        channel.finishConnect();
-        return channel;
+    @Override
+    public IOSocketChannel openSocket() throws IOException {
+        return new IOSocketChannelImpl(SocketChannel.open());
+    }
+
+    @Override
+    public IOServerSocketChannel openServerSocket() throws IOException {
+        return new IOServerSocketChannelImpl(ServerSocketChannel.open());
     }
 }

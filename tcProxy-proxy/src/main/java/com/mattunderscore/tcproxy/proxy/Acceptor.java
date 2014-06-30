@@ -27,7 +27,7 @@ package com.mattunderscore.tcproxy.proxy;
 
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.io.impl.IOFactory;
+import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
 import com.mattunderscore.tcproxy.io.IOSocketOption;
 import com.mattunderscore.tcproxy.proxy.settings.AcceptorSettings;
 import com.mattunderscore.tcproxy.proxy.settings.InboundSocketSettings;
@@ -87,7 +87,7 @@ public class Acceptor implements Runnable {
      * @throws IOException
      */
     IOServerSocketChannel openServerSocket() throws IOException {
-        final IOServerSocketChannel serverSocket = IOFactory.openServerSocket();
+        final IOServerSocketChannel serverSocket = StaticIOFactory.openServerSocket();
         serverSocket.setOption(IOSocketOption.RECEIVE_BUFFER, inboundSettings.getReceiveBufferSize());
         serverSocket.bind(new InetSocketAddress(settings.getPort()));
         return serverSocket;
