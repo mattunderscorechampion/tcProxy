@@ -17,6 +17,7 @@
         <module>tcProxy-gui</module>
         <module>tcProxy-io</module>
         <module>tcProxy-cli</module>
+        <module>tcProxy-cli-argument-parser</module>
     </modules>
 
     <build>

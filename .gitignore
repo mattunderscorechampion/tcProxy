@@ -4,6 +4,7 @@ tcProxy-proxy/target/
 tcProxy-io/target/
 tcProxy-cli/target/
 tcProxy-cli/dependency-reduced-pom.xml
+tcProxy-cli-argument-parser/target/
 *.iml
 *.project
 *.classpath
