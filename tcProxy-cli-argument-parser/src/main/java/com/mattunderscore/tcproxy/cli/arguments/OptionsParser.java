@@ -55,21 +55,46 @@ public final class OptionsParser {
 
     public List<Setting<?>> parse(String[] args) {
         final List<Setting<?>> settings = new ArrayList<>();
+        final List<Option<?>> foundOptions = new ArrayList<>();
         for (int i = 0; i < args.length; i++) {
             final Option<Object> option = (Option<Object>)flagMap.get(args[i]);
-            final SettingParser<Object> parser = option.getParser();
-            if (parser != null) {
-                try {
-                    final Object value = parser.parse(args[i + 1]);
-                    settings.add(Setting.create(option, value));
-                    i++;
-                } catch (NotParsableException e) {
+            if (option != null) {
+                foundOptions.add(option);
+                final SettingParser<Object> parser = option.getParser();
+                if (parser != null) {
+                    try {
+                        final Object value = parser.parse(args[i + 1]);
+                        settings.add(Setting.create(option, value));
+                        i++;
+                    }
+                    catch (NotParsableException e) {
+                        settings.add(Setting.create(option));
+                    }
+                }
+                else {
                     settings.add(Setting.create(option));
                 }
             }
-            else {
-                settings.add(Setting.create(option));
+        }
+        final List<Option<?>> unfoundOptions = getUnfoundOptions(foundOptions);
+        settings.addAll(getDefaults(unfoundOptions));
+        return settings;
+    }
+
+    private List<Option<?>> getUnfoundOptions(List<Option<?>> foundOptions) {
+        final List<Option<?>> unfoundOptions = new ArrayList<>();
+        for (final Option<?> option : flagMap.values()) {
+            if (!foundOptions.contains(option) && option.getParser() != null) {
+                unfoundOptions.add(option);
             }
+        }
+        return unfoundOptions;
+    }
+
+    private List<Setting<?>> getDefaults(List<Option<?>> options) {
+        final List<Setting<?>> settings = new ArrayList<>();
+        for (Option<?> option : options) {
+            settings.add(Setting.create(option));
         }
         return settings;
     }

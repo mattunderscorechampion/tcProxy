@@ -48,6 +48,11 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.mattunderscore.tcproxy</groupId>
+                <artifactId>tcProxy-cli-agrument-parser</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.11</version>

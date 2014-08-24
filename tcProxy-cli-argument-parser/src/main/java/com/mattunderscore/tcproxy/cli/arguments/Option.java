@@ -29,8 +29,12 @@ package com.mattunderscore.tcproxy.cli.arguments;
  * @author matt on 23/08/14.
  */
 public final class Option<T> {
-    public static <T> Option create(String shortFlag, String longFlag, String description, T defaultValue, SettingParser<T> parser) {
+    public static <T> Option<T> create(String shortFlag, String longFlag, String description, T defaultValue, SettingParser<T> parser) {
         return new Option(shortFlag, longFlag, description, defaultValue, parser);
+    }
+
+    public static Option<Void> create(String shortFlag, String longFlag, String description) {
+        return new Option(shortFlag, longFlag, description, null, null);
     }
 
     private final String shortFlag;
@@ -65,5 +69,32 @@ public final class Option<T> {
 
     public SettingParser<T> getParser() {
         return parser;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Option option = (Option) o;
+
+        if (defaultValue != null ? !defaultValue.equals(option.defaultValue) : option.defaultValue != null)
+            return false;
+        if (!description.equals(option.description)) return false;
+        if (!longFlag.equals(option.longFlag)) return false;
+        if (parser != null ? !parser.equals(option.parser) : option.parser != null) return false;
+        if (!shortFlag.equals(option.shortFlag)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = shortFlag.hashCode();
+        result = 31 * result + longFlag.hashCode();
+        result = 31 * result + description.hashCode();
+        result = 31 * result + (defaultValue != null ? defaultValue.hashCode() : 0);
+        result = 31 * result + (parser != null ? parser.hashCode() : 0);
+        return result;
     }
 }

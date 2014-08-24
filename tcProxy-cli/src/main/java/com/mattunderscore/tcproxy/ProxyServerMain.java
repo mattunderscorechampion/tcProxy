@@ -25,14 +25,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy;
 
+import com.mattunderscore.tcproxy.cli.arguments.*;
 import com.mattunderscore.tcproxy.proxy.Connection;
 import com.mattunderscore.tcproxy.proxy.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.Direction;
+import com.mattunderscore.tcproxy.proxy.ProxyServer;
 import com.mattunderscore.tcproxy.proxy.settings.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.logging.LogManager;
@@ -42,20 +46,39 @@ import java.util.logging.LogManager;
  */
 public final class ProxyServerMain {
     public static final Logger LOG = LoggerFactory.getLogger("cli");
+    private static final Option<Void> HELP = Option.create("-h", "--help", "Display usage");
+    private static final Option<Integer> INBOUND_PORT = Option.create("-ip", "--ip", "Inbound port", 8085, IntegerParser.PARSER);
+    private static final Option<String> OUTBOUND_HOST = Option.create("-oh", "--oh", "Outbound host", "localhost", StringParser.PARSER);
+    private static final Option<Integer> OUTBOUND_PORT = Option.create("-op", "--op", "Outbound port", 8080, IntegerParser.PARSER);
+    private static final Option<Integer> QUEUE_SIZE = Option.create("-qs", "--qs", "Queue size", 10000, IntegerParser.PARSER);
+    private static final Option<Integer> BATCH_SIZE = Option.create("-bs", "--bs", "Batch size", 2048, IntegerParser.PARSER);
+    private static final Option<Integer> SEND_BUFFER = Option.create("-sb", "--sb", "Send buffer, ", 10240, IntegerParser.PARSER);
+    private static final Option<Integer> RECEIVE_BUFFER = Option.create("-rb", "--rb", "Receive buffer", 10240, IntegerParser.PARSER);
 
     public static void main(final String[] args) throws IOException, InterruptedException {
         LogManager.getLogManager().readConfiguration(ProxyServerMain.class.getResourceAsStream("/logging.properties"));
 
+        final Map<Option<?>, Object> settings = getSettings(args);
+        if (settings.containsKey(HELP)) {
+            final HelpDisplay usage = new HelpDisplay(getOptions());
+            usage.printTo(System.out);
+            return;
+        }
+
         final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         try {
             final ConnectionManager manager = new ConnectionManager();
-            final com.mattunderscore.tcproxy.proxy.ProxyServer server = new com.mattunderscore.tcproxy.proxy.ProxyServer(
-                    new AcceptorSettings(8085),
-                    new ConnectionSettings(10000, 2048),
-                    new InboundSocketSettings(10240, 10240),
-                    new OutboundSocketSettings(8080, "localhost", 10240, 10240),
-                    new ReadSelectorSettings(10240),
-                    manager);
+            final ProxyServer server = new ProxyServer(
+                new AcceptorSettings((Integer)settings.get(INBOUND_PORT)),
+                new ConnectionSettings((Integer)settings.get(QUEUE_SIZE), (Integer)settings.get(BATCH_SIZE)),
+                new InboundSocketSettings((Integer)settings.get(RECEIVE_BUFFER), (Integer)settings.get(SEND_BUFFER)),
+                new OutboundSocketSettings(
+                    (Integer)settings.get(OUTBOUND_PORT),
+                    (String)settings.get(OUTBOUND_HOST),
+                    (Integer)settings.get(RECEIVE_BUFFER),
+                    (Integer)settings.get(SEND_BUFFER)),
+                new ReadSelectorSettings((Integer)settings.get(RECEIVE_BUFFER)),
+                manager);
 
             manager.addListener(new ConnectionManager.Listener() {
                 private final Map<Connection, Future<?>> tasks = new ConcurrentHashMap<>();
@@ -94,10 +117,34 @@ public final class ProxyServerMain {
             });
 
             server.start();
+            new CountDownLatch(1).await();
         }
         catch (final Throwable t) {
             LOG.error("Uncaught error", t);
         }
-        new CountDownLatch(1).await();
+    }
+
+    private static final Option<?>[] getOptions() {
+        return new Option<?>[] {
+            HELP,
+            INBOUND_PORT,
+            OUTBOUND_HOST,
+            OUTBOUND_PORT,
+            QUEUE_SIZE,
+            BATCH_SIZE,
+            SEND_BUFFER,
+            RECEIVE_BUFFER
+        };
+    }
+
+    private static final Map<Option<?>, Object> getSettings(String[] args) {
+        final Map<Option<?>, Object> map = new HashMap<>();
+        final Option<?>[] options = getOptions();
+        final OptionsParser parser = new OptionsParser(options);
+        final List<Setting<?>> settings = parser.parse(args);
+        for (Setting<?> setting : settings) {
+            map.put(setting.getOption(), setting.getValue());
+        }
+        return map;
     }
 }

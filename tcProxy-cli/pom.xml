@@ -18,6 +18,10 @@
             <groupId>com.mattunderscore.tcproxy</groupId>
             <artifactId>tcProxy-proxy</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.mattunderscore.tcproxy</groupId>
+            <artifactId>tcProxy-cli-agrument-parser</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
