@@ -66,7 +66,7 @@ public final class DirectionImpl implements Direction {
         open = true;
         stringValue = asString();
         processorChain = new Stack<>();
-        chainLock = new ReentrantReadWriteLock();
+        chainLock = new ReentrantReadWriteLock(true);
     }
 
     @Override
