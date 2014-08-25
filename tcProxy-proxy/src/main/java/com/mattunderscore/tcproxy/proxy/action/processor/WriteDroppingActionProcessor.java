@@ -50,4 +50,8 @@ public class WriteDroppingActionProcessor implements ActionProcessor {
             processor.process(action);
         }
     }
+
+    @Override
+    public void flush() {
+    }
 }

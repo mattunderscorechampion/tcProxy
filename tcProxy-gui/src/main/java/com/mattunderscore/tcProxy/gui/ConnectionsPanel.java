@@ -29,6 +29,7 @@ import com.mattunderscore.tcproxy.proxy.Connection;
 import com.mattunderscore.tcproxy.proxy.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.Direction;
 import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
+import com.mattunderscore.tcproxy.proxy.action.processor.DelayingActionProcessorFactory;
 import com.mattunderscore.tcproxy.proxy.action.processor.WriteDroppingActionProcessorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,7 @@ import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -179,6 +181,7 @@ public final class ConnectionsPanel extends JPanel {
             add(read);
             add(written);
             final JButton dropButton = new JButton("Drop writes");
+            final JButton delayButton = new JButton("Delay writes");
             final JButton restoreButton = new JButton("Restore writes");
             restoreButton.addActionListener(new ActionListener() {
                 @Override
@@ -189,6 +192,7 @@ public final class ConnectionsPanel extends JPanel {
                         public void run() {
                             remove(restoreButton);
                             add(dropButton);
+                            add(delayButton);
                             revalidate();
                         }
                     });
@@ -202,6 +206,22 @@ public final class ConnectionsPanel extends JPanel {
                         @Override
                         public void run() {
                             remove(dropButton);
+                            remove(delayButton);
+                            add(restoreButton);
+                            revalidate();
+                        }
+                    });
+                }
+            });
+            delayButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    destination.chainProcessor(new DelayingActionProcessorFactory(2, TimeUnit.SECONDS));
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            remove(dropButton);
+                            remove(delayButton);
                             add(restoreButton);
                             revalidate();
                         }
@@ -209,6 +229,7 @@ public final class ConnectionsPanel extends JPanel {
                 }
             });
             add(dropButton);
+            add(delayButton);
 
             final Direction.Listener readListener = new Direction.Listener() {
                 @Override

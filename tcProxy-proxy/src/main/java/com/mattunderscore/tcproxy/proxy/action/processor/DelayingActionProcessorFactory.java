@@ -25,59 +25,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.action.processor;
 
-import com.mattunderscore.tcproxy.proxy.action.Action;
+import com.mattunderscore.tcproxy.proxy.Direction;
 
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ActionProcessor that delays calling the next processor in the chain.
- * @author Matt Champion on 22/03/14.
+ * @author matt on 25/08/14.
  */
-public class DelayingActionProcessor implements ActionProcessor {
-    private final ActionProcessor processor;
-    private final ScheduledExecutorService executorService;
+public class DelayingActionProcessorFactory implements ActionProcessorFactory {
     private final long delay;
     private final TimeUnit delayUnits;
 
-    /**
-     *
-     * @param processor The next processor in the chain.
-     * @param executorService The executor that is used to call the next action processor after the delay
-     * @param delay The magnitude of the delay
-     * @param delayUnits The unit of the delay
-     */
-    public DelayingActionProcessor(ActionProcessor processor, ScheduledExecutorService executorService, long delay, TimeUnit delayUnits) {
-        this.processor = processor;
-        this.executorService = executorService;
+    public DelayingActionProcessorFactory(long delay, TimeUnit delayUnits) {
         this.delay = delay;
         this.delayUnits = delayUnits;
     }
 
     @Override
-    public void process(final Action action) {
-        executorService.schedule(new DelayedTask(action), delay, delayUnits);
-    }
-
-    @Override
-    public void flush() throws InterruptedException {
-        executorService.shutdown();
-        executorService.awaitTermination(delay * 2, delayUnits);
-    }
-
-    /**
-     * Task for calling the next processor.
-     */
-    private final class DelayedTask implements Runnable {
-        private final Action action;
-
-        public DelayedTask(final Action action) {
-            this.action = action;
-        }
-
-        @Override
-        public void run() {
-            processor.process(action);
-        }
+    public ActionProcessor create(Direction direction) {
+        final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        return new DelayingActionProcessor(direction.getProcessor(), executor, delay, delayUnits);
     }
 }

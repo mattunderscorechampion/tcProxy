@@ -38,4 +38,9 @@ public interface ActionProcessor {
      * @param action The action to process
      */
     void process(Action action);
+
+    /**
+     * Block until the processor is finished
+     */
+    void flush() throws InterruptedException;
 }

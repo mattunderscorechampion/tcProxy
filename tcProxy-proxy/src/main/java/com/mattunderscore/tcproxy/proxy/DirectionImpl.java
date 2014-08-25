@@ -111,7 +111,12 @@ public final class DirectionImpl implements Direction {
         chainLock.writeLock().lock();
         try {
             if (processorChain.size() > 1) {
-                processorChain.pop();
+                final ActionProcessor processor = processorChain.pop();
+                try {
+                    processor.flush();
+                } catch (InterruptedException e) {
+                    LOG.debug("Interrupted while flushing processor", e);
+                }
             }
         }
         finally {

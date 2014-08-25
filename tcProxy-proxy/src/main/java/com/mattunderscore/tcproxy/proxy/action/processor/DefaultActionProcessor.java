@@ -64,4 +64,8 @@ public class DefaultActionProcessor implements ActionProcessor {
             }
         }
     }
+
+    @Override
+    public synchronized void flush() {
+    }
 }
