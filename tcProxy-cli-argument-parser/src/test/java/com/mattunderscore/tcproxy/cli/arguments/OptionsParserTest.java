@@ -65,10 +65,19 @@ public final class OptionsParserTest {
         final Option<Integer> inboundPort = Option.create("-ip", "--ip", "Inbound port", 8085, IntegerParser.PARSER);
 
         final OptionsParser parser = new OptionsParser(inboundPort);
-        final List<Setting<?>> parseResults = parser.parse(new String[]{"-dfgsdfsdfsd"});
+        final List<Setting<?>> parseResults = parser.parse(new String[]{"-x"});
         final Setting<?> setting = parseResults.get(0);
         assertEquals(1, parseResults.size());
         assertEquals(inboundPort, setting.getOption());
         assertEquals(8085, setting.getValue());
+    }
+
+    @Test
+    public void test3() {
+        final Option<Void> inboundPort = Option.create("-ip", "--ip", "Inbound port");
+
+        final OptionsParser parser = new OptionsParser(inboundPort);
+        final List<Setting<?>> parseResults = parser.parse(new String[]{"-x"});
+        assertEquals(0, parseResults.size());
     }
 }
