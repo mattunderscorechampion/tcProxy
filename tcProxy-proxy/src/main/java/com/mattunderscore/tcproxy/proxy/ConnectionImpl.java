@@ -29,6 +29,7 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Implementation of {@link com.mattunderscore.tcproxy.proxy.Connection}.
@@ -38,19 +39,22 @@ public class ConnectionImpl implements Connection {
     private final Direction clientToServer;
     private final Direction serverToClient;
     private final ConnectionManager manager;
-    private volatile boolean partClosed;
+    private final AtomicBoolean halfClosed;
 
     public ConnectionImpl(final ConnectionManager manager, final Direction clientToServer, final Direction serverToClient) {
         this.manager = manager;
         this.clientToServer = clientToServer;
         this.serverToClient = serverToClient;
-        partClosed = false;
+        halfClosed = new AtomicBoolean(false);
+
+        final DirectionListener listener = new DirectionListener();
+        clientToServer.addListener(listener);
+        serverToClient.addListener(listener);
     }
 
     @Override
     public Direction clientToServer() {
         return clientToServer;
-
     }
 
     @Override
@@ -63,13 +67,6 @@ public class ConnectionImpl implements Connection {
         clientToServer.close();
         serverToClient.close();
         manager.unregister(this);
-    }
-
-    void partClosed() {
-        if (partClosed) {
-            manager.unregister(this);
-        }
-        partClosed = true;
     }
 
     Direction otherDirection(final Direction direction) {
@@ -89,5 +86,25 @@ public class ConnectionImpl implements Connection {
         return String.format("c - s : %s, s - c %s",
                 clientToServer,
                 serverToClient);
+    }
+
+    /**
+     * Listener for direction closes.
+     */
+    private final class DirectionListener implements Direction.Listener {
+        @Override
+        public void dataRead(Direction direction, int bytesRead) {
+        }
+
+        @Override
+        public void dataWritten(Direction direction, int bytesWritten) {
+        }
+
+        @Override
+        public void closed(Direction direction) {
+            if (!halfClosed.compareAndSet(false, true)) {
+                manager.unregister(ConnectionImpl.this);
+            }
+        }
     }
 }
