@@ -43,7 +43,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 /**
  * @author matt on 21/04/14.
  */
-public class BatchedWriteTest {
+public final class BatchedWriteTest {
     @Mock
     private IWrite write0;
     @Mock

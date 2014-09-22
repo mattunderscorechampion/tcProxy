@@ -53,7 +53,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 /**
  * @author Matt Champion on 12/03/14.
  */
-public class ReadSelectorTest {
+public final class ReadSelectorTest {
     @Mock
     private IOSelectionKey key;
     @Mock
