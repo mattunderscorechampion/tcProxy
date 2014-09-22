@@ -25,6 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -109,5 +111,22 @@ public final class ConnectionManagerTest {
         verify(listener).closedConnection(conn);
         verify(directionListener).closed(dir0);
         verify(directionListener).closed(dir1);
+    }
+
+    @Test
+    public void connectionsTest() throws IOException {
+        final ConnectionManager manager = new ConnectionManager();
+
+        final Direction dir0 = new DirectionImpl(channel0, channel1, actionQueue);
+        final Direction dir1 = new DirectionImpl(channel1, channel0, actionQueue);
+        final Connection conn = new ConnectionImpl(manager, dir0, dir1);
+
+        manager.register(conn);
+
+        assertTrue(manager.getConnections().contains(conn));
+        assertEquals(1, manager.getConnections().size());
+
+        conn.close();
+        assertEquals(0, manager.getConnections().size());
     }
 }

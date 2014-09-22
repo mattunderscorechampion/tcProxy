@@ -76,7 +76,7 @@ public final class WriteSelector implements Runnable {
         LOG.debug("{} : Stopping", this);
     }
 
-    private void registerKeys() {
+    void registerKeys() {
         final Set<DirectionAndConnection> directions = new HashSet<>();
         newDirections.drainTo(directions);
         for (final DirectionAndConnection dc : directions)
@@ -92,7 +92,7 @@ public final class WriteSelector implements Runnable {
         }
     }
 
-    private void writeBytes() {
+    void writeBytes() {
         final Set<IOSelectionKey> keys = selector.selectedKeys();
         for (final IOSelectionKey key : keys) {
             if (key.isWritable()) {

@@ -25,18 +25,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessor;
-import com.mattunderscore.tcproxy.proxy.action.processor.DefaultActionProcessor;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.proxy.action.Action;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
-import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -47,13 +43,18 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
- * @author Matt Champion on 12/03/14.
+ * @author Matt Champion on 22/09/14.
  */
-public class ReadSelectorTest {
+public final class WriteSelectorTest {
+
     @Mock
     private IOSelectionKey key;
     @Mock
@@ -66,21 +67,19 @@ public class ReadSelectorTest {
     private IOSelector selector;
     @Mock
     private ActionQueue queue;
+    @Mock
+    private Action action;
 
     private DirectionAndConnection dc;
-    private ActionProcessor processor;
-    private ReadSelectorSettings settings;
-    private BlockingQueue<Connection> newConnections;
-    private BlockingQueue<DirectionAndConnection> newDirections;
-    private ReadSelector readSelector;
+    private BlockingQueue<DirectionAndConnection> newWorkQueue;
+    private WriteSelector writeSelector;
 
     @Before
     public void setUp() {
         initMocks(this);
-        newConnections = new ArrayBlockingQueue<>(5);
-        newDirections = new ArrayBlockingQueue<>(5);
-        settings = new ReadSelectorSettings(16);
-        readSelector = new ReadSelector(selector, settings, newConnections);
+
+        newWorkQueue = new ArrayBlockingQueue<>(5);
+        writeSelector = new WriteSelector(selector, newWorkQueue);
 
         dc = new DirectionAndConnection(direction, connection);
 
@@ -90,51 +89,56 @@ public class ReadSelectorTest {
         when(direction.getFrom()).thenReturn(channel);
         when(direction.getTo()).thenReturn(channel);
         when(direction.getQueue()).thenReturn(queue);
-        processor = new DefaultActionProcessor(dc, newDirections);
-        when(direction.getProcessor()).thenReturn(processor);
-
-        when(key.attachment()).thenReturn(dc);
     }
 
     @Test
     public void registerKeys0() throws ClosedChannelException {
-        readSelector.registerKeys();
+        writeSelector.registerKeys();
 
-        verify(channel, never()).register(selector, IOSelectionKey.Op.READ, dc);
+        verify(channel, never()).register(eq(selector), eq(IOSelectionKey.Op.WRITE), isA(DirectionAndConnection.class));
     }
 
     @Test
     public void registerKeys1() throws ClosedChannelException {
-        when(channel.register(selector, IOSelectionKey.Op.READ, dc)).thenReturn(key);
-        newConnections.add(connection);
+        when(channel.register(selector, IOSelectionKey.Op.WRITE, dc)).thenReturn(key);
+        newWorkQueue.add(dc);
 
-        readSelector.registerKeys();
+        writeSelector.registerKeys();
 
-        verify(channel, times(2)).register(selector, IOSelectionKey.Op.READ, dc);
-        assertEquals(0, newConnections.size());
+        verify(channel).register(selector, IOSelectionKey.Op.WRITE, dc);
+        assertEquals(0, newWorkQueue.size());
     }
 
     @Test
-    public void readBytes() throws IOException {
+    public void writeBytes0() {
         final Set<IOSelectionKey> keys = new HashSet<>();
-        final ByteBuffer buffer = ByteBuffer.allocate(16);
         keys.add(key);
 
-        when(key.isReadable()).thenReturn(true);
+        when(key.isWritable()).thenReturn(true);
         when(key.isValid()).thenReturn(true);
         when(selector.selectedKeys()).thenReturn(keys);
-        when(queue.queueFull()).thenReturn(false);
-        when(queue.hasData()).thenReturn(false);
-        when(direction.read(buffer)).then(new Answer<Integer>() {
-            @Override
-            public Integer answer(InvocationOnMock invocationOnMock) throws Throwable {
-                buffer.put(new byte[8]);
-                return 8;
-            }
-        });
+        when(key.attachment()).thenReturn(dc);
 
-        readSelector.readBytes(buffer);
+        writeSelector.writeBytes();
 
-        assertEquals(1, newDirections.size());
+        verify(queue).hasData();
+        verify(key).cancel();
+    }
+
+    @Test
+    public void writeBytes1() throws IOException {
+        final Set<IOSelectionKey> keys = new HashSet<>();
+        keys.add(key);
+
+        when(key.isWritable()).thenReturn(true);
+        when(key.isValid()).thenReturn(true);
+        when(selector.selectedKeys()).thenReturn(keys);
+        when(key.attachment()).thenReturn(dc);
+        when(queue.hasData()).thenReturn(true);
+        when(queue.current()).thenReturn(action);
+
+        writeSelector.writeBytes();
+
+        verify(action).writeToSocket();
     }
 }
