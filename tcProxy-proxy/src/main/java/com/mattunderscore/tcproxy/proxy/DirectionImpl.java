@@ -164,7 +164,6 @@ public final class DirectionImpl implements Direction {
             LOG.info("{} : Closed", this);
             to.close();
             open = false;
-            //connection.partClosed();
             for (final Listener listener : listeners) {
                 listener.closed(this);
             }

@@ -66,7 +66,6 @@ public class ConnectionImpl implements Connection {
     public void close() throws IOException {
         clientToServer.close();
         serverToClient.close();
-        manager.unregister(this);
     }
 
     Direction otherDirection(final Direction direction) {
