@@ -54,6 +54,8 @@ public final class ConnectionManagerTest {
     private ActionQueue actionQueue;
     @Mock
     private ConnectionManager.Listener listener;
+    @Mock
+    private Direction.Listener directionListener;
 
     @Before
     public void setUp() throws IOException {
@@ -69,13 +71,15 @@ public final class ConnectionManagerTest {
     }
 
     @Test
-    public void listenerTest() throws IOException {
+    public void listenerTest0() throws IOException {
         final ConnectionManager manager = new ConnectionManager();
 
         final Direction dir0 = new DirectionImpl(channel0, channel1, actionQueue);
         final Direction dir1 = new DirectionImpl(channel1, channel0, actionQueue);
         final Connection conn = new ConnectionImpl(manager, dir0, dir1);
         manager.addListener(listener);
+        dir0.addListener(directionListener);
+        dir1.addListener(directionListener);
 
         manager.register(conn);
         verify(listener).newConnection(conn);
@@ -83,5 +87,27 @@ public final class ConnectionManagerTest {
         dir0.close();
         dir1.close();
         verify(listener).closedConnection(conn);
+        verify(directionListener).closed(dir0);
+        verify(directionListener).closed(dir1);
+    }
+
+    @Test
+    public void listenerTest1() throws IOException {
+        final ConnectionManager manager = new ConnectionManager();
+
+        final Direction dir0 = new DirectionImpl(channel0, channel1, actionQueue);
+        final Direction dir1 = new DirectionImpl(channel1, channel0, actionQueue);
+        final Connection conn = new ConnectionImpl(manager, dir0, dir1);
+        manager.addListener(listener);
+        dir0.addListener(directionListener);
+        dir1.addListener(directionListener);
+
+        manager.register(conn);
+        verify(listener).newConnection(conn);
+
+        conn.close();
+        verify(listener).closedConnection(conn);
+        verify(directionListener).closed(dir0);
+        verify(directionListener).closed(dir1);
     }
 }
