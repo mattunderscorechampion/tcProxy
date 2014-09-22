@@ -12,5 +12,11 @@
     <artifactId>tcProxy-cli-agrument-parser</artifactId>
     <name>tcProxy Command Line Argument Parser</name>
 
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

@@ -25,8 +25,50 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.cli.arguments;
 
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+
 /**
- * @author matt on 22/09/14.
+ * @author Matt Champion on 22/09/14.
  */
-public class OptionsParserTest {
+public final class OptionsParserTest {
+    @Test
+    public void test0() {
+        final Option<Integer> inboundPort = Option.create("-ip", "--ip", "Inbound port", 8085, IntegerParser.PARSER);
+
+        final OptionsParser parser = new OptionsParser(inboundPort);
+        final List<Setting<?>> parseResults = parser.parse(new String[]{"-ip", "5"});
+        final Setting<?> setting = parseResults.get(0);
+        assertEquals(1, parseResults.size());
+        assertEquals(inboundPort, setting.getOption());
+        assertEquals(5, setting.getValue());
+    }
+
+    @Test
+    public void test1() {
+        final Option<Integer> inboundPort = Option.create("-ip", "--ip", "Inbound port", 8085, IntegerParser.PARSER);
+
+        final OptionsParser parser = new OptionsParser(inboundPort);
+        final List<Setting<?>> parseResults = parser.parse(new String[]{"--ip", "5"});
+        final Setting<?> setting = parseResults.get(0);
+        assertEquals(1, parseResults.size());
+        assertEquals(inboundPort, setting.getOption());
+        assertEquals(5, setting.getValue());
+    }
+
+    @Test
+    public void test2() {
+        final Option<Integer> inboundPort = Option.create("-ip", "--ip", "Inbound port", 8085, IntegerParser.PARSER);
+
+        final OptionsParser parser = new OptionsParser(inboundPort);
+        final List<Setting<?>> parseResults = parser.parse(new String[]{"-dfgsdfsdfsd"});
+        final Setting<?> setting = parseResults.get(0);
+        assertEquals(1, parseResults.size());
+        assertEquals(inboundPort, setting.getOption());
+        assertEquals(8085, setting.getValue());
+    }
 }
