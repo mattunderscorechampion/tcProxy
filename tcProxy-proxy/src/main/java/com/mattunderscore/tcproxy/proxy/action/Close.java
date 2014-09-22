@@ -33,7 +33,7 @@ import java.io.IOException;
  * The close action.
  * @author Matt Champion on 19/02/14.
  */
-public class Close implements Action {
+public final class Close implements Action {
     public final Direction direction;
     public volatile boolean written;
 

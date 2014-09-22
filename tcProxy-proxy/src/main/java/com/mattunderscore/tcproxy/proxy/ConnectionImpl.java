@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Implementation of {@link com.mattunderscore.tcproxy.proxy.Connection}.
  * @author Matt Champion on 18/02/14.
  */
-public class ConnectionImpl implements Connection {
+public final class ConnectionImpl implements Connection {
     private final Direction clientToServer;
     private final Direction serverToClient;
     private final ConnectionManager manager;

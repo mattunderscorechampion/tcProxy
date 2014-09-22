@@ -38,7 +38,7 @@ import java.util.Queue;
  * the action queue is empty.
  * @author Matt Champion on 22/03/14.
  */
-public class DefaultActionProcessor implements ActionProcessor {
+public final class DefaultActionProcessor implements ActionProcessor {
     private final DirectionAndConnection direction;
     private final ActionQueue actionQueue;
     private final Queue<DirectionAndConnection> directions;

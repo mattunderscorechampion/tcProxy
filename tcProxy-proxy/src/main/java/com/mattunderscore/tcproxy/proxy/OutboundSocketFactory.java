@@ -37,7 +37,7 @@ import java.net.InetSocketAddress;
  * Factory for outbound sockets.
  * @author Matt Champion on 18/02/14.
  */
-public class OutboundSocketFactory {
+public final class OutboundSocketFactory {
     private final OutboundSocketSettings settings;
 
     public OutboundSocketFactory(final OutboundSocketSettings settings) {

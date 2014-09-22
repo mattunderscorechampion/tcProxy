@@ -32,7 +32,7 @@ import com.mattunderscore.tcproxy.proxy.action.Write;
  * Action processor that drops all write actions. Closed actions are passed on to the next processor in the chain,
  * @author Matt Champion on 22/03/14.
  */
-public class WriteDroppingActionProcessor implements ActionProcessor {
+public final class WriteDroppingActionProcessor implements ActionProcessor {
     private final ActionProcessor processor;
 
     /**

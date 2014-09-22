@@ -32,7 +32,7 @@ import com.mattunderscore.tcproxy.proxy.DirectionAndConnection;
  * Factory for write dropping processors.
  * @author Matt Champion on 22/03/14.
  */
-public class WriteDroppingActionProcessorFactory implements ActionProcessorFactory {
+public final class WriteDroppingActionProcessorFactory implements ActionProcessorFactory {
     @Override
     public ActionProcessor create(final Direction direction) {
         return new WriteDroppingActionProcessor(direction.getProcessor());

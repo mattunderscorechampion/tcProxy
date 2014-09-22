@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author matt on 25/08/14.
  */
-public class DelayingActionProcessorFactory implements ActionProcessorFactory {
+public final class DelayingActionProcessorFactory implements ActionProcessorFactory {
     private final long delay;
     private final TimeUnit delayUnits;
 

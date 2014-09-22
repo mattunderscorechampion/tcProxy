@@ -35,7 +35,7 @@ import java.util.Queue;
  * Factory for default action processors.
  * @author Matt Champion on 22/03/14.
  */
-public class DefaultActionProcessorFactory implements ActionProcessorFactory {
+public final class DefaultActionProcessorFactory implements ActionProcessorFactory {
     private final Connection connection;
     private final Queue<DirectionAndConnection> directions;
 

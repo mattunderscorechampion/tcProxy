@@ -34,7 +34,7 @@ import java.nio.ByteBuffer;
  * Batched write action.
  * @author matt on 20/04/14.
  */
-public class BatchedWrite implements Action {
+public final class BatchedWrite implements Action {
     private final ByteBuffer data;
     private volatile boolean flipped;
     private volatile Direction direction;

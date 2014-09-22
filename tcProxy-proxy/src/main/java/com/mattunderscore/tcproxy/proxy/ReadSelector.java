@@ -46,7 +46,7 @@ import java.util.concurrent.BlockingQueue;
  * The read selector for the proxy.
  * @author Matt Champion on 18/02/14.
  */
-public class ReadSelector implements Runnable {
+public final class ReadSelector implements Runnable {
     public static final Logger LOG = LoggerFactory.getLogger("reader");
     private volatile boolean running = false;
     private final IOSelector selector;

@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * ActionProcessor that delays calling the next processor in the chain.
  * @author Matt Champion on 22/03/14.
  */
-public class DelayingActionProcessor implements ActionProcessor {
+public final class DelayingActionProcessor implements ActionProcessor {
     private final ActionProcessor processor;
     private final ScheduledExecutorService executorService;
     private final long delay;

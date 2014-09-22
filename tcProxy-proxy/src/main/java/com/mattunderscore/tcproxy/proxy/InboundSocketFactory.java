@@ -36,7 +36,7 @@ import java.nio.channels.SocketChannel;
 /**
  * @author Matt Champion on 10/03/14.
  */
-public class InboundSocketFactory {
+public final class InboundSocketFactory {
     private final InboundSocketSettings settings;
 
     public InboundSocketFactory(final InboundSocketSettings settings) {

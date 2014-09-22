@@ -36,7 +36,7 @@ import java.util.concurrent.BlockingQueue;
  * Implementation of {@link ActionQueue}.
  * @author Matt Champion on 19/02/14.
  */
-public class ActionQueueImpl implements ActionQueue {
+public final class ActionQueueImpl implements ActionQueue {
     private final int batchSize;
     private final BlockingQueue<Action> actions;
     private volatile Action current = null;

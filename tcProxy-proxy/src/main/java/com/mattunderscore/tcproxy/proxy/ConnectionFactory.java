@@ -38,7 +38,7 @@ import java.util.Queue;
  * Factory for connections.
  * @author Matt Champion on 21/02/14.
  */
-public class ConnectionFactory {
+public final class ConnectionFactory {
 
     private final ConnectionSettings settings;
     private final ConnectionManager manager;

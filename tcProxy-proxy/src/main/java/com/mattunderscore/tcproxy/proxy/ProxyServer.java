@@ -39,7 +39,7 @@ import java.util.concurrent.BlockingQueue;
  * The proxy.
  * @author Matt Champion on 18/02/14.
  */
-public class ProxyServer {
+public final class ProxyServer {
     private static final Logger LOG = LoggerFactory.getLogger("proxy");
     private final Acceptor acceptor;
     private final WriteSelector writer;

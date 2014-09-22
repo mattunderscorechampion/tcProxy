@@ -42,7 +42,7 @@ import java.nio.channels.ClosedByInterruptException;
  * The acceptor.
  * @author Matt Champion on 18/02/14.
  */
-public class Acceptor implements Runnable {
+public final class Acceptor implements Runnable {
     public static final Logger LOG = LoggerFactory.getLogger("acceptor");
     private final AcceptorSettings settings;
     private final InboundSocketSettings inboundSettings;

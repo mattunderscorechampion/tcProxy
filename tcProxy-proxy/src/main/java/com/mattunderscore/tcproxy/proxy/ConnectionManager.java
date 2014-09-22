@@ -32,7 +32,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * Manager for connections.
  * @author Matt Champion on 22/02/14.
  */
-public class ConnectionManager {
+public final class ConnectionManager {
     private final Set<Connection> connections = new CopyOnWriteArraySet<>();
     private final Set<Listener> listeners = new CopyOnWriteArraySet<>();
 

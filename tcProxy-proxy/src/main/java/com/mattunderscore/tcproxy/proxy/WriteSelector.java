@@ -43,7 +43,7 @@ import java.util.concurrent.BlockingQueue;
  * The write selector for the proxy.
  * @author Matt Champion on 19/02/14.
  */
-public class WriteSelector implements Runnable {
+public final class WriteSelector implements Runnable {
     public static final Logger LOG = LoggerFactory.getLogger("writer");
     private final IOSelector selector;
     private final BlockingQueue<DirectionAndConnection> newDirections;
