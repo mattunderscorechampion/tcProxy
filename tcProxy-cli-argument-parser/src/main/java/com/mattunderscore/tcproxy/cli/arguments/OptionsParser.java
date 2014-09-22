@@ -25,10 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.cli.arguments;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author matt on 23/08/14.
@@ -76,13 +73,13 @@ public final class OptionsParser {
                 }
             }
         }
-        final List<Option<?>> unfoundOptions = getUnfoundOptions(foundOptions);
+        final Set<Option<?>> unfoundOptions = getUnfoundOptions(foundOptions);
         settings.addAll(getDefaults(unfoundOptions));
         return settings;
     }
 
-    private List<Option<?>> getUnfoundOptions(List<Option<?>> foundOptions) {
-        final List<Option<?>> unfoundOptions = new ArrayList<>();
+    private Set<Option<?>> getUnfoundOptions(List<Option<?>> foundOptions) {
+        final Set<Option<?>> unfoundOptions = new HashSet<>();
         for (final Option<?> option : flagMap.values()) {
             if (!foundOptions.contains(option) && option.getParser() != null) {
                 unfoundOptions.add(option);
@@ -91,7 +88,7 @@ public final class OptionsParser {
         return unfoundOptions;
     }
 
-    private List<Setting<?>> getDefaults(List<Option<?>> options) {
+    private List<Setting<?>> getDefaults(Set<Option<?>> options) {
         final List<Setting<?>> settings = new ArrayList<>();
         for (Option<?> option : options) {
             settings.add(Setting.create(option));
