@@ -14,5 +14,11 @@
     <description>An IO API that wraps the Java Standard Library to provide interfaces for all components making it more
         testable.</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>
