@@ -44,4 +44,9 @@ public interface IOSelector {
      * @return The set of selection keys provided by the last selection operation.
      */
     Set<IOSelectionKey> selectedKeys();
+
+    /**
+     * @return The set of registered selection keys, may include cancelled keys.
+     */
+    Set<IOSelectionKey> keys();
 }

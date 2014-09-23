@@ -60,4 +60,15 @@ final class IOSelectorImpl implements IOSelector {
             return new IOSelectionKeyImplSet(keys);
         }
     }
+
+    @Override
+    public Set<IOSelectionKey> keys() {
+        final Set<SelectionKey> keys = selectorDelegate.keys();
+        if (keys.size() == 0) {
+            return Collections.emptySet();
+        }
+        else {
+            return new IOSelectionKeyImplSet(keys);
+        }
+    }
 }
