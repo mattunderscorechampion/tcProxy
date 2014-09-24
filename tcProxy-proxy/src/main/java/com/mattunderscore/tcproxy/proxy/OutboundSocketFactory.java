@@ -52,7 +52,9 @@ public final class OutboundSocketFactory {
         final InetSocketAddress remote = new InetSocketAddress(settings.getHost(), settings.getPort());
         channel.bind(null);
         channel.connect(remote);
-        channel.finishConnect();
+        while (!channel.finishConnect()) {
+          // TODO: Backoff
+        }
         return channel;
     }
 }
