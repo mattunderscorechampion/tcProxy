@@ -29,6 +29,8 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
 import com.mattunderscore.tcproxy.io.IOSocketOption;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -38,6 +40,8 @@ import java.net.InetSocketAddress;
  * @author Matt Champion on 18/02/14.
  */
 public final class OutboundSocketFactory {
+    private static final Logger LOG = LoggerFactory.getLogger("outbound socket factory");
+    private static final long backOff = 5L;
     private final OutboundSocketSettings settings;
 
     public OutboundSocketFactory(final OutboundSocketSettings settings) {
@@ -53,7 +57,11 @@ public final class OutboundSocketFactory {
         channel.bind(null);
         channel.connect(remote);
         while (!channel.finishConnect()) {
-          // TODO: Backoff
+            try {
+                Thread.sleep(backOff);
+            } catch (InterruptedException e) {
+                LOG.debug("Interrupted while waiting for socket to be connected");
+            }
         }
         return channel;
     }
