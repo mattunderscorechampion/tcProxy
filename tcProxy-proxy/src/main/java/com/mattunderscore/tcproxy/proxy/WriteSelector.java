@@ -48,7 +48,7 @@ public final class WriteSelector extends AbstractSelector {
     private final BlockingQueue<DirectionAndConnection> newDirections;
 
     public WriteSelector(final IOSelector selector, final BlockingQueue<DirectionAndConnection> newDirections) {
-        super(selector);
+        super(selector, new BinaryBackoff(1L));
         this.newDirections = newDirections;
     }
 

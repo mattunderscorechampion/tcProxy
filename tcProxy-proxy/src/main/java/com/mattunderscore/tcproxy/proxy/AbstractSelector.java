@@ -40,10 +40,12 @@ import java.util.Set;
  */
 public abstract class AbstractSelector implements Runnable {
     private final IOSelector selector;
+    private final SelectorBackoff backoff;
     private volatile boolean running = false;
 
-    protected AbstractSelector(IOSelector selector) {
+    protected AbstractSelector(IOSelector selector, SelectorBackoff backoff) {
         this.selector = selector;
+        this.backoff = backoff;
     }
 
     @Override
@@ -62,7 +64,10 @@ public abstract class AbstractSelector implements Runnable {
             final Set<IOSelectionKey> selectedKeys = selector.selectedKeys();
             if (selectedKeys.size() > 0) {
                 processKeys(selectedKeys);
+                backoff.selected(selectedKeys.size());
             }
+
+            backoff.backoff();
         }
         getLogger().debug("{} : Stopped", this);
     }

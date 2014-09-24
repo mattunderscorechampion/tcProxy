@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.HashSet;
@@ -53,7 +52,7 @@ public final class ReadSelector extends AbstractSelector {
     private final ByteBuffer readBuffer;
 
     public ReadSelector(final IOSelector selector, final ReadSelectorSettings settings, final BlockingQueue<Connection> newConnections) {
-        super(selector);
+        super(selector, new BinaryBackoff(1L));
         this.newConnections = newConnections;
         readBuffer = ByteBuffer.allocate(settings.getReadBufferSize());
     }
