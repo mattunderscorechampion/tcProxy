@@ -43,40 +43,21 @@ import java.util.concurrent.BlockingQueue;
  * The write selector for the proxy.
  * @author Matt Champion on 19/02/14.
  */
-public final class WriteSelector implements Runnable {
+public final class WriteSelector extends AbstractSelector {
     public static final Logger LOG = LoggerFactory.getLogger("writer");
-    private final IOSelector selector;
     private final BlockingQueue<DirectionAndConnection> newDirections;
-    private volatile boolean running = false;
 
     public WriteSelector(final IOSelector selector, final BlockingQueue<DirectionAndConnection> newDirections) {
-        this.selector = selector;
+        super(selector);
         this.newDirections = newDirections;
     }
 
     @Override
-    public void run() {
-        LOG.debug("{} : Starting", this);
-        running = true;
-        while (running) {
-            try {
-                selector.selectNow();
-            } catch (final IOException e) {
-                LOG.debug("{} : Error selecting keys", this, e);
-            }
-
-            registerKeys();
-
-            writeBytes();
-        }
+    protected Logger getLogger() {
+        return LOG;
     }
 
-    public void stop() {
-        running = false;
-        LOG.debug("{} : Stopping", this);
-    }
-
-    void registerKeys() {
+    protected void registerKeys() {
         final Set<DirectionAndConnection> directions = new HashSet<>();
         newDirections.drainTo(directions);
         for (final DirectionAndConnection dc : directions)
@@ -84,7 +65,7 @@ public final class WriteSelector implements Runnable {
             final Direction direction = dc.getDirection();
             final IOSocketChannel channel = direction.getTo();
             try {
-                channel.register(selector, IOSelectionKey.Op.WRITE, dc);
+                register(channel, IOSelectionKey.Op.WRITE, dc);
             }
             catch (final ClosedChannelException e) {
                 LOG.debug("{} : The destination of {} is already closed", this, direction);
@@ -92,8 +73,8 @@ public final class WriteSelector implements Runnable {
         }
     }
 
-    void writeBytes() {
-        final Set<IOSelectionKey> keys = selector.selectedKeys();
+    @Override
+    protected void processKeys(Set<IOSelectionKey> keys) {
         for (final IOSelectionKey key : keys) {
             if (key.isWritable()) {
                 final DirectionAndConnection dc = (DirectionAndConnection) key.attachment();

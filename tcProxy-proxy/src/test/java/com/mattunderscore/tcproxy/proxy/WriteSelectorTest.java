@@ -35,7 +35,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.util.HashSet;
 import java.util.Set;
@@ -119,7 +118,7 @@ public final class WriteSelectorTest {
         when(selector.selectedKeys()).thenReturn(keys);
         when(key.attachment()).thenReturn(dc);
 
-        writeSelector.writeBytes();
+        writeSelector.processKeys(keys);
 
         verify(queue).hasData();
         verify(key).cancel();
@@ -137,7 +136,7 @@ public final class WriteSelectorTest {
         when(queue.hasData()).thenReturn(true);
         when(queue.current()).thenReturn(action);
 
-        writeSelector.writeBytes();
+        writeSelector.processKeys(keys);
 
         verify(action).writeToSocket();
     }

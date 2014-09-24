@@ -122,7 +122,6 @@ public final class ReadSelectorTest {
 
         when(key.isReadable()).thenReturn(true);
         when(key.isValid()).thenReturn(true);
-        when(selector.selectedKeys()).thenReturn(keys);
         when(queue.queueFull()).thenReturn(false);
         when(queue.hasData()).thenReturn(false);
         when(direction.read(buffer)).then(new Answer<Integer>() {
@@ -133,7 +132,7 @@ public final class ReadSelectorTest {
             }
         });
 
-        readSelector.readBytes(buffer);
+        readSelector.readBytes(key, buffer);
 
         assertEquals(1, newDirections.size());
     }

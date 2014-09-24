@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.HashSet;
@@ -46,44 +47,19 @@ import java.util.concurrent.BlockingQueue;
  * The read selector for the proxy.
  * @author Matt Champion on 18/02/14.
  */
-public final class ReadSelector implements Runnable {
+public final class ReadSelector extends AbstractSelector {
     public static final Logger LOG = LoggerFactory.getLogger("reader");
-    private volatile boolean running = false;
-    private final IOSelector selector;
-    private final ReadSelectorSettings settings;
     private final BlockingQueue<Connection> newConnections;
+    private final ByteBuffer readBuffer;
 
     public ReadSelector(final IOSelector selector, final ReadSelectorSettings settings, final BlockingQueue<Connection> newConnections) {
-        this.selector = selector;
-        this.settings = settings;
+        super(selector);
         this.newConnections = newConnections;
-    }
-
-    public void stop() {
-        running = false;
-        LOG.debug("{} : Stopping", this);
+        readBuffer = ByteBuffer.allocate(settings.getReadBufferSize());
     }
 
     @Override
-    public void run() {
-        LOG.debug("{} : Starting", this);
-        final ByteBuffer buffer = ByteBuffer.allocate(settings.getReadBufferSize());
-        running = true;
-        while (running) {
-            try {
-                selector.selectNow();
-            }
-            catch (final IOException e) {
-                LOG.debug("{} : Error selecting", this, e);
-            }
-
-            registerKeys();
-
-            readBytes(buffer);
-        }
-    }
-
-    void registerKeys() {
+    protected void registerKeys() {
         final Set<Connection> connections = new HashSet<>();
         newConnections.drainTo(connections);
         for (final Connection connection : connections) {
@@ -91,12 +67,12 @@ public final class ReadSelector implements Runnable {
                 final Direction cTs = connection.clientToServer();
                 final DirectionAndConnection dc0 = new DirectionAndConnection(cTs, connection);
                 final IOSocketChannel channel0 = cTs.getFrom();
-                channel0.register(selector, IOSelectionKey.Op.READ, dc0);
+                register(channel0, IOSelectionKey.Op.READ, dc0);
 
                 final Direction sTc = connection.serverToClient();
                 final DirectionAndConnection dc1 = new DirectionAndConnection(sTc, connection);
                 final IOSocketChannel channel1 = sTc.getFrom();
-                channel1.register(selector, IOSelectionKey.Op.READ, dc1);
+                register(channel1, IOSelectionKey.Op.READ, dc1);
             }
             catch (final IOException e) {
                 LOG.debug("{} : Error registering", this, e);
@@ -104,45 +80,54 @@ public final class ReadSelector implements Runnable {
         }
     }
 
-    void readBytes(final ByteBuffer buffer) {
-        final Set<IOSelectionKey> selectionKeys = selector.selectedKeys();
-        for (final IOSelectionKey key : selectionKeys) {
-            if (key.isValid() && key.isReadable()) {
-                final DirectionAndConnection dc = (DirectionAndConnection)key.attachment();
-                final Direction direction = dc.getDirection();
-                final ActionQueue queue = direction.getQueue();
-                if (!queue.queueFull()) {
-                    buffer.position(0);
-                    final ByteChannel channel = direction.getFrom();
-                    try {
-                        final int bytes = direction.read(buffer);
-                        if (bytes > 0) {
-                            buffer.flip();
-                            final ByteBuffer writeBuffer = ByteBuffer.allocate(buffer.limit());
-                            writeBuffer.put(buffer);
-                            writeBuffer.flip();
+    @Override
+    protected void processKeys(Set<IOSelectionKey> selectedKeys) {
+        for (final IOSelectionKey key : selectedKeys) {
+            readBytes(key, readBuffer);
+        }
+    }
 
-                            informOfData(direction, writeBuffer);
-                        }
-                        else if (bytes == -1) {
-                            key.cancel();
-                            informOfClose(direction);
-                            final ConnectionImpl conn = (ConnectionImpl) dc.getConnection();
-                            final Direction otherDirection = conn.otherDirection(direction);
-                            LOG.debug("{} : Closed {} ", this, otherDirection);
-                            otherDirection.close();
-                        }
+    void readBytes(IOSelectionKey key, ByteBuffer buffer) {
+        if (key.isValid() && key.isReadable()) {
+            final DirectionAndConnection dc = (DirectionAndConnection)key.attachment();
+            final Direction direction = dc.getDirection();
+            final ActionQueue queue = direction.getQueue();
+            if (!queue.queueFull()) {
+                buffer.position(0);
+                final ByteChannel channel = direction.getFrom();
+                try {
+                    final int bytes = direction.read(buffer);
+                    if (bytes > 0) {
+                        buffer.flip();
+                        final ByteBuffer writeBuffer = ByteBuffer.allocate(buffer.limit());
+                        writeBuffer.put(buffer);
+                        writeBuffer.flip();
+
+                        informOfData(direction, writeBuffer);
                     }
-                    catch (final ClosedChannelException e) {
-                        LOG.debug("{} : Channel {} already closed", this, channel);
+                    else if (bytes == -1) {
                         key.cancel();
+                        informOfClose(direction);
+                        final ConnectionImpl conn = (ConnectionImpl) dc.getConnection();
+                        final Direction otherDirection = conn.otherDirection(direction);
+                        LOG.debug("{} : Closed {} ", this, otherDirection);
+                        otherDirection.close();
                     }
-                    catch (final IOException e) {
-                        LOG.debug("{} : Error on channel {}, {}", this, channel, key, e);
-                    }
+                }
+                catch (final ClosedChannelException e) {
+                    LOG.debug("{} : Channel {} already closed", this, channel);
+                    key.cancel();
+                }
+                catch (final IOException e) {
+                    LOG.debug("{} : Error on channel {}, {}", this, channel, key, e);
                 }
             }
         }
+    }
+
+    @Override
+    protected Logger getLogger() {
+        return LOG;
     }
 
     void informOfData(final Direction direction, final ByteBuffer write) {
