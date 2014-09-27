@@ -87,8 +87,12 @@ public final class ReadSelector extends AbstractSelector {
     }
 
     void readBytes(IOSelectionKey key, ByteBuffer buffer) {
-        if (key.isValid() && key.isReadable()) {
-            final DirectionAndConnection dc = (DirectionAndConnection)key.attachment();
+        final DirectionAndConnection dc = (DirectionAndConnection)key.attachment();
+        if (!key.isValid()) {
+            LOG.debug("{} : Selected key no longer valid, closing connection", this);
+            closeConnection(dc.getConnection());
+        }
+        else if (key.isReadable()) {
             final Direction direction = dc.getDirection();
             final ActionQueue queue = direction.getQueue();
             if (!queue.queueFull()) {
@@ -122,11 +126,22 @@ public final class ReadSelector extends AbstractSelector {
                 }
             }
         }
+        else {
+            LOG.debug("{} : Unexpected key state {}", this, key);
+        }
     }
 
-    @Override
-    protected Logger getLogger() {
-        return LOG;
+    /**
+     * Close the connection and log any exception.
+     * @param conn The connection to close
+     */
+    private void closeConnection(Connection conn) {
+        try {
+            conn.close();
+        }
+        catch (IOException e) {
+            LOG.warn("{} : Error closing connection", this, e);
+        }
     }
 
     void informOfData(final Direction direction, final ByteBuffer write) {
@@ -135,6 +150,11 @@ public final class ReadSelector extends AbstractSelector {
 
     void informOfClose(final Direction direction) {
         direction.getProcessor().process(new Close(direction));
+    }
+
+    @Override
+    protected Logger getLogger() {
+        return LOG;
     }
 
     @Override

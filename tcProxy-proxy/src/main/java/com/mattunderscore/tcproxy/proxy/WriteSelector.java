@@ -76,8 +76,12 @@ public final class WriteSelector extends AbstractSelector {
     @Override
     protected void processKeys(Set<IOSelectionKey> keys) {
         for (final IOSelectionKey key : keys) {
-            if (key.isWritable()) {
-                final DirectionAndConnection dc = (DirectionAndConnection) key.attachment();
+            final DirectionAndConnection dc = (DirectionAndConnection) key.attachment();
+            if (!key.isValid()) {
+                LOG.debug("{} : Selected key no longer valid, closing connection", this);
+                closeConnection(dc.getConnection());
+            }
+            else if (key.isWritable()) {
                 final Direction direction = dc.getDirection();
                 final ActionQueue write = direction.getQueue();
 
@@ -85,23 +89,42 @@ public final class WriteSelector extends AbstractSelector {
                     try {
                         if (write.hasData()) {
                             final Action data = write.current();
-                            data.writeToSocket();
-                        } else {
+                            if (key.isValid()) {
+                                data.writeToSocket();
+                            }
+                            else {
+                                LOG.debug("{} : Selected key no longer valid, closing connection", this);
+                                closeConnection(dc.getConnection());
+                            }
+                        }
+                        else {
                             LOG.debug("{} : Finished queued actions, cancel key", this);
                             key.cancel();
                         }
                     }
-                    catch( final IOException e){
+                    catch (final IOException e) {
                         LOG.warn("{} : Error writing", this, e);
                         key.cancel();
-                        try {
-                            dc.getConnection().close();
-                        } catch (IOException e1) {
-                            LOG.warn("{} : Error closing connection", this, e);
-                        }
+                        closeConnection(dc.getConnection());
                     }
                 }
             }
+            else {
+                LOG.debug("{} : Unexpected key state {}", this, key);
+            }
+        }
+    }
+
+    /**
+     * Close the connection and log any exception.
+     * @param conn The connection to close
+     */
+    private void closeConnection(Connection conn) {
+        try {
+            conn.close();
+        }
+        catch (IOException e) {
+            LOG.warn("{} : Error closing connection", this, e);
         }
     }
 
