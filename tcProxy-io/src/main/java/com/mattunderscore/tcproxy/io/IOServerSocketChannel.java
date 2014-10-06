@@ -28,15 +28,25 @@ package com.mattunderscore.tcproxy.io;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 import java.io.IOException;
+import java.nio.channels.ClosedChannelException;
 
 /**
  * A server socket channel.
  * @author Matt Champion on 13/03/14.
  */
-public interface IOServerSocketChannel extends IOSocket, IOChannel {
+public interface IOServerSocketChannel extends IOSocket {
     /**
      * @return An inbound IOSocketChannel attempting to connect to the server.
      * @throws IOException
      */
     IOSocketChannel accept() throws IOException;
+
+    /**
+     * Register a server socket channel with a selector for accepting connections.
+     * @param selector
+     * @param att
+     * @return
+     * @throws ClosedChannelException
+     */
+    IOSelectionKey register(IOSelector selector, Object att) throws ClosedChannelException;
 }
