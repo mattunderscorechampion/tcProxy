@@ -71,4 +71,9 @@ final class IOSelectorImpl implements IOSelector {
             return new IOSelectionKeyImplSet(keys);
         }
     }
+
+    @Override
+    public void close() throws IOException {
+        selectorDelegate.close();
+    }
 }

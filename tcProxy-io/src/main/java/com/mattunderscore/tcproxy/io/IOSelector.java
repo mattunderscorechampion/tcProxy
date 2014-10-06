@@ -49,4 +49,10 @@ public interface IOSelector {
      * @return The set of registered selection keys, may include cancelled keys.
      */
     Set<IOSelectionKey> keys();
+
+    /**
+     * Close the selector. Any selection keys that have not been cancelled will be invalidated and their channels
+     * deregistered.
+     */
+    void close() throws IOException;
 }
