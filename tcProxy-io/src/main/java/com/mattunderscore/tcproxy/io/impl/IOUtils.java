@@ -82,6 +82,18 @@ final class IOUtils {
         else if (option == IOSocketOption.BLOCKING) {
             selectableChannel.configureBlocking((Boolean) value);
         }
+        else if (option == IOSocketOption.KEEP_ALIVE) {
+            networkChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, (Boolean) value);
+        }
+        else if (option == IOSocketOption.LINGER) {
+            networkChannel.setOption(StandardSocketOptions.SO_LINGER, (Integer) value);
+        }
+        else if (option == IOSocketOption.REUSE_ADDRESS) {
+            networkChannel.setOption(StandardSocketOptions.SO_REUSEADDR, (Boolean) value);
+        }
+        else if (option == IOSocketOption.TCP_NO_DELAY) {
+            networkChannel.setOption(StandardSocketOptions.TCP_NODELAY, (Boolean) value);
+        }
         else {
             throw new IllegalStateException("Unknown socket option");
         }

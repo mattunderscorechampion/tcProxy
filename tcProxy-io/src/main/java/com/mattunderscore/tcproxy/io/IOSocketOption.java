@@ -42,6 +42,22 @@ public final class IOSocketOption<T> {
      * Socket option blocking socket.
      */
     public final static IOSocketOption<Boolean> BLOCKING = new IOSocketOption<>();
+    /**
+     * Socket option for SO_KEEP_ALIVE.
+     */
+    public static final IOSocketOption<Boolean> KEEP_ALIVE = new IOSocketOption<>();
+    /**
+     * Socket option for SO_LINGER.
+     */
+    public static final IOSocketOption<Integer> LINGER = new IOSocketOption<>();
+    /**
+     * Socket option for SO_REUSEADDR.
+     */
+    public static final IOSocketOption<Boolean> REUSE_ADDRESS = new IOSocketOption<>();
+    /**
+     * Socket option for TCP_NODELAY.
+     */
+    public static final IOSocketOption<Boolean> TCP_NO_DELAY = new IOSocketOption<>();
 
     private IOSocketOption() {
     }
