@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.io;
 
 import java.nio.channels.SelectionKey;
+import java.util.Set;
 
 /**
  * Provides a selection key for use with this package.
@@ -37,6 +38,16 @@ public interface IOSelectionKey {
      * @return {@code true} if the key is valid.
      */
     boolean isValid();
+
+    /**
+     * @return {@code true} if the keys channel is ready for accepting.
+     */
+    boolean isAcceptable();
+
+    /**
+     * @return {@code true} if the keys channel is ready for connecting.
+     */
+    boolean isConnectable();
 
     /**
      * @return {@code true} if the keys channel is ready for reading.
@@ -60,6 +71,16 @@ public interface IOSelectionKey {
     Object attachment();
 
     /**
+     * @return The set of interested operations.
+     */
+    Set<Op> interestedOperations();
+
+    /**
+     * @return The set of ready operations.
+     */
+    Set<Op> readyOperations();
+
+    /**
      * The available operations that a selection key may be interested in.
      */
     enum Op {
@@ -68,7 +89,6 @@ public interface IOSelectionKey {
          */
         ACCEPT(SelectionKey.OP_ACCEPT),
         /**
-         *
          * Selection operation for connecting.
          */
         CONNECT(SelectionKey.OP_CONNECT),

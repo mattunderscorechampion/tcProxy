@@ -28,6 +28,7 @@ package com.mattunderscore.tcproxy.io.impl;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 
 import java.nio.channels.SelectionKey;
+import java.util.Set;
 
 /**
  * Implementation of {@link com.mattunderscore.tcproxy.io.IOSelectionKey}. Delegates to {@link SelectionKey}.
@@ -43,6 +44,16 @@ final class IOSelectionKeyImpl implements IOSelectionKey {
     @Override
     public boolean isValid() {
         return keyDelegate.isValid();
+    }
+
+    @Override
+    public boolean isAcceptable() {
+        return keyDelegate.isAcceptable();
+    }
+
+    @Override
+    public boolean isConnectable() {
+        return keyDelegate.isConnectable();
     }
 
     @Override
@@ -63,6 +74,16 @@ final class IOSelectionKeyImpl implements IOSelectionKey {
     @Override
     public Object attachment() {
         return keyDelegate.attachment();
+    }
+
+    @Override
+    public Set<Op> interestedOperations() {
+        return IOUtils.mapToIntFromOps(keyDelegate.interestOps());
+    }
+
+    @Override
+    public Set<Op> readyOperations() {
+        return IOUtils.mapToIntFromOps(keyDelegate.interestOps());
     }
 
     @Override

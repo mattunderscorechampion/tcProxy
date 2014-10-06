@@ -33,6 +33,7 @@ import java.net.StandardSocketOptions;
 import java.nio.channels.NetworkChannel;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
+import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -55,6 +56,28 @@ final class IOUtils {
             case WRITE: return SelectionKey.OP_WRITE;
             default: throw new IllegalStateException("Unknown op");
         }
+    }
+
+    /**
+     * Map from int to enum set.
+     * @param ops The int value.
+     * @return The operation set.
+     */
+    static Set<IOSelectionKey.Op> mapToIntFromOps(int ops) {
+        final EnumSet<IOSelectionKey.Op> set = EnumSet.noneOf(IOSelectionKey.Op.class);
+        if ((ops & SelectionKey.OP_READ) > 0) {
+            set.add(IOSelectionKey.Op.READ);
+        }
+        if ((ops & SelectionKey.OP_WRITE) > 0) {
+            set.add(IOSelectionKey.Op.WRITE);
+        }
+        if ((ops & SelectionKey.OP_ACCEPT) > 0) {
+            set.add(IOSelectionKey.Op.ACCEPT);
+        }
+        if ((ops & SelectionKey.OP_CONNECT) > 0) {
+            set.add(IOSelectionKey.Op.CONNECT);
+        }
+        return set;
     }
 
     /**
