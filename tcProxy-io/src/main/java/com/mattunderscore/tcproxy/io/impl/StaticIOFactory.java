@@ -30,14 +30,13 @@ import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 import java.io.IOException;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
 
 /**
+ * Static implementation of IO factory for convenience.
  * @author Matt Champion on 13/03/14.
  */
 public final class StaticIOFactory {
+    private static final IOFactoryImpl FACTORY = new IOFactoryImpl();
     private StaticIOFactory() {
     }
 
@@ -46,7 +45,7 @@ public final class StaticIOFactory {
      * @throws IOException
      */
     public static IOSelector openSelector() throws IOException {
-        return new IOSelectorImpl(Selector.open());
+        return FACTORY.openSelector();
     }
 
     /**
@@ -54,7 +53,7 @@ public final class StaticIOFactory {
      * @throws IOException
      */
     public static IOSocketChannel openSocket() throws IOException {
-        return new IOSocketChannelImpl(SocketChannel.open());
+        return FACTORY.openSocket();
     }
 
     /**
@@ -62,6 +61,6 @@ public final class StaticIOFactory {
      * @throws IOException
      */
     public static IOServerSocketChannel openServerSocket() throws IOException {
-        return new IOServerSocketChannelImpl(ServerSocketChannel.open());
+        return FACTORY.openServerSocket();
     }
 }

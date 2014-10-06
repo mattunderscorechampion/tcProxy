@@ -36,6 +36,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
 /**
+ * Factory implementation for sockets and selectors.
  * @author matt on 30/06/14.
  */
 public final class IOFactoryImpl implements IOFactory {
