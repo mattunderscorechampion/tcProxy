@@ -25,15 +25,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.impl;
 
-import com.mattunderscore.tcproxy.io.*;
-
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
-import java.util.EnumSet;
-import java.util.Set;
+
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 /**
  * @author Matt Champion on 13/03/14.
@@ -72,7 +74,8 @@ final class IOServerSocketChannelImpl implements IOServerSocketChannel {
 
     @Override
     public <T> void setOption(final IOSocketOption<T> option, final T value) throws IOException {
-        IOUtils.applySocketOption(socketDelegate, option, value);
+        final IOSocketOptionImpl<T> optionImpl = IOUtils.convertSocketOption(option);
+        optionImpl.apply(socketDelegate, value);
     }
 
     @Override

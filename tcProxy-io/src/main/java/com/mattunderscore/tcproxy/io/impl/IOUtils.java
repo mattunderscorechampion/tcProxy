@@ -25,16 +25,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.impl;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSocketOption;
-
-import java.io.IOException;
-import java.net.StandardSocketOptions;
-import java.nio.channels.NetworkChannel;
-import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.util.EnumSet;
 import java.util.Set;
+
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 /**
  * @author Matt Champion on 13/03/14.
@@ -93,29 +89,28 @@ final class IOUtils {
         return sum;
     }
 
-    static void applySocketOption(final Object channel, IOSocketOption<?> option, Object value) throws IOException {
-        final NetworkChannel networkChannel = (NetworkChannel)channel;
-        final SelectableChannel selectableChannel = (SelectableChannel)channel;
+    @SuppressWarnings("unchecked")
+    static <T> IOSocketOptionImpl<T> convertSocketOption(IOSocketOption<T> option) {
         if (option == IOSocketOption.RECEIVE_BUFFER) {
-            networkChannel.setOption(StandardSocketOptions.SO_RCVBUF, (Integer) value);
+            return (IOSocketOptionImpl<T>) IOSocketOptionImpl.RECEIVE_BUFFER;
         }
         else if (option == IOSocketOption.SEND_BUFFER) {
-            networkChannel.setOption(StandardSocketOptions.SO_SNDBUF, (Integer) value);
+            return (IOSocketOptionImpl<T>) IOSocketOptionImpl.SEND_BUFFER;
         }
         else if (option == IOSocketOption.BLOCKING) {
-            selectableChannel.configureBlocking((Boolean) value);
+            return (IOSocketOptionImpl<T>) IOSocketOptionImpl.BLOCKING;
         }
         else if (option == IOSocketOption.KEEP_ALIVE) {
-            networkChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, (Boolean) value);
+            return (IOSocketOptionImpl<T>) IOSocketOptionImpl.KEEP_ALIVE;
         }
         else if (option == IOSocketOption.LINGER) {
-            networkChannel.setOption(StandardSocketOptions.SO_LINGER, (Integer) value);
+            return (IOSocketOptionImpl<T>) IOSocketOptionImpl.LINGER;
         }
         else if (option == IOSocketOption.REUSE_ADDRESS) {
-            networkChannel.setOption(StandardSocketOptions.SO_REUSEADDR, (Boolean) value);
+            return (IOSocketOptionImpl<T>) IOSocketOptionImpl.REUSE_ADDRESS;
         }
         else if (option == IOSocketOption.TCP_NO_DELAY) {
-            networkChannel.setOption(StandardSocketOptions.TCP_NODELAY, (Boolean) value);
+            return (IOSocketOptionImpl<T>) IOSocketOptionImpl.TCP_NO_DELAY;
         }
         else {
             throw new IllegalStateException("Unknown socket option");
