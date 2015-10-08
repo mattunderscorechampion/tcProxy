@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>tcProxy-cli-agrument-parser</artifactId>
+    <artifactId>tcProxy-cli-argument-parser</artifactId>
     <name>tcProxy Command Line Argument Parser</name>
 
     <dependencies>
