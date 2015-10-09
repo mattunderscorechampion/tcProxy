@@ -43,19 +43,19 @@ import java.nio.channels.SocketChannel;
  * Socket options that can be applied to {@link SocketChannel} and {@link ServerSocketChannel}.
  * @author Matt Champion on 08/10/2015
  */
-interface IOSocketOptionImpl<T> {
+interface InternalIOSocketOption<T> {
     /**
      * Socket option for SO_RCVBUF.
      */
-    IOSocketOptionImpl<Integer> RECEIVE_BUFFER = new BasicOption<>(SO_RCVBUF);
+    InternalIOSocketOption<Integer> RECEIVE_BUFFER = new BasicOption<>(SO_RCVBUF);
     /**
      * Socket option for SO_SNDBUF.
      */
-    IOSocketOptionImpl<Integer> SEND_BUFFER = new BasicOption<>(SO_SNDBUF);
+    InternalIOSocketOption<Integer> SEND_BUFFER = new BasicOption<>(SO_SNDBUF);
     /**
      * Socket option blocking socket.
      */
-    IOSocketOptionImpl<Boolean> BLOCKING = new IOSocketOptionImpl<Boolean>() {
+    InternalIOSocketOption<Boolean> BLOCKING = new InternalIOSocketOption<Boolean>() {
         @Override
         public void apply(Object channel, Boolean value) throws IOException {
             ((SelectableChannel)channel).configureBlocking(value);
@@ -64,30 +64,30 @@ interface IOSocketOptionImpl<T> {
     /**
      * Socket option for SO_KEEP_ALIVE.
      */
-    IOSocketOptionImpl<Boolean> KEEP_ALIVE = new BasicOption<>(SO_KEEPALIVE);
+    InternalIOSocketOption<Boolean> KEEP_ALIVE = new BasicOption<>(SO_KEEPALIVE);
     /**
      * Socket option for SO_LINGER.
      */
-    IOSocketOptionImpl<Integer> LINGER = new BasicOption<>(SO_LINGER);
+    InternalIOSocketOption<Integer> LINGER = new BasicOption<>(SO_LINGER);
     /**
      * Socket option for SO_REUSEADDR.
      */
-    IOSocketOptionImpl<Boolean> REUSE_ADDRESS = new BasicOption<>(SO_REUSEADDR);
+    InternalIOSocketOption<Boolean> REUSE_ADDRESS = new BasicOption<>(SO_REUSEADDR);
     /**
      * Socket option for TCP_NODELAY.
      */
-    IOSocketOptionImpl<Boolean> TCP_NO_DELAY = new BasicOption<>(TCP_NODELAY);
+    InternalIOSocketOption<Boolean> TCP_NO_DELAY = new BasicOption<>(TCP_NODELAY);
 
     /**
-     * Apply an {@link IOSocketOptionImpl} to a channel.
+     * Apply an {@link InternalIOSocketOption} to a channel.
      */
     void apply(Object channel, T value) throws IOException;
 
     /**
-     * Apply an {@link IOSocketOptionImpl} as a {@link SocketOption}.
+     * Apply an {@link InternalIOSocketOption} as a {@link SocketOption}.
      * @param <T> The type of value the option takes
      */
-    final class BasicOption<T> implements IOSocketOptionImpl<T> {
+    final class BasicOption<T> implements InternalIOSocketOption<T> {
         private final SocketOption<T> option;
 
         private BasicOption(SocketOption<T> option) {

@@ -90,27 +90,27 @@ final class IOUtils {
     }
 
     @SuppressWarnings("unchecked")
-    static <T> IOSocketOptionImpl<T> convertSocketOption(IOSocketOption<T> option) {
+    static <T> InternalIOSocketOption<T> convertSocketOption(IOSocketOption<T> option) {
         if (option == IOSocketOption.RECEIVE_BUFFER) {
-            return (IOSocketOptionImpl<T>) IOSocketOptionImpl.RECEIVE_BUFFER;
+            return (InternalIOSocketOption<T>) InternalIOSocketOption.RECEIVE_BUFFER;
         }
         else if (option == IOSocketOption.SEND_BUFFER) {
-            return (IOSocketOptionImpl<T>) IOSocketOptionImpl.SEND_BUFFER;
+            return (InternalIOSocketOption<T>) InternalIOSocketOption.SEND_BUFFER;
         }
         else if (option == IOSocketOption.BLOCKING) {
-            return (IOSocketOptionImpl<T>) IOSocketOptionImpl.BLOCKING;
+            return (InternalIOSocketOption<T>) InternalIOSocketOption.BLOCKING;
         }
         else if (option == IOSocketOption.KEEP_ALIVE) {
-            return (IOSocketOptionImpl<T>) IOSocketOptionImpl.KEEP_ALIVE;
+            return (InternalIOSocketOption<T>) InternalIOSocketOption.KEEP_ALIVE;
         }
         else if (option == IOSocketOption.LINGER) {
-            return (IOSocketOptionImpl<T>) IOSocketOptionImpl.LINGER;
+            return (InternalIOSocketOption<T>) InternalIOSocketOption.LINGER;
         }
         else if (option == IOSocketOption.REUSE_ADDRESS) {
-            return (IOSocketOptionImpl<T>) IOSocketOptionImpl.REUSE_ADDRESS;
+            return (InternalIOSocketOption<T>) InternalIOSocketOption.REUSE_ADDRESS;
         }
         else if (option == IOSocketOption.TCP_NO_DELAY) {
-            return (IOSocketOptionImpl<T>) IOSocketOptionImpl.TCP_NO_DELAY;
+            return (InternalIOSocketOption<T>) InternalIOSocketOption.TCP_NO_DELAY;
         }
         else {
             throw new IllegalStateException("Unknown socket option");
