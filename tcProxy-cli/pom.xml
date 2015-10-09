@@ -20,7 +20,7 @@
         </dependency>
         <dependency>
             <groupId>com.mattunderscore.tcproxy</groupId>
-            <artifactId>tcProxy-cli-agrument-parser</artifactId>
+            <artifactId>tcProxy-cli-argument-parser</artifactId>
         </dependency>
     </dependencies>
 
@@ -50,5 +50,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
