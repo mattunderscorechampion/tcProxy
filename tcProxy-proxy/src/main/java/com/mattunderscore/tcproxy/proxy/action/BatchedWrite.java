@@ -25,10 +25,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.action;
 
-import com.mattunderscore.tcproxy.proxy.Direction;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
+
+import com.mattunderscore.tcproxy.proxy.Direction;
 
 /**
  * Batched write action.
@@ -64,28 +64,25 @@ public final class BatchedWrite implements Action {
     }
 
     /**
-     * Add the action to the batch.
+     * Add the action to the batch. The action must be batchable.
      * @param action The action
      * @return {@code true} if the action fits completely into the batch
      */
-    public boolean batch(Action action) {
+    public boolean batch(IWrite action) {
         if (flipped) {
             return false;
         }
-        else if (action.isBatchable() && action instanceof IWrite) {
-            final IWrite write = (IWrite)action;
-            final ByteBuffer batchData = write.getData();
+        else {
+            assert action.isBatchable() : "The action should already have been checked to be batchable";
+            final ByteBuffer batchData = action.getData();
             if (batchData.remaining() < data.remaining()) {
                 data.put(batchData);
-                direction = write.getDirection();
+                direction = action.getDirection();
                 return true;
             }
             else {
                 return false;
             }
-        }
-        else {
-            throw new IllegalArgumentException("Must be a write");
         }
     }
 }

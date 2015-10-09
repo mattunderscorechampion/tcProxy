@@ -25,12 +25,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.action.queue;
 
-import com.mattunderscore.tcproxy.proxy.action.Action;
-import com.mattunderscore.tcproxy.proxy.Connection;
-import com.mattunderscore.tcproxy.proxy.action.BatchedWrite;
-
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+
+import com.mattunderscore.tcproxy.proxy.action.Action;
+import com.mattunderscore.tcproxy.proxy.action.BatchedWrite;
+import com.mattunderscore.tcproxy.proxy.action.IWrite;
 
 /**
  * Implementation of {@link ActionQueue}.
@@ -78,7 +78,7 @@ public final class ActionQueueImpl implements ActionQueue {
         while (true) {
             final Action nextAction = actions.peek();
             if (nextAction != null && nextAction.isBatchable()) {
-                if (batchedWrite.batch(nextAction)) {
+                if (batchedWrite.batch((IWrite)nextAction)) {
                     batchedData = true;
                     actions.poll();
                 }
