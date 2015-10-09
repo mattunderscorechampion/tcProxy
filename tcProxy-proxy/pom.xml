@@ -18,7 +18,11 @@
     <dependencies>
         <dependency>
             <groupId>com.mattunderscore.tcproxy</groupId>
-            <artifactId>tcProxy-io</artifactId>
+            <artifactId>tcProxy-io-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mattunderscore.tcproxy</groupId>
+            <artifactId>tcProxy-io-jsl</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

@@ -1,7 +1,8 @@
 tcProxy-gui/target/
 tcProxy-gui/dependency-reduced-pom.xml
 tcProxy-proxy/target/
-tcProxy-io/target/
+tcProxy-io-api/target/
+tcProxy-io-jsl/target/
 tcProxy-cli/target/
 tcProxy-cli/dependency-reduced-pom.xml
 tcProxy-cli-argument-parser/target/

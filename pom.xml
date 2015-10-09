@@ -21,7 +21,8 @@
     <modules>
         <module>tcProxy-proxy</module>
         <module>tcProxy-gui</module>
-        <module>tcProxy-io</module>
+        <module>tcProxy-io-api</module>
+        <module>tcProxy-io-jsl</module>
         <module>tcProxy-cli</module>
         <module>tcProxy-cli-argument-parser</module>
     </modules>
@@ -77,7 +78,12 @@
         <dependencies>
             <dependency>
                 <groupId>com.mattunderscore.tcproxy</groupId>
-                <artifactId>tcProxy-io</artifactId>
+                <artifactId>tcProxy-io-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mattunderscore.tcproxy</groupId>
+                <artifactId>tcProxy-io-jsl</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

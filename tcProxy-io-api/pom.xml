@@ -9,15 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>tcProxy-io</artifactId>
-    <name>tcProxy IO</name>
-    <description>An IO API that wraps the Java Standard Library to provide interfaces for all components making it more
-        testable.</description>
-
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-    </dependencies>
+    <artifactId>tcProxy-io-api</artifactId>
+    <name>tcProxy IO API</name>
+    <description>An IO API that provides interfaces for all components making it more testable.</description>
 </project>
