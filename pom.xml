@@ -25,6 +25,7 @@
         <module>tcProxy-io-jsl</module>
         <module>tcProxy-cli</module>
         <module>tcProxy-cli-argument-parser</module>
+        <module>tcProxy-examples</module>
     </modules>
 
     <licenses>
@@ -96,6 +97,12 @@
                 <artifactId>tcProxy-cli-argument-parser</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.mattunderscore.tcproxy</groupId>
+                <artifactId>tcProxy-examples</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>

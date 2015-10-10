@@ -1,3 +1,5 @@
+tcProxy-examples/target
+tcProxy-examples/dependency-reduced-pom.xml
 tcProxy-gui/target/
 tcProxy-gui/dependency-reduced-pom.xml
 tcProxy-proxy/target/
