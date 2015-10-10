@@ -17,8 +17,9 @@ handled by the same threads.
 Implementation
 ==============
 
-There are six separate modules. An I/O API module, an I/O implementation module, a proxy implementation module, a
-command line interface  argument parsing module, a command line interface module, a graphical user interface module.
+There are severn separate modules. An I/O API module, an I/O implementation module, a proxy implementation module, a
+command line interface  argument parsing module, a command line interface module, a graphical user interface module and
+an examples module.
 
 The TCP proxy uses Java NIO. The socket reads and writes do not block, accepting new connections still block. There is
 a separate thread for accepting connections, reading and writing data. Data read from a socket is placed on a queue
