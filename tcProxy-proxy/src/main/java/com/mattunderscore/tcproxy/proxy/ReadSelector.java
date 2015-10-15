@@ -55,9 +55,13 @@ public final class ReadSelector extends AbstractSelector {
     private final ByteBuffer readBuffer;
 
     public ReadSelector(final IOSelector selector, final ReadSelectorSettings settings, final BlockingQueue<Connection> newConnections) {
+        this(selector, newConnections, ByteBuffer.allocate(settings.getReadBufferSize()));
+    }
+
+    ReadSelector(final IOSelector selector, final BlockingQueue<Connection> newConnections, ByteBuffer readBuffer) {
         super(IOSelectionKey.Op.READ, selector, new BinaryBackoff(1L));
         this.newConnections = newConnections;
-        readBuffer = ByteBuffer.allocate(settings.getReadBufferSize());
+        this.readBuffer = readBuffer;
     }
 
     @Override
@@ -85,11 +89,11 @@ public final class ReadSelector extends AbstractSelector {
     @Override
     protected void processKeys(Set<IOSelectionKey> selectedKeys) {
         for (final IOSelectionKey key : selectedKeys) {
-            readBytes(key, readBuffer);
+            readBytes(key);
         }
     }
 
-    void readBytes(IOSelectionKey key, ByteBuffer buffer) {
+    void readBytes(IOSelectionKey key) {
         final DirectionAndConnection dc = (DirectionAndConnection)key.attachment();
         if (!key.isValid()) {
             LOG.debug("{} : Selected key no longer valid, closing connection", this);
@@ -99,19 +103,23 @@ public final class ReadSelector extends AbstractSelector {
             final Direction direction = dc.getDirection();
             final ActionQueue queue = direction.getQueue();
             if (!queue.queueFull()) {
-                buffer.position(0);
                 final ByteChannel channel = direction.getFrom();
                 try {
-                    final int bytes = direction.read(buffer);
+                    // Read data in
+                    final int bytes = direction.read(readBuffer);
+
                     if (bytes > 0) {
-                        buffer.flip();
-                        final ByteBuffer writeBuffer = ByteBuffer.allocate(buffer.limit());
-                        writeBuffer.put(buffer);
+                        // Copy the data read to a write buffer and prepare for the next read
+                        readBuffer.flip();
+                        final ByteBuffer writeBuffer = ByteBuffer.allocate(readBuffer.limit());
+                        writeBuffer.put(readBuffer);
                         writeBuffer.flip();
+                        readBuffer.clear();
 
                         informOfData(direction, writeBuffer);
                     }
                     else if (bytes == -1) {
+                        // Close the connection
                         key.cancel();
                         informOfClose(direction);
                         final ConnectionImpl conn = (ConnectionImpl) dc.getConnection();

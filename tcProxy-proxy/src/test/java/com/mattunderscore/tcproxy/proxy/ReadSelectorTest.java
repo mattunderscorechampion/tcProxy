@@ -54,6 +54,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
  * @author Matt Champion on 12/03/14.
  */
 public final class ReadSelectorTest {
+    private final ByteBuffer buffer = ByteBuffer.allocate(16);
+
     @Mock
     private IOSelectionKey key;
     @Mock
@@ -77,10 +79,10 @@ public final class ReadSelectorTest {
     @Before
     public void setUp() {
         initMocks(this);
+        buffer.clear();
         newConnections = new ArrayBlockingQueue<>(5);
         newDirections = new ArrayBlockingQueue<>(5);
-        settings = new ReadSelectorSettings(16);
-        readSelector = new ReadSelector(selector, settings, newConnections);
+        readSelector = new ReadSelector(selector, newConnections, buffer);
 
         dc = new DirectionAndConnection(direction, connection);
 
@@ -117,7 +119,6 @@ public final class ReadSelectorTest {
     @Test
     public void readBytes() throws IOException {
         final Set<IOSelectionKey> keys = new HashSet<>();
-        final ByteBuffer buffer = ByteBuffer.allocate(16);
         keys.add(key);
 
         when(key.isReadable()).thenReturn(true);
@@ -132,7 +133,7 @@ public final class ReadSelectorTest {
             }
         });
 
-        readSelector.readBytes(key, buffer);
+        readSelector.readBytes(key);
 
         assertEquals(1, newDirections.size());
     }
