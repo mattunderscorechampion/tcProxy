@@ -25,14 +25,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import org.slf4j.Logger;
-
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.util.Set;
+
+import org.slf4j.Logger;
+
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
  * Abstract selector implementation.
@@ -41,9 +42,11 @@ import java.util.Set;
 public abstract class AbstractSelector implements Runnable {
     private final IOSelector selector;
     private final SelectorBackoff backoff;
+    private final IOSelectionKey.Op operation;
     private volatile boolean running = false;
 
-    protected AbstractSelector(IOSelector selector, SelectorBackoff backoff) {
+    protected AbstractSelector(IOSelectionKey.Op operation, IOSelector selector, SelectorBackoff backoff) {
+        this.operation = operation;
         this.selector = selector;
         this.backoff = backoff;
     }
@@ -83,12 +86,11 @@ public abstract class AbstractSelector implements Runnable {
     /**
      * Register operations with the selector.
      * @param channel The channel
-     * @param operation The operation
      * @param attachment The attachment
      * @return The selection key
      * @throws ClosedChannelException
      */
-    protected final IOSelectionKey register(IOSocketChannel channel, IOSelectionKey.Op operation, Object attachment) throws ClosedChannelException {
+    protected final IOSelectionKey register(IOSocketChannel channel, Object attachment) throws ClosedChannelException {
         return channel.register(selector, operation, attachment);
     }
 

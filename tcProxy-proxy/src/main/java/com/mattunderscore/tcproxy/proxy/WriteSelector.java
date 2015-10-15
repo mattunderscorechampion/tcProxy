@@ -25,19 +25,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.proxy.action.Action;
-import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.proxy.action.Action;
+import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
 
 /**
  * The write selector for the proxy.
@@ -49,7 +50,7 @@ public final class WriteSelector extends AbstractSelector {
     private final Set<DirectionAndConnection> directions = new HashSet<>();
 
     public WriteSelector(final IOSelector selector, final BlockingQueue<DirectionAndConnection> newDirections) {
-        super(selector, new BinaryBackoff(1L));
+        super(IOSelectionKey.Op.WRITE, selector, new BinaryBackoff(1L));
         this.newDirections = newDirections;
     }
 
@@ -64,7 +65,7 @@ public final class WriteSelector extends AbstractSelector {
             final Direction direction = dc.getDirection();
             final IOSocketChannel channel = direction.getTo();
             try {
-                register(channel, IOSelectionKey.Op.WRITE, dc);
+                register(channel, dc);
             }
             catch (final ClosedChannelException e) {
                 LOG.debug("{} : The destination of {} is already closed", this, direction);

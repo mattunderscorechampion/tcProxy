@@ -25,22 +25,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.ByteChannel;
+import java.nio.channels.ClosedChannelException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.action.Close;
 import com.mattunderscore.tcproxy.proxy.action.Write;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.*;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * The read selector for the proxy.
@@ -53,7 +55,7 @@ public final class ReadSelector extends AbstractSelector {
     private final ByteBuffer readBuffer;
 
     public ReadSelector(final IOSelector selector, final ReadSelectorSettings settings, final BlockingQueue<Connection> newConnections) {
-        super(selector, new BinaryBackoff(1L));
+        super(IOSelectionKey.Op.READ, selector, new BinaryBackoff(1L));
         this.newConnections = newConnections;
         readBuffer = ByteBuffer.allocate(settings.getReadBufferSize());
     }
@@ -66,12 +68,12 @@ public final class ReadSelector extends AbstractSelector {
                 final Direction cTs = connection.clientToServer();
                 final DirectionAndConnection dc0 = new DirectionAndConnection(cTs, connection);
                 final IOSocketChannel channel0 = cTs.getFrom();
-                register(channel0, IOSelectionKey.Op.READ, dc0);
+                register(channel0, dc0);
 
                 final Direction sTc = connection.serverToClient();
                 final DirectionAndConnection dc1 = new DirectionAndConnection(sTc, connection);
                 final IOSocketChannel channel1 = sTc.getFrom();
-                register(channel1, IOSelectionKey.Op.READ, dc1);
+                register(channel1, dc1);
             }
             catch (final IOException e) {
                 LOG.debug("{} : Error registering", this, e);
