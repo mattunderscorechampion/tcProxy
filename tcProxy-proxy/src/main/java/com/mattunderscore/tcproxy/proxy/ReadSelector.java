@@ -48,6 +48,7 @@ import java.util.concurrent.BlockingQueue;
  */
 public final class ReadSelector extends AbstractSelector {
     public static final Logger LOG = LoggerFactory.getLogger("reader");
+    private final Set<Connection> connections = new HashSet<>();
     private final BlockingQueue<Connection> newConnections;
     private final ByteBuffer readBuffer;
 
@@ -59,7 +60,6 @@ public final class ReadSelector extends AbstractSelector {
 
     @Override
     protected void registerKeys() {
-        final Set<Connection> connections = new HashSet<>();
         newConnections.drainTo(connections);
         for (final Connection connection : connections) {
             try {
@@ -77,6 +77,7 @@ public final class ReadSelector extends AbstractSelector {
                 LOG.debug("{} : Error registering", this, e);
             }
         }
+        connections.clear();
     }
 
     @Override

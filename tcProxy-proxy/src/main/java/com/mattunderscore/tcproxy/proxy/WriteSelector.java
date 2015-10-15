@@ -46,6 +46,7 @@ import java.util.concurrent.BlockingQueue;
 public final class WriteSelector extends AbstractSelector {
     public static final Logger LOG = LoggerFactory.getLogger("writer");
     private final BlockingQueue<DirectionAndConnection> newDirections;
+    private final Set<DirectionAndConnection> directions = new HashSet<>();
 
     public WriteSelector(final IOSelector selector, final BlockingQueue<DirectionAndConnection> newDirections) {
         super(selector, new BinaryBackoff(1L));
@@ -58,10 +59,8 @@ public final class WriteSelector extends AbstractSelector {
     }
 
     protected void registerKeys() {
-        final Set<DirectionAndConnection> directions = new HashSet<>();
         newDirections.drainTo(directions);
-        for (final DirectionAndConnection dc : directions)
-        {
+        for (final DirectionAndConnection dc : directions) {
             final Direction direction = dc.getDirection();
             final IOSocketChannel channel = direction.getTo();
             try {
@@ -71,6 +70,7 @@ public final class WriteSelector extends AbstractSelector {
                 LOG.debug("{} : The destination of {} is already closed", this, direction);
             }
         }
+        directions.clear();
     }
 
     @Override
