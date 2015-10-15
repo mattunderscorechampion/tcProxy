@@ -92,7 +92,8 @@ final class IOSocketChannelImpl implements IOSocketChannel {
 
     @Override
     public IOSelectionKey register(final IOSelector selector, final IOSelectionKey.Op op, final Object att) throws ClosedChannelException {
-        return register(selector, EnumSet.of(op), att);
+        final IOSelectorImpl selectorImpl = (IOSelectorImpl)selector;
+        return new IOSelectionKeyImpl(channel.register(selectorImpl.selectorDelegate, IOUtils.mapToIntFromOp(op), att));
     }
 
     @Override
