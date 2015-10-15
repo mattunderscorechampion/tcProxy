@@ -76,7 +76,7 @@ public final class ConnectionImpl implements Connection {
             return clientToServer;
         }
         else {
-            return null;
+            throw new IllegalArgumentException("Unknown direction" + direction);
         }
     }
 
