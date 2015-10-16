@@ -1,18 +1,22 @@
 package com.mattunderscore.tcproxy.examples.workers;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Abstract worker. Common implementation of example worker threads.
  * @author Matt Champion on 09/10/2015
  */
 public abstract class AbstractWorker {
+    private final String name;
     private volatile boolean running = false;
 
     /**
      * Constructor.
      */
-    public AbstractWorker() {
+    public AbstractWorker(String name) {
+        Objects.requireNonNull(name);
+        this.name = name;
     }
 
     /**
@@ -20,11 +24,12 @@ public abstract class AbstractWorker {
      */
     public final void start() {
         final Thread thread = new Thread(new InternalRunnable());
-        thread.setName(getName());
+        thread.setName(name);
         thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
                 e.printStackTrace();
+                running = false;
             }
         });
 
@@ -41,28 +46,30 @@ public abstract class AbstractWorker {
     /**
      * @return If the tread is running
      */
-    public boolean isRunning() {
+    public final boolean isRunning() {
         return running;
     }
 
     /**
      * @return The name of the worker
      */
-    public abstract String getName();
+    public final String getName() {
+        return name;
+    }
 
     /**
-     * @return The work being done
+     * Performs the worker task.
+     * @throws IOException An I/O exception, if thrown the worker will stop
      */
-    public abstract WorkerRunnable getTask();
+    public abstract void doWork() throws IOException;
 
     private final class InternalRunnable implements Runnable {
         @Override
         public void run() {
-            final WorkerRunnable runnable = getTask();
             running = true;
             while (running) {
                 try {
-                    runnable.run();
+                    doWork();
                 }
                 catch (IOException e) {
                     e.printStackTrace();
@@ -70,16 +77,5 @@ public abstract class AbstractWorker {
                 }
             }
         }
-    }
-
-    /**
-     * Worker runnable.
-     */
-    public interface WorkerRunnable {
-        /**
-         * Action to take.
-         * @throws IOException
-         */
-        void run() throws IOException;
     }
 }

@@ -20,25 +20,14 @@ public final class Producer extends AbstractWorker {
      * @param dataProducer The data producer
      */
     public Producer(IOSocketChannel channel, DataProducer dataProducer) {
+        super("example-producer");
         this.channel = channel;
         this.dataProducer = dataProducer;
     }
 
     @Override
-    public String getName() {
-        return "example-producer";
-    }
-
-    @Override
-    public WorkerRunnable getTask() {
-        return new ProducerRunnable();
-    }
-
-    private final class ProducerRunnable implements WorkerRunnable {
-        @Override
-        public void run() throws IOException {
-            final ByteBuffer buffer = dataProducer.getData();
-            channel.write(buffer);
-        }
+    public void doWork() throws IOException {
+        final ByteBuffer buffer = dataProducer.getData();
+        channel.write(buffer);
     }
 }

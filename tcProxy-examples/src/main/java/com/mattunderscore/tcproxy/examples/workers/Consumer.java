@@ -10,6 +10,7 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
  * @author Matt Champion on 09/10/2015
  */
 public final class Consumer extends AbstractWorker {
+    private final ByteBuffer buffer = ByteBuffer.allocate(1024);
     private final IOSocketChannel channel;
 
     /**
@@ -17,26 +18,13 @@ public final class Consumer extends AbstractWorker {
      * @param channel The channel to consume from
      */
     public Consumer(IOSocketChannel channel) {
+        super("example-consumer");
         this.channel = channel;
     }
 
     @Override
-    public String getName() {
-        return "example-consumer";
-    }
-
-    @Override
-    public WorkerRunnable getTask() {
-        return new ConsumerRunnable();
-    }
-
-    private final class ConsumerRunnable implements WorkerRunnable {
-        private final ByteBuffer buffer = ByteBuffer.allocate(1024);
-
-        @Override
-        public void run() throws IOException {
-            channel.read(buffer);
-            buffer.clear();
-        }
+    public void doWork() throws IOException {
+        channel.read(buffer);
+        buffer.clear();
     }
 }

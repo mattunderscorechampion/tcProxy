@@ -21,24 +21,13 @@ public final class Acceptor extends AbstractWorker {
      * @param channels The queue to put accepted channels onto
      */
     public Acceptor(IOServerSocketChannel channel, Queue<IOSocketChannel> channels) {
+        super("example-acceptor");
         this.channel = channel;
         this.channels = channels;
     }
 
     @Override
-    public String getName() {
-        return "example-acceptor";
-    }
-
-    @Override
-    public WorkerRunnable getTask() {
-        return new AcceptorRunnable();
-    }
-
-    private final class AcceptorRunnable implements WorkerRunnable {
-        @Override
-        public void run() throws IOException{
-            channels.add(channel.accept());
-        }
+    public void doWork() throws IOException {
+        channels.add(channel.accept());
     }
 }
