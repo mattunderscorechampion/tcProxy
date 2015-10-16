@@ -28,7 +28,7 @@ package com.mattunderscore.tcproxy.proxy.action;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import com.mattunderscore.tcproxy.proxy.Direction;
+import com.mattunderscore.tcproxy.proxy.direction.Direction;
 
 /**
  * Batched write action.

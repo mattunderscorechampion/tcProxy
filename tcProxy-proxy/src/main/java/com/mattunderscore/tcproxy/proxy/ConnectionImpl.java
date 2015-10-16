@@ -25,14 +25,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
+import com.mattunderscore.tcproxy.proxy.connection.Connection;
+import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
+import com.mattunderscore.tcproxy.proxy.direction.Direction;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Implementation of {@link com.mattunderscore.tcproxy.proxy.Connection}.
+ * Implementation of {@link Connection}.
  * @author Matt Champion on 18/02/14.
  */
 public final class ConnectionImpl implements Connection {

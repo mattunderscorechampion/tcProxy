@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.action.processor;
 
-import com.mattunderscore.tcproxy.proxy.Direction;
+import com.mattunderscore.tcproxy.proxy.direction.Direction;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

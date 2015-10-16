@@ -23,28 +23,48 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy;
+package com.mattunderscore.tcproxy.proxy.direction;
 
-import java.io.IOException;
+import com.mattunderscore.tcproxy.proxy.connection.Connection;
 
 /**
- * A connection.
- * @author Matt Champion on 21/02/14.
+ * Tuple of the direction and connection.
+ * @author matt on 26/04/14.
  */
-public interface Connection {
-    /**
-     * @return The direction that reads from the client and writes to the server.
-     */
-    Direction clientToServer();
+public final class DirectionAndConnection {
+    private final Direction direction;
+    private final Connection connection;
 
-    /**
-     * @return The direction that reads from the server and writes to the client.
-     */
-    Direction serverToClient();
+    public DirectionAndConnection(Direction direction, Connection connection) {
 
-    /**
-     * Close the connection.
-     * @throws IOException
-     */
-    void close() throws IOException;
+        this.direction = direction;
+        this.connection = connection;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object != null && object instanceof DirectionAndConnection) {
+            final DirectionAndConnection dc = (DirectionAndConnection)object;
+            return direction.equals(dc.getDirection()) && connection.equals(dc.getConnection());
+        }
+        else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 31;
+        hash = (hash * 15) + direction.hashCode();
+        hash = (hash * 15) + connection.hashCode();
+        return hash;
+    }
 }

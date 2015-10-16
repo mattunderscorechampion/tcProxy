@@ -25,8 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.action.processor;
 
-import com.mattunderscore.tcproxy.proxy.Direction;
-import com.mattunderscore.tcproxy.proxy.DirectionAndConnection;
+import com.mattunderscore.tcproxy.proxy.direction.Direction;
 
 /**
  * Factory for write dropping processors.
