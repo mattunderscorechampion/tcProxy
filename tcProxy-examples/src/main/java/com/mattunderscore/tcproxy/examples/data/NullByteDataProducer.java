@@ -3,7 +3,7 @@ package com.mattunderscore.tcproxy.examples.data;
 import java.nio.ByteBuffer;
 
 /**
- * Producer of null byte vales.
+ * Producer of null byte values.
  * @author Matt Champion on 10/10/2015
  */
 public final class NullByteDataProducer implements DataProducer {

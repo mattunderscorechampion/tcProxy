@@ -3,7 +3,7 @@ package com.mattunderscore.tcproxy.examples.workers;
 import java.io.IOException;
 
 /**
- * Abstract worker.
+ * Abstract worker. Common implementation of example worker threads.
  * @author Matt Champion on 09/10/2015
  */
 public abstract class AbstractWorker {

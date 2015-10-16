@@ -22,7 +22,8 @@ import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 
 /**
- * Simple example with a single consumer and producer.
+ * Simple example with a single consumer and producer. The producer sends throttled random data to the consumer through
+ * a proxy.
  * @author Matt Champion on 09/10/2015
  */
 public final class SimpleExample {

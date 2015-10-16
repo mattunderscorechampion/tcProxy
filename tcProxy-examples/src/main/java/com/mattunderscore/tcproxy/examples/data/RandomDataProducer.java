@@ -4,10 +4,10 @@ import java.nio.ByteBuffer;
 import java.util.Random;
 
 /**
- * Producer of random data.
+ * Producer of random data. Produces random length, random values.
  * @author Matt Champion on 10/10/2015
  */
-public class RandomDataProducer implements DataProducer {
+public final class RandomDataProducer implements DataProducer {
     private final Random random = new Random();
     private final int maxLength;
 

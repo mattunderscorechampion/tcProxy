@@ -7,7 +7,7 @@ import com.mattunderscore.tcproxy.examples.data.DataProducer;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
- * Producer worker.
+ * Producer worker. Uses blocking writes to a channel.
  * @author Matt Champion on 09/10/2015
  */
 public final class Producer extends AbstractWorker {

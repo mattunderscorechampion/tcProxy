@@ -7,7 +7,8 @@ import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
- * Acceptor worker.
+ * Acceptor worker. Performs a block accept on a server socket channel and passes the opened sockets to a blocking
+ * queue.
  * @author Matt Champion on 10/10/2015
  */
 public final class Acceptor extends AbstractWorker {

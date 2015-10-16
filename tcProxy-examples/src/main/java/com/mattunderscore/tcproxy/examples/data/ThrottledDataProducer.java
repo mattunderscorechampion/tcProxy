@@ -3,7 +3,7 @@ package com.mattunderscore.tcproxy.examples.data;
 import java.nio.ByteBuffer;
 
 /**
- * Throttled data producer.
+ * Throttled data producer. Blocks for a fixed delay before returning data from a delegate producer.
  * @author Matt Champion on 10/10/2015
  */
 public final class ThrottledDataProducer implements DataProducer {

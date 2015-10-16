@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
- * Consumer worker.
+ * Consumer worker. Makes blocking reads from a channel and discards the data.
  * @author Matt Champion on 09/10/2015
  */
 public final class Consumer extends AbstractWorker {
