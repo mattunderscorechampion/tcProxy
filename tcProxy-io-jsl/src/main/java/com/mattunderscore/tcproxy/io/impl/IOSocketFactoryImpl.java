@@ -1,4 +1,4 @@
-/* Copyright © 2014 Matthew Champion
+/* Copyright © 2015 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -23,35 +23,39 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.impl;
 
 import java.io.IOException;
+import java.util.Map;
+
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketFactory;
+import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 /**
- * @author matt on 30/06/14.
+ * A {@link IOSocketFactory} implementation.
+ * @author Matt Champion on 17/10/2015
  */
-public interface IOFactory {
+final class IOSocketFactoryImpl implements IOSocketFactory {
+    private final Map<IOSocketOption<?>, Object> options;
 
-    /**
-     * @return A new selector.
-     * @throws IOException
-     */
-    IOSelector openSelector() throws IOException;
+    IOSocketFactoryImpl(Map<IOSocketOption<?>, Object> options) {
+        this.options = options;
+    }
 
-    /**
-     * @return A new unbound socket.
-     * @throws IOException
-     */
-    IOSocketChannel openSocket() throws IOException;
+    @Override
+    public IOSocketChannel create() throws IOException {
+        final IOSocketChannel channel = StaticIOFactory.openSocket();
 
-    /**
-     * @return A new server socket.
-     * @throws IOException
-     */
-    IOServerSocketChannel openServerSocket() throws IOException;
+        for (Map.Entry<IOSocketOption<?>, Object> entry : options.entrySet()) {
+            channel.setOption((IOSocketOption) entry.getKey(), entry.getValue());
+        }
 
-    /**
-     * @return A socket factory builder
-     */
-    IOSocketFactory.Builder socketFactoryBuilder();
+        return channel;
+    }
+
+    @Override
+    public Builder builder() {
+        return new IOSocketFactoryBuilderImpl(options);
+    }
 }

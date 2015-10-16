@@ -25,11 +25,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.impl;
 
+import java.io.IOException;
+
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-
-import java.io.IOException;
+import com.mattunderscore.tcproxy.io.IOSocketFactory;
 
 /**
  * Static implementation of IO factory for convenience.
@@ -62,5 +63,12 @@ public final class StaticIOFactory {
      */
     public static IOServerSocketChannel openServerSocket() throws IOException {
         return FACTORY.openServerSocket();
+    }
+
+    /**
+     * @return A socket factory builder
+     */
+    public static IOSocketFactory.Builder socketFactoryBuilder() {
+        return FACTORY.socketFactoryBuilder();
     }
 }

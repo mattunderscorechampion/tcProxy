@@ -1,4 +1,4 @@
-/* Copyright © 2014 Matthew Champion
+/* Copyright © 2015 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,30 +28,38 @@ package com.mattunderscore.tcproxy.io;
 import java.io.IOException;
 
 /**
- * @author matt on 30/06/14.
+ * Factory for sockets.
+ * @author Matt Champion on 17/10/2015
  */
-public interface IOFactory {
+public interface IOSocketFactory {
 
     /**
-     * @return A new selector.
-     * @throws IOException
+     * @return A new socket created by the factory
+     * @throws IOException If there is a problem creating the socket
      */
-    IOSelector openSelector() throws IOException;
+    IOSocketChannel create() throws IOException;
 
     /**
-     * @return A new unbound socket.
-     * @throws IOException
+     * @return A {@link Builder} with same configuration as this factory
      */
-    IOSocketChannel openSocket() throws IOException;
+    Builder builder();
 
     /**
-     * @return A new server socket.
-     * @throws IOException
+     * Builder for {@link IOSocketFactory}s. The build should be immutable.
      */
-    IOServerSocketChannel openServerSocket() throws IOException;
+    interface Builder {
+        /**
+         * Set an option on the sockets produced by the returned factory.
+         * @param option
+         * @param value
+         * @param <T>
+         * @return A new builder with the option set
+         */
+        <T> Builder setSocketOption(IOSocketOption<T> option, T value);
 
-    /**
-     * @return A socket factory builder
-     */
-    IOSocketFactory.Builder socketFactoryBuilder();
+        /**
+         * @return The factory
+         */
+        IOSocketFactory build();
+    }
 }
