@@ -25,15 +25,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
-import com.mattunderscore.tcproxy.io.IOSocketOption;
-import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketFactory;
+import com.mattunderscore.tcproxy.io.IOSocketOption;
+import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
+import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 
 /**
  * Factory for outbound sockets.
@@ -42,18 +44,21 @@ import java.net.InetSocketAddress;
 public final class OutboundSocketFactory {
     private static final Logger LOG = LoggerFactory.getLogger("outbound socket factory");
     private static final long backOff = 5L;
-    private final OutboundSocketSettings settings;
+    private final IOSocketFactory factory;
+    private final InetSocketAddress remote;
 
     public OutboundSocketFactory(final OutboundSocketSettings settings) {
-        this.settings = settings;
+        factory = StaticIOFactory
+            .socketFactoryBuilder()
+            .setSocketOption(IOSocketOption.SEND_BUFFER, settings.getSendBuffer())
+            .setSocketOption(IOSocketOption.RECEIVE_BUFFER, settings.getReceiveBuffer())
+            .setSocketOption(IOSocketOption.BLOCKING, false)
+            .build();
+        remote = new InetSocketAddress(settings.getHost(), settings.getPort());
     }
 
     public IOSocketChannel createSocket() throws IOException {
-        final IOSocketChannel channel = StaticIOFactory.openSocket();
-        channel.setOption(IOSocketOption.SEND_BUFFER, settings.getSendBuffer());
-        channel.setOption(IOSocketOption.RECEIVE_BUFFER, settings.getReceiveBuffer());
-        channel.setOption(IOSocketOption.BLOCKING, false);
-        final InetSocketAddress remote = new InetSocketAddress(settings.getHost(), settings.getPort());
+        final IOSocketChannel channel = factory.create();
         channel.bind(null);
         channel.connect(remote);
         while (!channel.finishConnect()) {
