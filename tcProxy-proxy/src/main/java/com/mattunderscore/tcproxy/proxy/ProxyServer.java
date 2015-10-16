@@ -45,23 +45,26 @@ public final class ProxyServer {
     private final WriteSelector writer;
     private final ReadSelector proxy;
 
-    public ProxyServer(final AcceptorSettings acceptorSettings,
-                       final ConnectionSettings connectionSettings,
-                       final InboundSocketSettings inboundSocketSettings,
-                       final OutboundSocketSettings outboundSocketSettings,
-                       final ReadSelectorSettings readSelectorSettings,
-                       final ConnectionManager manager) throws IOException {
+    public ProxyServer(
+        final AcceptorSettings acceptorSettings,
+        final ConnectionSettings connectionSettings,
+        final InboundSocketSettings inboundSocketSettings,
+        final OutboundSocketSettings outboundSocketSettings,
+        final ReadSelectorSettings readSelectorSettings,
+        final ConnectionManager manager) throws IOException {
+
         final BlockingQueue<Connection> newConnections = new ArrayBlockingQueue<>(5000);
         final BlockingQueue<DirectionAndConnection> newDirections = new ArrayBlockingQueue<>(5000);
         final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
-        final ConnectionFactory connectionFactory =
-                new ConnectionFactory(connectionSettings, manager, newDirections);
+        final ConnectionFactory connectionFactory = new ConnectionFactory(connectionSettings, manager, newDirections);
+
         final IOSelector readSelector = StaticIOFactory.openSelector();
         final IOSelector writeSelector = StaticIOFactory.openSelector();
 
         acceptor = new Acceptor(acceptorSettings, inboundSocketSettings, connectionFactory, socketFactory);
         proxy = new ReadSelector(readSelector,readSelectorSettings, newConnections);
         writer = new WriteSelector(writeSelector, newDirections);
+
         manager.addListener(new ConnectionManager.Listener() {
             @Override
             public void newConnection(final Connection connection) {
@@ -78,16 +81,20 @@ public final class ProxyServer {
         final Thread acceptorThread = new Thread(acceptor);
         final Thread readerThread = new Thread(proxy);
         final Thread writerThread = new Thread(writer);
+
         acceptorThread.setName("tcProxy - Acceptor Thread");
         readerThread.setName("tcProxy - Reader Thread");
         writerThread.setName("tcProxy - Writer Thread");
+
         acceptorThread.setDaemon(false);
         readerThread.setDaemon(false);
         writerThread.setDaemon(false);
+
         final ExceptionHandler handler = new ExceptionHandler();
         acceptorThread.setUncaughtExceptionHandler(handler);
         readerThread.setUncaughtExceptionHandler(handler);
         writerThread.setUncaughtExceptionHandler(handler);
+
         acceptorThread.start();
         readerThread.start();
         writerThread.start();
