@@ -65,13 +65,8 @@ public final class SimpleExample {
         consumer.start();
 
         // Keep going
-        while (acceptor.isRunning() && producer.isRunning() && consumer.isRunning()) {
-            try {
-                Thread.sleep(100L);
-            }
-            catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        System.out.print("Press return to stop: ");
+        System.in.read();
+        server.stop();
     }
 }

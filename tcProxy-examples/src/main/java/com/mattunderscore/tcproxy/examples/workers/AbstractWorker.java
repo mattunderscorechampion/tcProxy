@@ -25,6 +25,7 @@ public abstract class AbstractWorker {
     public final void start() {
         final Thread thread = new Thread(new InternalRunnable());
         thread.setName(name);
+        thread.setDaemon(true);
         thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
