@@ -50,6 +50,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
+ * Unit tests for {@link WriteSelector}.
  * @author Matt Champion on 22/09/14.
  */
 public final class WriteSelectorTest {

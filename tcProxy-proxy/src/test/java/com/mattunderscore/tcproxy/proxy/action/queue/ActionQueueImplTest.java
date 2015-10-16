@@ -44,7 +44,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
- * @author matt on 21/04/14.
+ * Unit tests for {@link ActionQueueImpl}.
+ * @author Matt Champion on 21/04/14.
  */
 public final class ActionQueueImplTest {
     @Mock

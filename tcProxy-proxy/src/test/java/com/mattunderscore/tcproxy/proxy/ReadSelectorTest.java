@@ -25,32 +25,34 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessor;
-import com.mattunderscore.tcproxy.proxy.action.processor.DefaultActionProcessor;
-import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
-import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.ClosedChannelException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessor;
+import com.mattunderscore.tcproxy.proxy.action.processor.DefaultActionProcessor;
+import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
 
 /**
+ * Unit tests for {@link ReadSelector}.
  * @author Matt Champion on 12/03/14.
  */
 public final class ReadSelectorTest {
@@ -70,8 +72,6 @@ public final class ReadSelectorTest {
     private ActionQueue queue;
 
     private DirectionAndConnection dc;
-    private ActionProcessor processor;
-    private ReadSelectorSettings settings;
     private BlockingQueue<Connection> newConnections;
     private BlockingQueue<DirectionAndConnection> newDirections;
     private ReadSelector readSelector;
@@ -92,7 +92,7 @@ public final class ReadSelectorTest {
         when(direction.getFrom()).thenReturn(channel);
         when(direction.getTo()).thenReturn(channel);
         when(direction.getQueue()).thenReturn(queue);
-        processor = new DefaultActionProcessor(dc, newDirections);
+        final ActionProcessor processor = new DefaultActionProcessor(dc, newDirections);
         when(direction.getProcessor()).thenReturn(processor);
 
         when(key.attachment()).thenReturn(dc);
@@ -118,9 +118,6 @@ public final class ReadSelectorTest {
 
     @Test
     public void readBytes() throws IOException {
-        final Set<IOSelectionKey> keys = new HashSet<>();
-        keys.add(key);
-
         when(key.isReadable()).thenReturn(true);
         when(key.isValid()).thenReturn(true);
         when(queue.queueFull()).thenReturn(false);

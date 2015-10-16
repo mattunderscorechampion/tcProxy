@@ -25,23 +25,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.action;
 
-import com.mattunderscore.tcproxy.proxy.Direction;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
+import com.mattunderscore.tcproxy.proxy.Direction;
 
 /**
- * @author matt on 21/04/14.
+ * Unit tests for {@link BatchedWrite}.
+ * @author Matt Champion on 21/04/14.
  */
 public final class BatchedWriteTest {
     @Mock

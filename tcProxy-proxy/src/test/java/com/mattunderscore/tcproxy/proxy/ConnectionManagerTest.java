@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.net.SocketAddress;
 
 /**
+ * Unit tests for {@link ConnectionManager}.
  * @author Matt Champion on 22/09/14.
  */
 public final class ConnectionManagerTest {
