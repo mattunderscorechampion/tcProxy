@@ -33,35 +33,18 @@ import java.io.IOException;
  * @param <T> The type of socket created
  */
 public interface IOSocketFactory<T extends IOSocket> {
+    /**
+     * Set an option on the sockets produced by the returned factory.
+     * @param option The option
+     * @param value The value
+     * @param <O> The type of value
+     * @return A new builder with the option set
+     */
+    <O> IOSocketFactory<T> setSocketOption(IOSocketOption<O> option, O value);
 
     /**
      * @return A new socket created by the factory
      * @throws IOException If there is a problem creating the socket
      */
     T create() throws IOException;
-
-    /**
-     * @return A {@link Builder} with same configuration as this factory
-     */
-    Builder<T> builder();
-
-    /**
-     * Builder for {@link IOSocketFactory}s. The build should be immutable.
-     * @param <T> The type of socket created by the factory
-     */
-    interface Builder<T extends IOSocket> {
-        /**
-         * Set an option on the sockets produced by the returned factory.
-         * @param option The option
-         * @param value The value
-         * @param <O> The type of value
-         * @return A new builder with the option set
-         */
-        <O> Builder<T> setSocketOption(IOSocketOption<O> option, O value);
-
-        /**
-         * @return The factory
-         */
-        IOSocketFactory<T> build();
-    }
 }

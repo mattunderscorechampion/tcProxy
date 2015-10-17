@@ -29,6 +29,7 @@ import java.io.IOException;
 
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocket;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
 
@@ -66,16 +67,12 @@ public final class StaticIOFactory {
     }
 
     /**
-     * @return A socket factory builder
+     * @param type The class of the type of socket
+     * @param <T> The type of socket
+     * @return A socket factory
+     * @throws IllegalArgumentException If no builder is available for the socket type
      */
-    public static IOSocketFactory.Builder<IOSocketChannel> socketFactoryBuilder() {
-        return FACTORY.socketFactoryBuilder();
-    }
-
-    /**
-     * @return A socket factory builder
-     */
-    public static IOSocketFactory.Builder<IOServerSocketChannel> serverSocketFactoryBuilder() {
-        return FACTORY.serverSocketFactoryBuilder();
+    public static <T extends IOSocket> IOSocketFactory<T> socketFactory(Class<T> type) {
+        return FACTORY.socketFactory(type);
     }
 }

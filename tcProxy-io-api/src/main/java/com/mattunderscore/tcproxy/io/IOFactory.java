@@ -51,7 +51,10 @@ public interface IOFactory {
     IOServerSocketChannel openServerSocket() throws IOException;
 
     /**
-     * @return A socket factory builder
+     * @param type The class of the type of socket
+     * @param <T> The type of socket
+     * @return A socket factory
+     * @throws IllegalArgumentException If no builder is available for the socket type
      */
-    IOSocketFactory.Builder<IOSocketChannel> socketFactoryBuilder();
+    <T extends IOSocket> IOSocketFactory<T> socketFactory(Class<T> type);
 }

@@ -49,11 +49,10 @@ public final class OutboundSocketFactory {
 
     public OutboundSocketFactory(final OutboundSocketSettings settings) {
         factory = StaticIOFactory
-            .socketFactoryBuilder()
+            .socketFactory(IOSocketChannel.class)
             .setSocketOption(IOSocketOption.SEND_BUFFER, settings.getSendBuffer())
             .setSocketOption(IOSocketOption.RECEIVE_BUFFER, settings.getReceiveBuffer())
-            .setSocketOption(IOSocketOption.BLOCKING, false)
-            .build();
+            .setSocketOption(IOSocketOption.BLOCKING, false);
         remote = new InetSocketAddress(settings.getHost(), settings.getPort());
     }
 
