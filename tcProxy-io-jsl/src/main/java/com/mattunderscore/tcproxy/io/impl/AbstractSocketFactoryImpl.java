@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.io.impl;
 
 import java.io.IOException;
+import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,16 +39,16 @@ import com.mattunderscore.tcproxy.io.IOSocketOption;
  * @author Matt Champion on 17/10/2015
  */
 abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocketFactory<T> {
-    /**
-     * The options set.
-     */
     protected final Map<IOSocketOption<?>, Object> options;
+    protected final SocketAddress boundSocket;
 
     AbstractSocketFactoryImpl() {
+        boundSocket = null;
         options = new HashMap<>();
     }
 
-    AbstractSocketFactoryImpl(Map<IOSocketOption<?>, Object> options) {
+    AbstractSocketFactoryImpl(SocketAddress boundSocket, Map<IOSocketOption<?>, Object> options) {
+        this.boundSocket = boundSocket;
         this.options = options;
     }
 
@@ -55,14 +56,20 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
     public final <O> IOSocketFactory<T> set(IOSocketOption<O> option, O value) {
         final Map<IOSocketOption<?>, Object> newOptions = new HashMap<>(options);
         newOptions.put(option, value);
-        return newBuilder(options);
+        return newBuilder(boundSocket, newOptions);
+    }
+
+    @Override
+    public IOSocketFactory<T> bind(SocketAddress localAddress) {
+        return newBuilder(localAddress, options);
     }
 
     /**
-     * @param options The new options
+     * @param newAddress The new socket address
+     * @param newOptions The new options
      * @return A new concrete builder
      */
-    protected abstract IOSocketFactory<T> newBuilder(Map<IOSocketOption<?>, Object> options);
+    protected abstract IOSocketFactory<T> newBuilder(SocketAddress newAddress, Map<IOSocketOption<?>, Object> newOptions);
 
     @Override
     public final T create() throws IOException {

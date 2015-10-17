@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.io;
 
 import java.io.IOException;
+import java.net.SocketAddress;
 
 /**
  * Factory for sockets.
@@ -41,6 +42,8 @@ public interface IOSocketFactory<T extends IOSocket> {
      * @return A new builder with the option set
      */
     <O> IOSocketFactory<T> set(IOSocketOption<O> option, O value);
+
+    IOSocketFactory<T> bind(SocketAddress localAddress);
 
     /**
      * @return A new socket created by the factory

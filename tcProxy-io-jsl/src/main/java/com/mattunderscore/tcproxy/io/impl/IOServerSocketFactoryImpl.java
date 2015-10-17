@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.io.impl;
 
 import java.io.IOException;
+import java.net.SocketAddress;
 import java.util.Map;
 
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
@@ -33,6 +34,7 @@ import com.mattunderscore.tcproxy.io.IOSocketFactory;
 import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 /**
+ * A {@link IOSocketFactory} implementation for {@link IOServerSocketChannel}s.
  * @author Matt Champion on 17/10/2015
  */
 final class IOServerSocketFactoryImpl extends AbstractSocketFactoryImpl<IOServerSocketChannel> {
@@ -41,13 +43,13 @@ final class IOServerSocketFactoryImpl extends AbstractSocketFactoryImpl<IOServer
         super();
     }
 
-    public IOServerSocketFactoryImpl(Map<IOSocketOption<?>, Object> options) {
-        super(options);
+    public IOServerSocketFactoryImpl(SocketAddress boundSocket, Map<IOSocketOption<?>, Object> options) {
+        super(boundSocket, options);
     }
 
     @Override
-    protected IOSocketFactory<IOServerSocketChannel> newBuilder(Map<IOSocketOption<?>, Object> options) {
-        return new IOServerSocketFactoryImpl(options);
+    protected IOSocketFactory<IOServerSocketChannel> newBuilder(SocketAddress newAddress, Map<IOSocketOption<?>, Object> newOptions) {
+        return new IOServerSocketFactoryImpl(newAddress, newOptions);
     }
 
     @Override

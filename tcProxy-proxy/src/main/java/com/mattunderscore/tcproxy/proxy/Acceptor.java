@@ -89,11 +89,10 @@ public final class Acceptor implements Runnable {
      * @throws IOException
      */
     IOServerSocketChannel openServerSocket() throws IOException {
-        final IOServerSocketChannel serverSocket = StaticIOFactory.socketFactory(IOServerSocketChannel.class)
+        return StaticIOFactory.socketFactory(IOServerSocketChannel.class)
             .set(IOSocketOption.RECEIVE_BUFFER, inboundSettings.getReceiveBufferSize())
+            .bind(new InetSocketAddress(settings.getPort()))
             .create();
-        serverSocket.bind(new InetSocketAddress(settings.getPort()));
-        return serverSocket;
     }
 
     /**
