@@ -102,6 +102,15 @@ public final class ProxyServer {
         acceptorThread.start();
         readerThread.start();
         writerThread.start();
+
+        try {
+            acceptor.waitForReady();
+            proxy.waitForReady();
+            writer.waitForReady();
+        }
+        catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void stop() {

@@ -28,6 +28,7 @@ package com.mattunderscore.tcproxy.proxy;
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
 
@@ -40,6 +41,7 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
  * @author Matt Champion on 24/09/14.
  */
 public abstract class AbstractSelector implements Runnable {
+    private final CountDownLatch readyLatch = new CountDownLatch(1);
     private final IOSelector selector;
     private final SelectorBackoff backoff;
     private final IOSelectionKey.Op operation;
@@ -55,6 +57,7 @@ public abstract class AbstractSelector implements Runnable {
     public final void run() {
         getLogger().debug("{} : Starting", this);
         running = true;
+        readyLatch.countDown();
         while (running) {
             try {
                 selector.selectNow();
@@ -81,6 +84,10 @@ public abstract class AbstractSelector implements Runnable {
     public final void stop() {
         running = false;
         getLogger().debug("{} : Stopping", this);
+    }
+
+    void waitForReady() throws InterruptedException {
+        readyLatch.await();
     }
 
     /**

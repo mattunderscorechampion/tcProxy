@@ -28,6 +28,7 @@ package com.mattunderscore.tcproxy.proxy;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ClosedByInterruptException;
+import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,7 @@ import com.mattunderscore.tcproxy.proxy.settings.InboundSocketSettings;
  */
 public final class Acceptor implements Runnable {
     public static final Logger LOG = LoggerFactory.getLogger("acceptor");
+    private final CountDownLatch readyLatch = new CountDownLatch(1);
     private final AcceptorSettings settings;
     private final InboundSocketSettings inboundSettings;
     private final ConnectionFactory connectionFactory;
@@ -101,6 +103,7 @@ public final class Acceptor implements Runnable {
      */
     void mainLoop(final IOServerSocketChannel channel) {
         acceptorThread = Thread.currentThread();
+        readyLatch.countDown();
         while (running) {
             try {
                 final IOSocketChannel clientSide = channel.accept();
@@ -118,6 +121,10 @@ public final class Acceptor implements Runnable {
                 LOG.warn("{} : There was an unhandled exception in the main loop - continuing", this, e);
             }
         }
+    }
+
+    void waitForReady() throws InterruptedException {
+        readyLatch.await();
     }
 
     @Override
