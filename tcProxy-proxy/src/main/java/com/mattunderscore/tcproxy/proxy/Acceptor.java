@@ -90,7 +90,7 @@ public final class Acceptor implements Runnable {
      */
     IOServerSocketChannel openServerSocket() throws IOException {
         final IOServerSocketChannel serverSocket = StaticIOFactory.socketFactory(IOServerSocketChannel.class)
-            .setSocketOption(IOSocketOption.RECEIVE_BUFFER, inboundSettings.getReceiveBufferSize())
+            .set(IOSocketOption.RECEIVE_BUFFER, inboundSettings.getReceiveBufferSize())
             .create();
         serverSocket.bind(new InetSocketAddress(settings.getPort()));
         return serverSocket;
@@ -105,8 +105,8 @@ public final class Acceptor implements Runnable {
         while (running) {
             try {
                 final IOSocketChannel clientSide = channel.accept();
-                clientSide.setOption(IOSocketOption.SEND_BUFFER, inboundSettings.getReceiveBufferSize());
-                clientSide.setOption(IOSocketOption.BLOCKING, false);
+                clientSide.set(IOSocketOption.SEND_BUFFER, inboundSettings.getReceiveBufferSize());
+                clientSide.set(IOSocketOption.BLOCKING, false);
                 LOG.info("{} : Accepted {}", this, clientSide);
                 final IOSocketChannel serverSide = factory.createSocket();
                 LOG.info("{} : Opened {}", this, serverSide);

@@ -52,7 +52,7 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
     }
 
     @Override
-    public final <O> IOSocketFactory<T> setSocketOption(IOSocketOption<O> option, O value) {
+    public final <O> IOSocketFactory<T> set(IOSocketOption<O> option, O value) {
         final Map<IOSocketOption<?>, Object> newOptions = new HashMap<>(options);
         newOptions.put(option, value);
         return newBuilder(options);
@@ -70,7 +70,7 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
 
         // Apply builder options to socket
         for (Map.Entry<IOSocketOption<?>, Object> entry : options.entrySet()) {
-            socket.setOption((IOSocketOption) entry.getKey(), entry.getValue());
+            socket.set((IOSocketOption) entry.getKey(), entry.getValue());
         }
 
         return socket;

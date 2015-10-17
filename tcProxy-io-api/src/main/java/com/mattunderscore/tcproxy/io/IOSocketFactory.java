@@ -40,7 +40,7 @@ public interface IOSocketFactory<T extends IOSocket> {
      * @param <O> The type of value
      * @return A new builder with the option set
      */
-    <O> IOSocketFactory<T> setSocketOption(IOSocketOption<O> option, O value);
+    <O> IOSocketFactory<T> set(IOSocketOption<O> option, O value);
 
     /**
      * @return A new socket created by the factory

@@ -64,5 +64,5 @@ public interface IOSocket {
      * @param <T> The type of the value.
      * @throws IOException
      */
-    <T> void setOption(IOSocketOption<T> option, T value) throws IOException;
+    <T> void set(IOSocketOption<T> option, T value) throws IOException;
 }
