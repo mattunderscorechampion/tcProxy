@@ -15,6 +15,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.mattunderscore.tcproxy</groupId>
             <artifactId>tcProxy-io-jsl</artifactId>
         </dependency>

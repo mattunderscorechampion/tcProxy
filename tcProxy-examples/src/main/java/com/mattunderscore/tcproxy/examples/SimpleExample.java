@@ -5,6 +5,9 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mattunderscore.tcproxy.examples.data.RandomDataProducer;
 import com.mattunderscore.tcproxy.examples.data.ThrottledDataProducer;
 import com.mattunderscore.tcproxy.examples.workers.Acceptor;
@@ -27,7 +30,8 @@ import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
  * @author Matt Champion on 09/10/2015
  */
 public final class SimpleExample {
-    public static void main(String[] args) throws IOException, InterruptedException {
+    private static final Logger LOG = LoggerFactory.getLogger("example");
+    public static void main(String[] args) throws IOException {
         // Start the proxy
         final ProxyServer server = new ProxyServer(
             new AcceptorSettings(8085),
@@ -42,27 +46,54 @@ public final class SimpleExample {
             new ConnectionManager());
         server.start();
 
-        // Start an acceptor
-        final IOServerSocketChannel acceptorChannel = StaticIOFactory.openServerSocket();
-        acceptorChannel.bind(new InetSocketAddress("localhost", 8080));
         final BlockingQueue<IOSocketChannel> channels = new ArrayBlockingQueue<>(2);
-        final Acceptor acceptor = new Acceptor(acceptorChannel, channels);
-        acceptor.start();
+        final Acceptor acceptor;
+        try {
+            // Start an acceptor
+            final IOServerSocketChannel acceptorChannel = StaticIOFactory.openServerSocket();
+            acceptorChannel.bind(new InetSocketAddress("localhost", 8080));
+            acceptor = new Acceptor(acceptorChannel, channels);
+            acceptor.start();
+        }
+        catch (IOException e) {
+            LOG.error("Error creating acceptor", e);
+            server.stop();
+            return;
+        }
 
-        // Start a producer
-        final IOSocketChannel producerChannel = StaticIOFactory.openSocket();
-        producerChannel.connect(new InetSocketAddress("localhost", 8085));
-        final Producer producer = new Producer(
-            producerChannel,
-            new ThrottledDataProducer(
-                100L,
-                new RandomDataProducer(32)));
-        producer.start();
+        final Producer producer;
+        try {
+            // Start a producer
+            final IOSocketChannel producerChannel = StaticIOFactory.openSocket();
+            producerChannel.connect(new InetSocketAddress("localhost", 8085));
+            producer = new Producer(
+                producerChannel,
+                new ThrottledDataProducer(
+                    100L,
+                    new RandomDataProducer(32)));
+            producer.start();
+        }
+        catch (IOException e) {
+            LOG.error("Error creating producer", e);
+            server.stop();
+            acceptor.stop();
+            return;
+        }
 
-        // Start a consumer
-        final IOSocketChannel consumerChannel = channels.take();
-        final Consumer consumer = new Consumer(consumerChannel);
-        consumer.start();
+        try {
+            // Start a consumer
+            final IOSocketChannel consumerChannel = channels.take();
+            final Consumer consumer = new Consumer(consumerChannel);
+            consumer.start();
+        }
+        catch (InterruptedException e) {
+            LOG.error("Error creating consumer", e);
+            server.stop();
+            server.stop();
+            acceptor.stop();
+            producer.stop();
+            return;
+        }
 
         // Keep going
         System.out.print("Press return to stop: ");
