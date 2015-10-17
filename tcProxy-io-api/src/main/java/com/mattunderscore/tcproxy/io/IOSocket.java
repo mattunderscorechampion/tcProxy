@@ -35,7 +35,7 @@ public interface IOSocket {
 
     /**
      * Bind the socket to a local address.
-     * @param localAddress
+     * @param localAddress The local address
      * @throws IOException
      */
     void bind(SocketAddress localAddress) throws IOException;

@@ -25,8 +25,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io;
 
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
-
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 
@@ -43,9 +41,9 @@ public interface IOServerSocketChannel extends IOSocket {
 
     /**
      * Register a server socket channel with a selector for accepting connections.
-     * @param selector
-     * @param att
-     * @return
+     * @param selector The selector
+     * @param att A attachment
+     * @return The selection key
      * @throws ClosedChannelException
      */
     IOSelectionKey register(IOSelector selector, Object att) throws ClosedChannelException;

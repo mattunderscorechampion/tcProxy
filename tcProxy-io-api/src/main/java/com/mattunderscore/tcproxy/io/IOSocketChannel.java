@@ -27,7 +27,8 @@ package com.mattunderscore.tcproxy.io;
 
 import java.io.IOException;
 import java.net.SocketAddress;
-import java.nio.channels.*;
+import java.nio.channels.ByteChannel;
+import java.nio.channels.ClosedChannelException;
 import java.util.Set;
 
 /**
@@ -38,15 +39,15 @@ public interface IOSocketChannel extends ByteChannel, IOSocket {
 
     /**
      * Connect the socket to a remote address.
-     * @param remoteAddress
-     * @return
+     * @param remoteAddress The remote address to connect to
+     * @return If the connect has been established
      * @throws IOException
      */
     boolean connect(SocketAddress remoteAddress) throws IOException;
 
     /**
      * Finish the connection.
-     * @return
+     * @return If the connect was completed
      * @throws IOException
      */
     boolean finishConnect() throws IOException;
@@ -59,20 +60,20 @@ public interface IOSocketChannel extends ByteChannel, IOSocket {
 
     /**
      * Register the channel with a selector.
-     * @param selector
-     * @param op
-     * @param att
-     * @return
-     * @throws java.nio.channels.ClosedChannelException
+     * @param selector The selector
+     * @param op The operation
+     * @param att A attachment
+     * @return The selection key
+     * @throws ClosedChannelException
      */
     IOSelectionKey register(IOSelector selector, IOSelectionKey.Op op, Object att) throws ClosedChannelException;
 
     /**
      * Register the channel with a selector.
-     * @param selector
-     * @param ops
-     * @param att
-     * @return
+     * @param selector The selector
+     * @param ops The operations
+     * @param att A attachment
+     * @return The selection key
      * @throws ClosedChannelException
      */
     IOSelectionKey register(IOSelector selector, Set<IOSelectionKey.Op> ops, Object att) throws ClosedChannelException;
