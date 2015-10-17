@@ -75,6 +75,7 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
     public final T create() throws IOException {
         final T socket = newSocket();
 
+        socket.bind(boundSocket);
         // Apply builder options to socket
         for (Map.Entry<IOSocketOption<?>, Object> entry : options.entrySet()) {
             socket.set((IOSocketOption) entry.getKey(), entry.getValue());
