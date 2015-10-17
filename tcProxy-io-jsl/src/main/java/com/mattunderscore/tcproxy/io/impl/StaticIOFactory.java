@@ -71,4 +71,11 @@ public final class StaticIOFactory {
     public static IOSocketFactory.Builder<IOSocketChannel> socketFactoryBuilder() {
         return FACTORY.socketFactoryBuilder();
     }
+
+    /**
+     * @return A socket factory builder
+     */
+    public static IOSocketFactory.Builder<IOServerSocketChannel> serverSocketFactoryBuilder() {
+        return FACTORY.serverSocketFactoryBuilder();
+    }
 }

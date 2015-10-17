@@ -1,4 +1,4 @@
-/* Copyright © 2014 Matthew Champion
+/* Copyright © 2015 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -25,43 +25,32 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.impl;
 
-import java.io.IOException;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.mattunderscore.tcproxy.io.IOFactory;
-import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
+import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 /**
- * Factory implementation for sockets and selectors.
- * @author matt on 30/06/14.
+ * @author Matt Champion on 17/10/2015
  */
-public final class IOFactoryImpl implements IOFactory {
-    @Override
-    public IOSelector openSelector() throws IOException {
-        return new IOSelectorImpl(Selector.open());
+public class IOServerSocketFactoryBuilderImpl extends AbstractSocketFactoryBuilder<IOServerSocketChannel> {
+    public IOServerSocketFactoryBuilderImpl() {
+        super();
+    }
+
+    public IOServerSocketFactoryBuilderImpl(Map<IOSocketOption<?>, Object> options) {
+        super(options);
     }
 
     @Override
-    public IOSocketChannel openSocket() throws IOException {
-        return new IOSocketChannelImpl(SocketChannel.open());
+    protected IOSocketFactory.Builder<IOServerSocketChannel> newBuilder(Map<IOSocketOption<?>, Object> options) {
+        return new IOServerSocketFactoryBuilderImpl(options);
     }
 
     @Override
-    public IOServerSocketChannel openServerSocket() throws IOException {
-        return new IOServerSocketChannelImpl(ServerSocketChannel.open());
-    }
-
-    @Override
-    public IOSocketFactory.Builder<IOSocketChannel> socketFactoryBuilder() {
-        return new IOSocketFactoryBuilderImpl();
-    }
-
-    public IOSocketFactory.Builder<IOServerSocketChannel> serverSocketFactoryBuilder() {
-        return new IOServerSocketFactoryBuilderImpl();
+    public IOSocketFactory<IOServerSocketChannel> build() {
+        return new IOServerSocketFactoryImpl(this);
     }
 }
