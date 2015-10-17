@@ -58,7 +58,6 @@ public final class OutboundSocketFactory {
 
     public IOSocketChannel createSocket() throws IOException {
         final IOSocketChannel channel = factory.create();
-        channel.bind(null);
         channel.connect(remote);
         while (!channel.finishConnect()) {
             try {
