@@ -25,9 +25,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.impl;
 
-import java.util.HashMap;
 import java.util.Map;
 
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
 import com.mattunderscore.tcproxy.io.IOSocketOption;
 
@@ -35,26 +35,23 @@ import com.mattunderscore.tcproxy.io.IOSocketOption;
  * An {@link IOSocketFactoryImpl} builder.
  * @author Matt Champion on 17/10/2015
  */
-final class IOSocketFactoryBuilderImpl implements IOSocketFactory.Builder {
-    private final Map<IOSocketOption<?>, Object> options;
+final class IOSocketFactoryBuilderImpl extends AbstractSocketFactoryBuilder<IOSocketChannel> {
 
     IOSocketFactoryBuilderImpl() {
-        options = new HashMap<>();
+        super();
     }
 
     IOSocketFactoryBuilderImpl(Map<IOSocketOption<?>, Object> options) {
-        this.options = options;
+        super(options);
     }
 
     @Override
-    public <T> IOSocketFactory.Builder setSocketOption(IOSocketOption<T> option, T value) {
-        final Map<IOSocketOption<?>, Object> newOptions = new HashMap<>(options);
-        newOptions.put(option, value);
+    protected IOSocketFactory.Builder<IOSocketChannel> newBuilder(Map<IOSocketOption<?>, Object> options) {
         return new IOSocketFactoryBuilderImpl(options);
     }
 
     @Override
-    public IOSocketFactory build() {
-        return new IOSocketFactoryImpl(options);
+    public IOSocketFactory<IOSocketChannel> build() {
+        return new IOSocketFactoryImpl(this);
     }
 }

@@ -53,5 +53,5 @@ public interface IOFactory {
     /**
      * @return A socket factory builder
      */
-    IOSocketFactory.Builder socketFactoryBuilder();
+    IOSocketFactory.Builder<IOSocketChannel> socketFactoryBuilder();
 }

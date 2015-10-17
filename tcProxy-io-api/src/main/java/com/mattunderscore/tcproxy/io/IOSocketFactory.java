@@ -30,36 +30,38 @@ import java.io.IOException;
 /**
  * Factory for sockets.
  * @author Matt Champion on 17/10/2015
+ * @param <T> The type of socket created
  */
-public interface IOSocketFactory {
+public interface IOSocketFactory<T extends IOSocket> {
 
     /**
      * @return A new socket created by the factory
      * @throws IOException If there is a problem creating the socket
      */
-    IOSocketChannel create() throws IOException;
+    T create() throws IOException;
 
     /**
      * @return A {@link Builder} with same configuration as this factory
      */
-    Builder builder();
+    Builder<T> builder();
 
     /**
      * Builder for {@link IOSocketFactory}s. The build should be immutable.
+     * @param <T> The type of socket created by the factory
      */
-    interface Builder {
+    interface Builder<T extends IOSocket> {
         /**
          * Set an option on the sockets produced by the returned factory.
-         * @param option
-         * @param value
-         * @param <T>
+         * @param option The option
+         * @param value The value
+         * @param <O> The type of value
          * @return A new builder with the option set
          */
-        <T> Builder setSocketOption(IOSocketOption<T> option, T value);
+        <O> Builder<T> setSocketOption(IOSocketOption<O> option, O value);
 
         /**
          * @return The factory
          */
-        IOSocketFactory build();
+        IOSocketFactory<T> build();
     }
 }

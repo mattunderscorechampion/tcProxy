@@ -1,4 +1,4 @@
-/* Copyright © 2014 Matthew Champion
+/* Copyright © 2015 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -26,49 +26,43 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.io.impl;
 
 import java.io.IOException;
+import java.util.Map;
 
-import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocket;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
+import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 /**
- * Static implementation of IO factory for convenience.
- * @author Matt Champion on 13/03/14.
+ * Abstract implementation of {@link IOSocketFactory}.
+ * @author Matt Champion on 17/10/2015
  */
-public final class StaticIOFactory {
-    private static final IOFactoryImpl FACTORY = new IOFactoryImpl();
-    private StaticIOFactory() {
+abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocketFactory<T> {
+    private AbstractSocketFactoryBuilder<T> builder;
+
+    protected AbstractSocketFactoryImpl(AbstractSocketFactoryBuilder<T> builder) {
+        this.builder = builder;
+    }
+
+    @Override
+    public final T create() throws IOException {
+        final T socket = newSocket();
+
+        // Apply builder options to socket
+        for (Map.Entry<IOSocketOption<?>, Object> entry : builder.options.entrySet()) {
+            socket.setOption((IOSocketOption) entry.getKey(), entry.getValue());
+        }
+
+        return socket;
+    }
+
+    @Override
+    public final Builder<T> builder() {
+        return builder;
     }
 
     /**
-     * @return A new selector.
-     * @throws IOException
+     * @return A new concrete socket
+     * @throws IOException If there is a problem creating the socket
      */
-    public static IOSelector openSelector() throws IOException {
-        return FACTORY.openSelector();
-    }
-
-    /**
-     * @return A new unbound socket.
-     * @throws IOException
-     */
-    public static IOSocketChannel openSocket() throws IOException {
-        return FACTORY.openSocket();
-    }
-
-    /**
-     * @return A new server socket.
-     * @throws IOException
-     */
-    public static IOServerSocketChannel openServerSocket() throws IOException {
-        return FACTORY.openServerSocket();
-    }
-
-    /**
-     * @return A socket factory builder
-     */
-    public static IOSocketFactory.Builder<IOSocketChannel> socketFactoryBuilder() {
-        return FACTORY.socketFactoryBuilder();
-    }
+    protected abstract T newSocket() throws IOException;
 }

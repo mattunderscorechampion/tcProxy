@@ -26,36 +26,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.io.impl;
 
 import java.io.IOException;
-import java.util.Map;
 
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
-import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 /**
  * A {@link IOSocketFactory} implementation.
  * @author Matt Champion on 17/10/2015
  */
-final class IOSocketFactoryImpl implements IOSocketFactory {
-    private final Map<IOSocketOption<?>, Object> options;
+final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChannel> {
 
-    IOSocketFactoryImpl(Map<IOSocketOption<?>, Object> options) {
-        this.options = options;
+    protected IOSocketFactoryImpl(AbstractSocketFactoryBuilder<IOSocketChannel> builder) {
+        super(builder);
     }
 
     @Override
-    public IOSocketChannel create() throws IOException {
-        final IOSocketChannel channel = StaticIOFactory.openSocket();
-
-        for (Map.Entry<IOSocketOption<?>, Object> entry : options.entrySet()) {
-            channel.setOption((IOSocketOption) entry.getKey(), entry.getValue());
-        }
-
-        return channel;
-    }
-
-    @Override
-    public Builder builder() {
-        return new IOSocketFactoryBuilderImpl(options);
+    protected IOSocketChannel newSocket() throws IOException {
+        return StaticIOFactory.openSocket();
     }
 }

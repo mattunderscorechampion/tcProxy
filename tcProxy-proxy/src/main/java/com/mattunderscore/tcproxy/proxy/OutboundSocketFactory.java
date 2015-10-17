@@ -44,7 +44,7 @@ import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 public final class OutboundSocketFactory {
     private static final Logger LOG = LoggerFactory.getLogger("outbound socket factory");
     private static final long backOff = 5L;
-    private final IOSocketFactory factory;
+    private final IOSocketFactory<IOSocketChannel> factory;
     private final InetSocketAddress remote;
 
     public OutboundSocketFactory(final OutboundSocketSettings settings) {

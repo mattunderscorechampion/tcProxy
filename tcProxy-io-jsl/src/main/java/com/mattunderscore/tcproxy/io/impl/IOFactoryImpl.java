@@ -57,7 +57,7 @@ public final class IOFactoryImpl implements IOFactory {
     }
 
     @Override
-    public IOSocketFactory.Builder socketFactoryBuilder() {
+    public IOSocketFactory.Builder<IOSocketChannel> socketFactoryBuilder() {
         return new IOSocketFactoryBuilderImpl();
     }
 }

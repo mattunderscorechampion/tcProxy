@@ -1,4 +1,4 @@
-/* Copyright © 2014 Matthew Champion
+/* Copyright © 2015 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -25,50 +25,41 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.impl;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocket;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
+import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 /**
- * Static implementation of IO factory for convenience.
- * @author Matt Champion on 13/03/14.
+ * Abstract implementation of {@link IOSocketFactory.Builder}.
+ * @author Matt Champion on 17/10/2015
  */
-public final class StaticIOFactory {
-    private static final IOFactoryImpl FACTORY = new IOFactoryImpl();
-    private StaticIOFactory() {
+abstract class AbstractSocketFactoryBuilder<T extends IOSocket> implements IOSocketFactory.Builder<T> {
+    /**
+     * The options set.
+     */
+    protected final Map<IOSocketOption<?>, Object> options;
+
+    AbstractSocketFactoryBuilder() {
+        options = new HashMap<>();
+    }
+
+    AbstractSocketFactoryBuilder(Map<IOSocketOption<?>, Object> options) {
+        this.options = options;
+    }
+
+    @Override
+    public final <O> IOSocketFactory.Builder<T> setSocketOption(IOSocketOption<O> option, O value) {
+        final Map<IOSocketOption<?>, Object> newOptions = new HashMap<>(options);
+        newOptions.put(option, value);
+        return newBuilder(options);
     }
 
     /**
-     * @return A new selector.
-     * @throws IOException
+     * @param options The new options
+     * @return A new concrete builder
      */
-    public static IOSelector openSelector() throws IOException {
-        return FACTORY.openSelector();
-    }
-
-    /**
-     * @return A new unbound socket.
-     * @throws IOException
-     */
-    public static IOSocketChannel openSocket() throws IOException {
-        return FACTORY.openSocket();
-    }
-
-    /**
-     * @return A new server socket.
-     * @throws IOException
-     */
-    public static IOServerSocketChannel openServerSocket() throws IOException {
-        return FACTORY.openServerSocket();
-    }
-
-    /**
-     * @return A socket factory builder
-     */
-    public static IOSocketFactory.Builder<IOSocketChannel> socketFactoryBuilder() {
-        return FACTORY.socketFactoryBuilder();
-    }
+    protected abstract IOSocketFactory.Builder<T> newBuilder(Map<IOSocketOption<?>, Object> options);
 }
