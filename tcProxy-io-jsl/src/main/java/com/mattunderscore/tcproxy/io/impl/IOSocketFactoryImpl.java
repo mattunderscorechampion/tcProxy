@@ -27,11 +27,9 @@ package com.mattunderscore.tcproxy.io.impl;
 
 import java.io.IOException;
 import java.net.SocketAddress;
-import java.util.Map;
 
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
-import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 /**
  * A {@link IOSocketFactory} implementation for {@link IOSocketChannel}s.
@@ -43,13 +41,39 @@ final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChanne
         super();
     }
 
-    public IOSocketFactoryImpl(SocketAddress boundSocket, Map<IOSocketOption<?>, Object> options) {
-        super(boundSocket, options);
+    public IOSocketFactoryImpl(
+        Integer receiveBuffer,
+        Integer sendBuffer,
+        boolean blocking,
+        boolean keepAlive,
+        Integer linger,
+        boolean reuseAddress,
+        boolean noDelay,
+        SocketAddress boundSocket) {
+
+        super(receiveBuffer, sendBuffer, blocking, keepAlive, linger, reuseAddress, noDelay, boundSocket);
     }
 
     @Override
-    protected IOSocketFactory<IOSocketChannel> newBuilder(SocketAddress newAddress, Map<IOSocketOption<?>, Object> newOptions) {
-        return new IOSocketFactoryImpl(newAddress, newOptions);
+    protected IOSocketFactory<IOSocketChannel> newBuilder(
+        Integer receiveBuffer,
+        Integer sendBuffer,
+        boolean blocking,
+        boolean keepAlive,
+        Integer linger,
+        boolean reuseAddress,
+        boolean noDelay,
+        SocketAddress boundSocket) {
+
+        return new IOSocketFactoryImpl(
+            receiveBuffer,
+            sendBuffer,
+            blocking,
+            keepAlive,
+            linger,
+            reuseAddress,
+            noDelay,
+            boundSocket);
     }
 
     @Override

@@ -92,7 +92,7 @@ public final class Acceptor implements Runnable {
      */
     IOServerSocketChannel openServerSocket() throws IOException {
         return StaticIOFactory.socketFactory(IOServerSocketChannel.class)
-            .set(IOSocketOption.RECEIVE_BUFFER, inboundSettings.getReceiveBufferSize())
+            .receiveBuffer(inboundSettings.getReceiveBufferSize())
             .bind(new InetSocketAddress(settings.getPort()))
             .create();
     }

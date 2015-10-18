@@ -27,11 +27,9 @@ package com.mattunderscore.tcproxy.io.impl;
 
 import java.io.IOException;
 import java.net.SocketAddress;
-import java.util.Map;
 
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
-import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 /**
  * A {@link IOSocketFactory} implementation for {@link IOServerSocketChannel}s.
@@ -43,13 +41,39 @@ final class IOServerSocketFactoryImpl extends AbstractSocketFactoryImpl<IOServer
         super();
     }
 
-    public IOServerSocketFactoryImpl(SocketAddress boundSocket, Map<IOSocketOption<?>, Object> options) {
-        super(boundSocket, options);
+    public IOServerSocketFactoryImpl(
+        Integer receiveBuffer,
+        Integer sendBuffer,
+        boolean blocking,
+        boolean keepAlive,
+        Integer linger,
+        boolean reuseAddress,
+        boolean noDelay,
+        SocketAddress boundSocket) {
+
+        super(receiveBuffer, sendBuffer, blocking, keepAlive, linger, reuseAddress, noDelay, boundSocket);
     }
 
     @Override
-    protected IOSocketFactory<IOServerSocketChannel> newBuilder(SocketAddress newAddress, Map<IOSocketOption<?>, Object> newOptions) {
-        return new IOServerSocketFactoryImpl(newAddress, newOptions);
+    protected IOSocketFactory<IOServerSocketChannel> newBuilder(
+        Integer receiveBuffer,
+        Integer sendBuffer,
+        boolean blocking,
+        boolean keepAlive,
+        Integer linger,
+        boolean reuseAddress,
+        boolean noDelay,
+        SocketAddress boundSocket) {
+
+        return new IOServerSocketFactoryImpl(
+            receiveBuffer,
+            sendBuffer,
+            blocking,
+            keepAlive,
+            linger,
+            reuseAddress,
+            noDelay,
+            boundSocket);
     }
 
     @Override

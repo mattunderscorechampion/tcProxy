@@ -35,14 +35,53 @@ import java.net.SocketAddress;
  */
 public interface IOSocketFactory<T extends IOSocket> {
     /**
-     * Set an option on the sockets produced by the returned factory.
-     * @param option The option
-     * @param value The value
-     * @param <O> The type of value
-     * @return A new builder with the option set
+     * Set the socket option for SO_RCVBUF. Defaults to null.
+     * @param size The size of the buffer or null to use the system default
+     * @return A new factory with the option set
      */
-    <O> IOSocketFactory<T> set(IOSocketOption<O> option, O value);
+    IOSocketFactory<T> receiveBuffer(Integer size);
+    /**
+     * Set the socket option for SO_SNDBUF. Defaults to null.
+     * @param size The size of the buffer or null to use the system default
+     * @return A new factory with the option set
+     */
+    IOSocketFactory<T> sendBuffer(Integer size);
+    /**
+     * Set the socket to blocking mode. Defaults to false.
+     * @param enabled Enable the option
+     * @return A new factory with the option set
+     */
+    IOSocketFactory<T> blocking(boolean enabled);
+    /**
+     * Set the socket option for SO_KEEP_ALIVE. Defaults to false.
+     * @param enabled Enable the option
+     * @return A new factory with the option set
+     */
+    IOSocketFactory<T> keepAlive(boolean enabled);
+    /**
+     * Set the socket option for SO_LINGER. Defaults to null.
+     * @param time The linger time or null to use the system default
+     * @return A new factory with the option set
+     */
+    IOSocketFactory<T> linger(Integer time);
+    /**
+     * Set the socket option for SO_REUSEADDR. Defaults to false.
+     * @param enabled Enable the option
+     * @return A new factory with the option set
+     */
+    IOSocketFactory<T> reuseAddress(boolean enabled);
+    /**
+     * Set the socket option for TCP_NODELAY. Defaults to false.
+     * @param enabled Enable the option
+     * @return A new factory with the option set
+     */
+    IOSocketFactory<T> noDelay(boolean enabled);
 
+    /**
+     * Binds the socket to a local addresss.
+     * @param localAddress The local address
+     * @return A new factory with the option set
+     */
     IOSocketFactory<T> bind(SocketAddress localAddress);
 
     /**

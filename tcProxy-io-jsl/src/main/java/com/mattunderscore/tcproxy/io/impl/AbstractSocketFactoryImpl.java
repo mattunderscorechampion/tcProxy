@@ -27,59 +27,121 @@ package com.mattunderscore.tcproxy.io.impl;
 
 import java.io.IOException;
 import java.net.SocketAddress;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.mattunderscore.tcproxy.io.IOSocket;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
-import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 /**
  * Abstract implementation of {@link IOSocketFactory}.
  * @author Matt Champion on 17/10/2015
  */
 abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocketFactory<T> {
-    protected final Map<IOSocketOption<?>, Object> options;
+    protected final Integer receiveBuffer;
+    protected final Integer sendBuffer;
+    protected final boolean blocking;
+    protected final boolean keepAlive;
+    protected final Integer linger;
+    protected final boolean reuseAddress;
+    protected final boolean noDelay;
     protected final SocketAddress boundSocket;
 
     AbstractSocketFactoryImpl() {
         boundSocket = null;
-        options = new HashMap<>();
+        receiveBuffer = null;
+        sendBuffer = null;
+        blocking = false;
+        keepAlive = false;
+        linger = null;
+        reuseAddress = false;
+        noDelay = false;
     }
 
-    AbstractSocketFactoryImpl(SocketAddress boundSocket, Map<IOSocketOption<?>, Object> options) {
+    AbstractSocketFactoryImpl(
+        Integer receiveBuffer,
+        Integer sendBuffer,
+        boolean blocking,
+        boolean keepAlive,
+        Integer linger,
+        boolean reuseAddress,
+        boolean noDelay,
+        SocketAddress boundSocket) {
+
+        this.receiveBuffer = receiveBuffer;
+        this.sendBuffer = sendBuffer;
+        this.blocking = blocking;
+        this.keepAlive = keepAlive;
+        this.linger = linger;
+        this.reuseAddress = reuseAddress;
+        this.noDelay = noDelay;
         this.boundSocket = boundSocket;
-        this.options = options;
     }
 
     @Override
-    public final <O> IOSocketFactory<T> set(IOSocketOption<O> option, O value) {
-        final Map<IOSocketOption<?>, Object> newOptions = new HashMap<>(options);
-        newOptions.put(option, value);
-        return newBuilder(boundSocket, newOptions);
+    public IOSocketFactory<T> receiveBuffer(Integer size) {
+        return newBuilder(size, sendBuffer, blocking, keepAlive, linger, reuseAddress, noDelay, boundSocket);
     }
 
     @Override
-    public IOSocketFactory<T> bind(SocketAddress localAddress) {
-        return newBuilder(localAddress, options);
+    public IOSocketFactory<T> sendBuffer(Integer size) {
+        return newBuilder(receiveBuffer, size, blocking, keepAlive, linger, reuseAddress, noDelay, boundSocket);
+    }
+
+    @Override
+    public IOSocketFactory<T> blocking(boolean enabled) {
+        return newBuilder(receiveBuffer, sendBuffer, enabled, keepAlive, linger, reuseAddress, noDelay, boundSocket);
+    }
+
+    @Override
+    public IOSocketFactory<T> keepAlive(boolean enabled) {
+        return newBuilder(receiveBuffer, sendBuffer, blocking, enabled, linger, reuseAddress, noDelay, boundSocket);
+    }
+
+    @Override
+    public IOSocketFactory<T> linger(Integer time) {
+        return newBuilder(receiveBuffer, sendBuffer, blocking, keepAlive, time, reuseAddress, noDelay, boundSocket);
+    }
+
+    @Override
+    public IOSocketFactory<T> reuseAddress(boolean enabled) {
+        return newBuilder(receiveBuffer, sendBuffer, blocking, keepAlive, linger, enabled, noDelay, boundSocket);
+    }
+
+    @Override
+    public IOSocketFactory<T> noDelay(boolean enabled) {
+        return newBuilder(receiveBuffer, sendBuffer, blocking, keepAlive, linger, reuseAddress, enabled, boundSocket);
+    }
+
+    @Override
+    public IOSocketFactory<T> bind(SocketAddress newSocket) {
+        return newBuilder(receiveBuffer, sendBuffer, blocking, keepAlive, linger, reuseAddress, noDelay, newSocket);
     }
 
     /**
-     * @param newAddress The new socket address
-     * @param newOptions The new options
-     * @return A new concrete builder
+     * @param receiveBuffer The receive buffer size
+     * @param sendBuffer The send buffer size
+     * @param blocking Enable blocking
+     * @param keepAlive Enable keep alive
+     * @param linger Set linger
+     * @param reuseAddress Enable reuse address
+     * @param noDelay Enable no delay
+     * @param boundSocket Local address
+     * @return A concrete builder
      */
-    protected abstract IOSocketFactory<T> newBuilder(SocketAddress newAddress, Map<IOSocketOption<?>, Object> newOptions);
+    protected abstract IOSocketFactory<T> newBuilder(
+        Integer receiveBuffer,
+        Integer sendBuffer,
+        boolean blocking,
+        boolean keepAlive,
+        Integer linger,
+        boolean reuseAddress,
+        boolean noDelay,
+        SocketAddress boundSocket);
 
     @Override
     public final T create() throws IOException {
         final T socket = newSocket();
 
         socket.bind(boundSocket);
-        // Apply builder options to socket
-        for (Map.Entry<IOSocketOption<?>, Object> entry : options.entrySet()) {
-            socket.set((IOSocketOption) entry.getKey(), entry.getValue());
-        }
 
         return socket;
     }
