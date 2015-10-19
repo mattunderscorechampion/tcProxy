@@ -16,8 +16,8 @@ import com.mattunderscore.tcproxy.examples.workers.Producer;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
-import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.ProxyServer;
+import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.settings.AcceptorSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.InboundSocketSettings;
@@ -31,6 +31,7 @@ import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
  */
 public final class SimpleExample {
     private static final Logger LOG = LoggerFactory.getLogger("example");
+
     public static void main(String[] args) throws IOException {
         // Start the proxy
         final ProxyServer server = new ProxyServer(
@@ -50,8 +51,10 @@ public final class SimpleExample {
         final Acceptor acceptor;
         try {
             // Start an acceptor
-            final IOServerSocketChannel acceptorChannel = StaticIOFactory.openServerSocket();
-            acceptorChannel.bind(new InetSocketAddress("localhost", 8080));
+            final IOServerSocketChannel acceptorChannel = StaticIOFactory
+                .socketFactory(IOServerSocketChannel.class)
+                .bind(new InetSocketAddress("localhost", 8080))
+                .create();
             acceptor = new Acceptor(acceptorChannel, channels);
             acceptor.start();
         }
@@ -64,7 +67,7 @@ public final class SimpleExample {
         final Producer producer;
         try {
             // Start a producer
-            final IOSocketChannel producerChannel = StaticIOFactory.openSocket();
+            final IOSocketChannel producerChannel = StaticIOFactory.socketFactory(IOSocketChannel.class).create();
             producerChannel.connect(new InetSocketAddress("localhost", 8085));
             producer = new Producer(
                 producerChannel,

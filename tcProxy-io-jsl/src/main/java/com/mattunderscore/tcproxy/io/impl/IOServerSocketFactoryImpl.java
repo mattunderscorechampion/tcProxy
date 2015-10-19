@@ -37,21 +37,19 @@ import com.mattunderscore.tcproxy.io.IOSocketFactory;
  */
 final class IOServerSocketFactoryImpl extends AbstractSocketFactoryImpl<IOServerSocketChannel> {
 
-    public IOServerSocketFactoryImpl() {
-        super();
+    IOServerSocketFactoryImpl() {
+        super(null, null, true, null, null, false, null, null);
     }
 
-    public IOServerSocketFactoryImpl(
+    IOServerSocketFactoryImpl(
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
-        boolean keepAlive,
         Integer linger,
         boolean reuseAddress,
-        boolean noDelay,
         SocketAddress boundSocket) {
 
-        super(receiveBuffer, sendBuffer, blocking, keepAlive, linger, reuseAddress, noDelay, boundSocket);
+        super(receiveBuffer, sendBuffer, blocking, null, linger, reuseAddress, null, boundSocket);
     }
 
     @Override
@@ -59,25 +57,33 @@ final class IOServerSocketFactoryImpl extends AbstractSocketFactoryImpl<IOServer
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
-        boolean keepAlive,
+        Boolean keepAlive,
         Integer linger,
         boolean reuseAddress,
-        boolean noDelay,
+        Boolean noDelay,
         SocketAddress boundSocket) {
 
         return new IOServerSocketFactoryImpl(
             receiveBuffer,
             sendBuffer,
             blocking,
-            keepAlive,
             linger,
             reuseAddress,
-            noDelay,
             boundSocket);
     }
 
     @Override
     protected IOServerSocketChannel newSocket() throws IOException {
         return StaticIOFactory.openServerSocket();
+    }
+
+    @Override
+    public IOSocketFactory<IOServerSocketChannel> keepAlive(boolean enabled) {
+        throw new UnsupportedOperationException("IOServerSocketChannel does not support keep alive");
+    }
+
+    @Override
+    public IOSocketFactory<IOServerSocketChannel> noDelay(boolean enabled) {
+        throw new UnsupportedOperationException("IOServerSocketChannel does not support no delay");
     }
 }

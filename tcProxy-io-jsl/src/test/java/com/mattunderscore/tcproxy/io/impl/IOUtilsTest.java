@@ -36,7 +36,7 @@ import org.junit.Test;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey.Op;
 
-public class IOUtilsTest {
+public final class IOUtilsTest {
 
     @Test
     public void convertToBitSet0() {

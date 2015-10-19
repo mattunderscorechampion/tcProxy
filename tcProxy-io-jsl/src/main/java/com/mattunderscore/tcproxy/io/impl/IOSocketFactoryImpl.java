@@ -37,15 +37,15 @@ import com.mattunderscore.tcproxy.io.IOSocketFactory;
  */
 final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChannel> {
 
-    public IOSocketFactoryImpl() {
+    IOSocketFactoryImpl() {
         super();
     }
 
-    public IOSocketFactoryImpl(
+    IOSocketFactoryImpl(
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
-        boolean keepAlive,
+        Boolean keepAlive,
         Integer linger,
         boolean reuseAddress,
         boolean noDelay,
@@ -59,10 +59,10 @@ final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChanne
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
-        boolean keepAlive,
+        Boolean keepAlive,
         Integer linger,
         boolean reuseAddress,
-        boolean noDelay,
+        Boolean noDelay,
         SocketAddress boundSocket) {
 
         return new IOSocketFactoryImpl(

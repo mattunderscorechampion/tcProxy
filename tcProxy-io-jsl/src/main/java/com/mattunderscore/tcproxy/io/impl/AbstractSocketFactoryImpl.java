@@ -30,6 +30,7 @@ import java.net.SocketAddress;
 
 import com.mattunderscore.tcproxy.io.IOSocket;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
+import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 /**
  * Abstract implementation of {@link IOSocketFactory}.
@@ -39,17 +40,17 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
     protected final Integer receiveBuffer;
     protected final Integer sendBuffer;
     protected final boolean blocking;
-    protected final boolean keepAlive;
+    protected final Boolean keepAlive;
     protected final Integer linger;
     protected final boolean reuseAddress;
-    protected final boolean noDelay;
+    protected final Boolean noDelay;
     protected final SocketAddress boundSocket;
 
     AbstractSocketFactoryImpl() {
         boundSocket = null;
         receiveBuffer = null;
         sendBuffer = null;
-        blocking = false;
+        blocking = true;
         keepAlive = false;
         linger = null;
         reuseAddress = false;
@@ -60,10 +61,10 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
-        boolean keepAlive,
+        Boolean keepAlive,
         Integer linger,
         boolean reuseAddress,
-        boolean noDelay,
+        Boolean noDelay,
         SocketAddress boundSocket) {
 
         this.receiveBuffer = receiveBuffer;
@@ -131,16 +132,33 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
-        boolean keepAlive,
+        Boolean keepAlive,
         Integer linger,
         boolean reuseAddress,
-        boolean noDelay,
+        Boolean noDelay,
         SocketAddress boundSocket);
 
     @Override
     public final T create() throws IOException {
         final T socket = newSocket();
 
+        if (receiveBuffer != null) {
+            socket.set(IOSocketOption.RECEIVE_BUFFER, receiveBuffer);
+        }
+        if (sendBuffer != null) {
+            socket.set(IOSocketOption.SEND_BUFFER, sendBuffer);
+        }
+        socket.set(IOSocketOption.BLOCKING, blocking);
+        if (keepAlive != null) {
+            socket.set(IOSocketOption.KEEP_ALIVE, keepAlive);
+        }
+        if (linger != null) {
+            socket.set(IOSocketOption.LINGER, linger);
+        }
+        socket.set(IOSocketOption.REUSE_ADDRESS, reuseAddress);
+        if (noDelay != null) {
+            socket.set(IOSocketOption.TCP_NO_DELAY, noDelay);
+        }
         socket.bind(boundSocket);
 
         return socket;
