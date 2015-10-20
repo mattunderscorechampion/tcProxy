@@ -28,6 +28,7 @@ package com.mattunderscore.tcproxy.io.impl;
 import java.io.IOException;
 import java.net.SocketAddress;
 
+import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
 
@@ -37,11 +38,12 @@ import com.mattunderscore.tcproxy.io.IOSocketFactory;
  */
 final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChannel> {
 
-    IOSocketFactoryImpl() {
-        super();
+    IOSocketFactoryImpl(IOFactory ioFactory) {
+        super(ioFactory);
     }
 
     IOSocketFactoryImpl(
+        IOFactory ioFactory,
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
@@ -51,7 +53,7 @@ final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChanne
         boolean noDelay,
         SocketAddress boundSocket) {
 
-        super(receiveBuffer, sendBuffer, blocking, keepAlive, linger, reuseAddress, noDelay, boundSocket);
+        super(ioFactory, receiveBuffer, sendBuffer, blocking, keepAlive, linger, reuseAddress, noDelay, boundSocket);
     }
 
     @Override
@@ -66,6 +68,7 @@ final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChanne
         SocketAddress boundSocket) {
 
         return new IOSocketFactoryImpl(
+            ioFactory,
             receiveBuffer,
             sendBuffer,
             blocking,
@@ -78,6 +81,6 @@ final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChanne
 
     @Override
     protected IOSocketChannel newSocket() throws IOException {
-        return StaticIOFactory.openSocket();
+        return ioFactory.openSocket();
     }
 }

@@ -39,6 +39,7 @@ import com.mattunderscore.tcproxy.io.IOSocketFactory;
  */
 public final class StaticIOFactory {
     private static final IOFactoryImpl FACTORY = new IOFactoryImpl();
+
     private StaticIOFactory() {
     }
 

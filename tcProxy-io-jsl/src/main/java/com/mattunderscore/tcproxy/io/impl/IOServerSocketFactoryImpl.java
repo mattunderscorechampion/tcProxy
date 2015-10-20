@@ -28,6 +28,7 @@ package com.mattunderscore.tcproxy.io.impl;
 import java.io.IOException;
 import java.net.SocketAddress;
 
+import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
 
@@ -37,11 +38,12 @@ import com.mattunderscore.tcproxy.io.IOSocketFactory;
  */
 final class IOServerSocketFactoryImpl extends AbstractSocketFactoryImpl<IOServerSocketChannel> {
 
-    IOServerSocketFactoryImpl() {
-        super(null, null, true, null, null, false, null, null);
+    IOServerSocketFactoryImpl(IOFactory ioFactory) {
+        super(ioFactory, null, null, true, null, null, false, null, null);
     }
 
     IOServerSocketFactoryImpl(
+        IOFactory ioFactory,
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
@@ -49,7 +51,7 @@ final class IOServerSocketFactoryImpl extends AbstractSocketFactoryImpl<IOServer
         boolean reuseAddress,
         SocketAddress boundSocket) {
 
-        super(receiveBuffer, sendBuffer, blocking, null, linger, reuseAddress, null, boundSocket);
+        super(ioFactory, receiveBuffer, sendBuffer, blocking, null, linger, reuseAddress, null, boundSocket);
     }
 
     @Override
@@ -64,6 +66,7 @@ final class IOServerSocketFactoryImpl extends AbstractSocketFactoryImpl<IOServer
         SocketAddress boundSocket) {
 
         return new IOServerSocketFactoryImpl(
+            ioFactory,
             receiveBuffer,
             sendBuffer,
             blocking,
@@ -74,7 +77,7 @@ final class IOServerSocketFactoryImpl extends AbstractSocketFactoryImpl<IOServer
 
     @Override
     protected IOServerSocketChannel newSocket() throws IOException {
-        return StaticIOFactory.openServerSocket();
+        return ioFactory.openServerSocket();
     }
 
     @Override

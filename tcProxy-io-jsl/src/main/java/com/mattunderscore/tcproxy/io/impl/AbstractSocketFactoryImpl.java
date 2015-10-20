@@ -28,6 +28,7 @@ package com.mattunderscore.tcproxy.io.impl;
 import java.io.IOException;
 import java.net.SocketAddress;
 
+import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOSocket;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
 import com.mattunderscore.tcproxy.io.IOSocketOption;
@@ -37,6 +38,7 @@ import com.mattunderscore.tcproxy.io.IOSocketOption;
  * @author Matt Champion on 17/10/2015
  */
 abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocketFactory<T> {
+    protected final IOFactory ioFactory;
     protected final Integer receiveBuffer;
     protected final Integer sendBuffer;
     protected final boolean blocking;
@@ -46,7 +48,8 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
     protected final Boolean noDelay;
     protected final SocketAddress boundSocket;
 
-    AbstractSocketFactoryImpl() {
+    AbstractSocketFactoryImpl(IOFactory ioFactory) {
+        this.ioFactory = ioFactory;
         boundSocket = null;
         receiveBuffer = null;
         sendBuffer = null;
@@ -58,6 +61,7 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
     }
 
     AbstractSocketFactoryImpl(
+        IOFactory ioFactory,
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
@@ -67,6 +71,7 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
         Boolean noDelay,
         SocketAddress boundSocket) {
 
+        this.ioFactory = ioFactory;
         this.receiveBuffer = receiveBuffer;
         this.sendBuffer = sendBuffer;
         this.blocking = blocking;

@@ -60,10 +60,10 @@ public final class IOFactoryImpl implements IOFactory {
     @Override
     public <T extends IOSocket> IOSocketFactory<T> socketFactory(Class<T> type) {
         if (IOServerSocketChannel.class.equals(type)) {
-            return (IOSocketFactory<T>) new IOServerSocketFactoryImpl();
+            return (IOSocketFactory<T>) new IOServerSocketFactoryImpl(this);
         }
         else if (IOSocketChannel.class.equals(type)) {
-            return (IOSocketFactory<T>) new IOSocketFactoryImpl();
+            return (IOSocketFactory<T>) new IOSocketFactoryImpl(this);
         }
         else {
             throw new IllegalArgumentException("No factory available for " + type.getCanonicalName());
