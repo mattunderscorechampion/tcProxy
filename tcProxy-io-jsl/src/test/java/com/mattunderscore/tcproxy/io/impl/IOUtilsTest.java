@@ -35,6 +35,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey.Op;
+import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 public final class IOUtilsTest {
 
@@ -161,5 +162,45 @@ public final class IOUtilsTest {
         assertTrue(ops.contains(Op.READ));
         assertTrue(ops.contains(Op.WRITE));
         assertEquals(4, ops.size());
+    }
+
+    @Test
+    public void convertToInternalOption0() {
+        assertEquals(InternalIOSocketOption.RECEIVE_BUFFER, IOUtils.convertSocketOption(IOSocketOption.RECEIVE_BUFFER));
+    }
+
+    @Test
+    public void convertToInternalOption1() {
+        assertEquals(InternalIOSocketOption.SEND_BUFFER, IOUtils.convertSocketOption(IOSocketOption.SEND_BUFFER));
+    }
+
+    @Test
+    public void convertToInternalOption2() {
+        assertEquals(InternalIOSocketOption.BLOCKING, IOUtils.convertSocketOption(IOSocketOption.BLOCKING));
+    }
+
+    @Test
+    public void convertToInternalOption3() {
+        assertEquals(InternalIOSocketOption.LINGER, IOUtils.convertSocketOption(IOSocketOption.LINGER));
+    }
+
+    @Test
+    public void convertToInternalOption4() {
+        assertEquals(InternalIOSocketOption.KEEP_ALIVE, IOUtils.convertSocketOption(IOSocketOption.KEEP_ALIVE));
+    }
+
+    @Test
+    public void convertToInternalOption5() {
+        assertEquals(InternalIOSocketOption.REUSE_ADDRESS, IOUtils.convertSocketOption(IOSocketOption.REUSE_ADDRESS));
+    }
+
+    @Test
+    public void convertToInternalOption6() {
+        assertEquals(InternalIOSocketOption.TCP_NO_DELAY, IOUtils.convertSocketOption(IOSocketOption.TCP_NO_DELAY));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void convertToInternalOption7() {
+        IOUtils.convertSocketOption(null);
     }
 }

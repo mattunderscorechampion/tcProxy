@@ -113,7 +113,7 @@ final class IOUtils {
             return (InternalIOSocketOption<T>) InternalIOSocketOption.TCP_NO_DELAY;
         }
         else {
-            throw new IllegalStateException("Unknown socket option");
+            throw new IllegalArgumentException("Unknown socket option");
         }
     }
 }
