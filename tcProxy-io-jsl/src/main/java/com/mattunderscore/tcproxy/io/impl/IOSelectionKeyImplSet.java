@@ -27,6 +27,7 @@ package com.mattunderscore.tcproxy.io.impl;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 
+import java.lang.reflect.Array;
 import java.nio.channels.SelectionKey;
 import java.util.Collection;
 import java.util.Iterator;
@@ -55,7 +56,10 @@ final class IOSelectionKeyImplSet implements Set<IOSelectionKey> {
 
     @Override
     public boolean contains(Object o) {
-        if (o != null && o instanceof IOSelectionKeyImpl) {
+        if (o == this) {
+            return true;
+        }
+        else if (o != null && o.getClass().equals(IOSelectionKeyImpl.class)) {
             final IOSelectionKeyImpl key = (IOSelectionKeyImpl)o;
             return setDelegate.contains(key.keyDelegate);
         }
@@ -71,12 +75,25 @@ final class IOSelectionKeyImplSet implements Set<IOSelectionKey> {
 
     @Override
     public Object[] toArray() {
-        throw new UnsupportedOperationException();
+        return toArray(new Object[setDelegate.size()]);
     }
 
     @Override
     public <T> T[] toArray(T[] a) {
-        throw new UnsupportedOperationException();
+        final T[] array;
+        if (a.length >= setDelegate.size()) {
+            array = a;
+        }
+        else {
+            array = (T[])Array.newInstance(a.getClass().getComponentType());
+        }
+
+        int i = 0;
+        for (final SelectionKey key : setDelegate) {
+            array[i] = (T)new IOSelectionKeyImpl(key);
+            i++;
+        }
+        return array;
     }
 
     @Override
@@ -91,7 +108,7 @@ final class IOSelectionKeyImplSet implements Set<IOSelectionKey> {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+        return setDelegate.containsAll(c);
     }
 
     @Override
@@ -136,7 +153,7 @@ final class IOSelectionKeyImplSet implements Set<IOSelectionKey> {
 
         @Override
         public void remove() {
-            throw new UnsupportedOperationException("This set is immutable");
+            throw new UnsupportedOperationException("This set being iterated over is immutable");
         }
     }
 }
