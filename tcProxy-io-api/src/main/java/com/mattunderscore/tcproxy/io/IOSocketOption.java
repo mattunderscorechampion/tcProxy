@@ -33,32 +33,40 @@ public final class IOSocketOption<T> {
     /**
      * Socket option for SO_RCVBUF.
      */
-    public final static IOSocketOption<Integer> RECEIVE_BUFFER = new IOSocketOption<>();
+    public final static IOSocketOption<Integer> RECEIVE_BUFFER = new IOSocketOption<>("RECEIVE_BUFFER");
     /**
      * Socket option for SO_SNDBUF.
      */
-    public final static IOSocketOption<Integer> SEND_BUFFER = new IOSocketOption<>();
+    public final static IOSocketOption<Integer> SEND_BUFFER = new IOSocketOption<>("SEND_BUFFER");
     /**
      * Socket option blocking socket.
      */
-    public final static IOSocketOption<Boolean> BLOCKING = new IOSocketOption<>();
+    public final static IOSocketOption<Boolean> BLOCKING = new IOSocketOption<>("BLOCKING");
     /**
      * Socket option for SO_KEEP_ALIVE.
      */
-    public static final IOSocketOption<Boolean> KEEP_ALIVE = new IOSocketOption<>();
+    public static final IOSocketOption<Boolean> KEEP_ALIVE = new IOSocketOption<>("KEEP_ALIVE");
     /**
      * Socket option for SO_LINGER.
      */
-    public static final IOSocketOption<Integer> LINGER = new IOSocketOption<>();
+    public static final IOSocketOption<Integer> LINGER = new IOSocketOption<>("LINGER");
     /**
      * Socket option for SO_REUSEADDR.
      */
-    public static final IOSocketOption<Boolean> REUSE_ADDRESS = new IOSocketOption<>();
+    public static final IOSocketOption<Boolean> REUSE_ADDRESS = new IOSocketOption<>("REUSE_ADDRESS");
     /**
      * Socket option for TCP_NODELAY.
      */
-    public static final IOSocketOption<Boolean> TCP_NO_DELAY = new IOSocketOption<>();
+    public static final IOSocketOption<Boolean> TCP_NO_DELAY = new IOSocketOption<>("TCP_NO_DELAY");
 
-    private IOSocketOption() {
+    private final String name;
+
+    private IOSocketOption(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

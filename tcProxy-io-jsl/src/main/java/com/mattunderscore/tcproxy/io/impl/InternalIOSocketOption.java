@@ -60,6 +60,11 @@ interface InternalIOSocketOption<T> {
         public void apply(Object channel, Boolean value) throws IOException {
             ((SelectableChannel)channel).configureBlocking(value);
         }
+
+        @Override
+        public String toString() {
+            return "BLOCKING";
+        }
     };
     /**
      * Socket option for SO_KEEP_ALIVE.
@@ -97,6 +102,11 @@ interface InternalIOSocketOption<T> {
         @Override
         public void apply(Object channel, T value) throws IOException {
             ((NetworkChannel)channel).setOption(option, value);
+        }
+
+        @Override
+        public String toString() {
+            return option.name();
         }
     }
 }
