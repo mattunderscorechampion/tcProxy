@@ -36,13 +36,13 @@ import com.mattunderscore.tcproxy.io.IOSocketFactory;
  * A {@link IOSocketFactory} implementation for {@link IOServerSocketChannel}s.
  * @author Matt Champion on 17/10/2015
  */
-final class IOServerSocketFactoryImpl extends AbstractSocketFactoryImpl<IOServerSocketChannel> {
+final class IOServerSocketChannelFactoryImpl extends AbstractSocketFactoryImpl<IOServerSocketChannel> {
 
-    IOServerSocketFactoryImpl(IOFactory ioFactory) {
+    IOServerSocketChannelFactoryImpl(IOFactory ioFactory) {
         super(ioFactory, null, null, true, null, null, false, null, null);
     }
 
-    IOServerSocketFactoryImpl(
+    IOServerSocketChannelFactoryImpl(
         IOFactory ioFactory,
         Integer receiveBuffer,
         Integer sendBuffer,
@@ -65,7 +65,7 @@ final class IOServerSocketFactoryImpl extends AbstractSocketFactoryImpl<IOServer
         Boolean noDelay,
         SocketAddress boundSocket) {
 
-        return new IOServerSocketFactoryImpl(
+        return new IOServerSocketChannelFactoryImpl(
             ioFactory,
             receiveBuffer,
             sendBuffer,

@@ -60,7 +60,7 @@ public final class IOFactoryImpl implements IOFactory {
     @Override
     public <T extends IOSocket> IOSocketFactory<T> socketFactory(Class<T> type) {
         if (IOServerSocketChannel.class.equals(type)) {
-            return (IOSocketFactory<T>) new IOServerSocketFactoryImpl(this);
+            return (IOSocketFactory<T>) new IOServerSocketChannelFactoryImpl(this);
         }
         else if (IOSocketChannel.class.equals(type)) {
             return (IOSocketFactory<T>) new IOSocketFactoryImpl(this);

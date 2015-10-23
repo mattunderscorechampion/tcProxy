@@ -15,11 +15,10 @@ import org.mockito.Mock;
 
 import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
 import com.mattunderscore.tcproxy.io.IOSocketOption;
 
-public final class IOServerSocketFactoryImplTest {
+public final class IOServerSocketChannelFactoryImplTest {
     @Mock
     private IOFactory ioFactory;
     @Mock
@@ -36,7 +35,7 @@ public final class IOServerSocketFactoryImplTest {
 
     @Test
     public void createDefault() throws IOException {
-        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketFactoryImpl(ioFactory);
+        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
 
         final IOServerSocketChannel channel = factory.create();
 
@@ -50,7 +49,7 @@ public final class IOServerSocketFactoryImplTest {
 
     @Test
     public void createWithReceiveBuffer() throws IOException {
-        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketFactoryImpl(ioFactory);
+        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
 
         final IOServerSocketChannel channel = factory.receiveBuffer(1024).create();
 
@@ -65,7 +64,7 @@ public final class IOServerSocketFactoryImplTest {
 
     @Test
     public void createNonBlocking() throws IOException {
-        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketFactoryImpl(ioFactory);
+        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
 
         final IOServerSocketChannel channel = factory.blocking(false).create();
 
@@ -79,7 +78,7 @@ public final class IOServerSocketFactoryImplTest {
 
     @Test
     public void createNonBlockingWithReceiveBuffer() throws IOException {
-        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketFactoryImpl(ioFactory);
+        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
 
         final IOServerSocketChannel channel = factory.blocking(false).receiveBuffer(1024).create();
 
@@ -94,7 +93,7 @@ public final class IOServerSocketFactoryImplTest {
 
     @Test
     public void createWithSendBuffer() throws IOException {
-        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketFactoryImpl(ioFactory);
+        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
 
         final IOServerSocketChannel channel = factory.sendBuffer(1024).create();
 
@@ -109,14 +108,14 @@ public final class IOServerSocketFactoryImplTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void createWithKeepAlive() throws IOException {
-        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketFactoryImpl(ioFactory);
+        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
 
         factory.keepAlive(true);
     }
 
     @Test
     public void createWithLinger() throws IOException {
-        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketFactoryImpl(ioFactory);
+        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
 
         final IOServerSocketChannel channel = factory.linger(1024).create();
 
@@ -131,7 +130,7 @@ public final class IOServerSocketFactoryImplTest {
 
     @Test
     public void createWithReuseAddress() throws IOException {
-        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketFactoryImpl(ioFactory);
+        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
 
         final IOServerSocketChannel channel = factory.reuseAddress(true).create();
 
@@ -145,14 +144,14 @@ public final class IOServerSocketFactoryImplTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void createWithNoDelay() throws IOException {
-        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketFactoryImpl(ioFactory);
+        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
 
         factory.noDelay(true);
     }
 
     @Test
     public void createBound() throws IOException {
-        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketFactoryImpl(ioFactory);
+        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
 
         final IOServerSocketChannel channel = factory.bind(address).create();
 
@@ -166,7 +165,7 @@ public final class IOServerSocketFactoryImplTest {
 
     @Test
     public void createWithLatestReceiveBuffer() throws IOException {
-        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketFactoryImpl(ioFactory);
+        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
 
         final IOServerSocketChannel channel = factory.receiveBuffer(1024).receiveBuffer(2048).create();
 
