@@ -78,12 +78,12 @@ final class IOSelectionKeyImpl implements IOSelectionKey {
 
     @Override
     public Set<Op> interestedOperations() {
-        return IOUtils.mapToIntFromOps(keyDelegate.interestOps());
+        return IOUtils.mapToOpsFromInt(keyDelegate.interestOps());
     }
 
     @Override
     public Set<Op> readyOperations() {
-        return IOUtils.mapToIntFromOps(keyDelegate.interestOps());
+        return IOUtils.mapToOpsFromInt(keyDelegate.interestOps());
     }
 
     @Override

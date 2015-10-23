@@ -30,7 +30,6 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
-import java.util.EnumSet;
 import java.util.Set;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
@@ -99,7 +98,7 @@ final class IOSocketChannelImpl implements IOSocketChannel {
     @Override
     public IOSelectionKey register(final IOSelector selector, final Set<IOSelectionKey.Op> ops, final Object att) throws ClosedChannelException {
         final IOSelectorImpl selectorImpl = (IOSelectorImpl)selector;
-        return new IOSelectionKeyImpl(channel.register(selectorImpl.selectorDelegate, IOUtils.convertToBitSet(ops), att));
+        return new IOSelectionKeyImpl(channel.register(selectorImpl.selectorDelegate, IOUtils.mapToIntFromOps(ops), att));
     }
 
     @Override

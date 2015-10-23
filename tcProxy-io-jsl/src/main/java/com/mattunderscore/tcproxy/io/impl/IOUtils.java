@@ -40,7 +40,7 @@ final class IOUtils {
     }
 
     /**
-     * Map from op enum to int.
+     * Map from an option to int.
      * @param op The op.
      * @return The int value.
      */
@@ -55,11 +55,11 @@ final class IOUtils {
     }
 
     /**
-     * Map from int to enum set.
+     * Map from int to a set of options.
      * @param ops The int value.
      * @return The operation set.
      */
-    static Set<IOSelectionKey.Op> mapToIntFromOps(int ops) {
+    static Set<IOSelectionKey.Op> mapToOpsFromInt(int ops) {
         final EnumSet<IOSelectionKey.Op> set = EnumSet.noneOf(IOSelectionKey.Op.class);
         if ((ops & SelectionKey.OP_READ) > 0) {
             set.add(IOSelectionKey.Op.READ);
@@ -77,11 +77,11 @@ final class IOUtils {
     }
 
     /**
-     * Convert a set of ops to a bitmask.
+     * Map from a set of options to int.
      * @param ops The set of ops.
      * @return The bitmask,
      */
-    static int convertToBitSet(final Set<IOSelectionKey.Op> ops) {
+    static int mapToIntFromOps(final Set<IOSelectionKey.Op> ops) {
         int sum = 0;
         for (final IOSelectionKey.Op op : ops) {
             sum |= mapToIntFromOp(op);

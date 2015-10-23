@@ -40,7 +40,7 @@ public final class IOUtilsTest {
 
     @Test
     public void convertToBitSet0() {
-        final int bitSet = IOUtils.convertToBitSet(of(Op.ACCEPT));
+        final int bitSet = IOUtils.mapToIntFromOps(of(Op.ACCEPT));
         assertTrue((SelectionKey.OP_ACCEPT & bitSet) > 0);
         assertTrue((SelectionKey.OP_CONNECT & bitSet) == 0);
         assertTrue((SelectionKey.OP_READ & bitSet) == 0);
@@ -49,7 +49,7 @@ public final class IOUtilsTest {
 
     @Test
     public void convertToBitSet1() {
-        final int bitSet = IOUtils.convertToBitSet(of(Op.CONNECT));
+        final int bitSet = IOUtils.mapToIntFromOps(of(Op.CONNECT));
         assertTrue((SelectionKey.OP_CONNECT & bitSet) > 0);
         assertTrue((SelectionKey.OP_ACCEPT & bitSet) == 0);
         assertTrue((SelectionKey.OP_READ & bitSet) == 0);
@@ -58,7 +58,7 @@ public final class IOUtilsTest {
 
     @Test
     public void convertToBitSet2() {
-        final int bitSet = IOUtils.convertToBitSet(of(Op.READ));
+        final int bitSet = IOUtils.mapToIntFromOps(of(Op.READ));
         assertTrue((SelectionKey.OP_READ & bitSet) > 0);
         assertTrue((SelectionKey.OP_ACCEPT & bitSet) == 0);
         assertTrue((SelectionKey.OP_CONNECT & bitSet) == 0);
@@ -67,7 +67,7 @@ public final class IOUtilsTest {
 
     @Test
     public void convertToBitSet3() {
-        final int bitSet = IOUtils.convertToBitSet(of(Op.WRITE));
+        final int bitSet = IOUtils.mapToIntFromOps(of(Op.WRITE));
         assertTrue((SelectionKey.OP_WRITE & bitSet) > 0);
         assertTrue((SelectionKey.OP_ACCEPT & bitSet) == 0);
         assertTrue((SelectionKey.OP_CONNECT & bitSet) == 0);
@@ -76,7 +76,7 @@ public final class IOUtilsTest {
 
     @Test
     public void convertToBitSet4() {
-        final int bitSet = IOUtils.convertToBitSet(of(Op.CONNECT, Op.ACCEPT));
+        final int bitSet = IOUtils.mapToIntFromOps(of(Op.CONNECT, Op.ACCEPT));
         assertTrue((SelectionKey.OP_CONNECT & bitSet) > 0);
         assertTrue((SelectionKey.OP_ACCEPT & bitSet) > 0);
         assertTrue((SelectionKey.OP_READ & bitSet) == 0);
@@ -85,7 +85,7 @@ public final class IOUtilsTest {
 
     @Test
     public void convertToBitSet5() {
-        final int bitSet = IOUtils.convertToBitSet(of(Op.CONNECT, Op.ACCEPT, Op.READ));
+        final int bitSet = IOUtils.mapToIntFromOps(of(Op.CONNECT, Op.ACCEPT, Op.READ));
         assertTrue((SelectionKey.OP_CONNECT & bitSet) > 0);
         assertTrue((SelectionKey.OP_ACCEPT & bitSet) > 0);
         assertTrue((SelectionKey.OP_READ & bitSet) > 0);
@@ -94,7 +94,7 @@ public final class IOUtilsTest {
 
     @Test
     public void convertToBitSet6() {
-        final int bitSet = IOUtils.convertToBitSet(of(Op.CONNECT, Op.ACCEPT, Op.READ, Op.WRITE));
+        final int bitSet = IOUtils.mapToIntFromOps(of(Op.CONNECT, Op.ACCEPT, Op.READ, Op.WRITE));
         assertTrue((SelectionKey.OP_CONNECT & bitSet) > 0);
         assertTrue((SelectionKey.OP_ACCEPT & bitSet) > 0);
         assertTrue((SelectionKey.OP_READ & bitSet) > 0);
@@ -103,35 +103,35 @@ public final class IOUtilsTest {
 
     @Test
     public void convertToOpSet0() {
-        final Set<Op> ops = IOUtils.mapToIntFromOps(SelectionKey.OP_ACCEPT);
+        final Set<Op> ops = IOUtils.mapToOpsFromInt(SelectionKey.OP_ACCEPT);
         assertTrue(ops.contains(Op.ACCEPT));
         assertEquals(1, ops.size());
     }
 
     @Test
     public void convertToOpSet1() {
-        final Set<Op> ops = IOUtils.mapToIntFromOps(SelectionKey.OP_CONNECT);
+        final Set<Op> ops = IOUtils.mapToOpsFromInt(SelectionKey.OP_CONNECT);
         assertTrue(ops.contains(Op.CONNECT));
         assertEquals(1, ops.size());
     }
 
     @Test
     public void convertToOpSet2() {
-        final Set<Op> ops = IOUtils.mapToIntFromOps(SelectionKey.OP_READ);
+        final Set<Op> ops = IOUtils.mapToOpsFromInt(SelectionKey.OP_READ);
         assertTrue(ops.contains(Op.READ));
         assertEquals(1, ops.size());
     }
 
     @Test
     public void convertToOpSet3() {
-        final Set<Op> ops = IOUtils.mapToIntFromOps(SelectionKey.OP_WRITE);
+        final Set<Op> ops = IOUtils.mapToOpsFromInt(SelectionKey.OP_WRITE);
         assertTrue(ops.contains(Op.WRITE));
         assertEquals(1, ops.size());
     }
 
     @Test
     public void convertToOpSet4() {
-        final Set<Op> ops = IOUtils.mapToIntFromOps(SelectionKey.OP_ACCEPT | SelectionKey.OP_CONNECT);
+        final Set<Op> ops = IOUtils.mapToOpsFromInt(SelectionKey.OP_ACCEPT | SelectionKey.OP_CONNECT);
         assertTrue(ops.contains(Op.ACCEPT));
         assertTrue(ops.contains(Op.CONNECT));
         assertEquals(2, ops.size());
@@ -139,7 +139,7 @@ public final class IOUtilsTest {
 
     @Test
     public void convertToOpSet5() {
-        final Set<Op> ops = IOUtils.mapToIntFromOps(SelectionKey.OP_CONNECT | SelectionKey.OP_WRITE);
+        final Set<Op> ops = IOUtils.mapToOpsFromInt(SelectionKey.OP_CONNECT | SelectionKey.OP_WRITE);
         assertTrue(ops.contains(Op.CONNECT));
         assertTrue(ops.contains(Op.WRITE));
         assertEquals(2, ops.size());
@@ -147,7 +147,7 @@ public final class IOUtilsTest {
 
     @Test
     public void convertToOpSet6() {
-        final Set<Op> ops = IOUtils.mapToIntFromOps(SelectionKey.OP_READ | SelectionKey.OP_ACCEPT);
+        final Set<Op> ops = IOUtils.mapToOpsFromInt(SelectionKey.OP_READ | SelectionKey.OP_ACCEPT);
         assertTrue(ops.contains(Op.READ));
         assertTrue(ops.contains(Op.ACCEPT));
         assertEquals(2, ops.size());
@@ -155,7 +155,7 @@ public final class IOUtilsTest {
 
     @Test
     public void convertToOpSet7() {
-        final Set<Op> ops = IOUtils.mapToIntFromOps(SelectionKey.OP_ACCEPT | SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+        final Set<Op> ops = IOUtils.mapToOpsFromInt(SelectionKey.OP_ACCEPT | SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
         assertTrue(ops.contains(Op.ACCEPT));
         assertTrue(ops.contains(Op.CONNECT));
         assertTrue(ops.contains(Op.READ));
