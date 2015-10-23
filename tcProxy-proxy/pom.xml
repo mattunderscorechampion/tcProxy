@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>tcProxy-proxy</artifactId>
-    <name>tcProxy</name>
+    <name>tcProxy Proxy</name>
     <description>The implementation of a simple TCP proxy. Accepts incoming connections and forwards them
         on.</description>
 
