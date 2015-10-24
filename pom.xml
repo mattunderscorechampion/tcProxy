@@ -26,6 +26,7 @@
         <module>tcProxy-cli</module>
         <module>tcProxy-cli-argument-parser</module>
         <module>tcProxy-examples</module>
+        <module>tcProxy-selector</module>
     </modules>
 
     <licenses>
@@ -85,6 +86,11 @@
             <dependency>
                 <groupId>com.mattunderscore.tcproxy</groupId>
                 <artifactId>tcProxy-io-jsl</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mattunderscore.tcproxy</groupId>
+                <artifactId>tcProxy-selector</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
