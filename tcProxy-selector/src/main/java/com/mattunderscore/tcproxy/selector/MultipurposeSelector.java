@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
@@ -137,7 +138,16 @@ public final class MultipurposeSelector implements Runnable {
      * @param runnable The runnable
      */
     public void register(IOSocketChannel channel, IOSelectionKey.Op op, SelectorRunnable runnable) {
-        registrations.add(new Registration(channel, op, runnable));
+        registrations.add(new SocketRegistration(channel, op, runnable));
+    }
+
+    /**
+     * Register accept with the selector.
+     * @param channel The channel
+     * @param runnable The runnable
+     */
+    public void register(IOServerSocketChannel channel, ServerSelectorRunnable runnable) {
+        registrations.add(new ServerRegistration(channel, runnable));
     }
 
     /**
@@ -178,21 +188,48 @@ public final class MultipurposeSelector implements Runnable {
         STOPPING
     }
 
-    private static final class Registration {
+    private interface Registration {
+        void run(Set<IOSelectionKey.Op> readyOperations);
+        void register(IOSelector selector) throws ClosedChannelException;
+    }
+
+    private static final class SocketRegistration implements Registration {
         private final IOSocketChannel channel;
         private final IOSelectionKey.Op op;
         private final SelectorRunnable runnable;
 
-        private Registration(IOSocketChannel channel, IOSelectionKey.Op op, SelectorRunnable runnable) {
+        private SocketRegistration(IOSocketChannel channel, IOSelectionKey.Op op, SelectorRunnable runnable) {
             this.channel = channel;
             this.op = op;
             this.runnable = runnable;
         }
 
+        @Override
         public void register(IOSelector selector) throws ClosedChannelException {
             channel.register(selector, op, this);
         }
 
+        @Override
+        public void run(Set<IOSelectionKey.Op> readyOperations) {
+            runnable.run(channel, readyOperations);
+        }
+    }
+
+    private static final class ServerRegistration implements Registration {
+        private final IOServerSocketChannel channel;
+        private final ServerSelectorRunnable runnable;
+
+        private ServerRegistration(IOServerSocketChannel channel, ServerSelectorRunnable runnable) {
+            this.channel = channel;
+            this.runnable = runnable;
+        }
+
+        @Override
+        public void register(IOSelector selector) throws ClosedChannelException {
+            channel.register(selector, this);
+        }
+
+        @Override
         public void run(Set<IOSelectionKey.Op> readyOperations) {
             runnable.run(channel, readyOperations);
         }
@@ -200,5 +237,9 @@ public final class MultipurposeSelector implements Runnable {
 
     public interface SelectorRunnable {
         void run(IOSocketChannel socket, Set<IOSelectionKey.Op> readyOperations);
+    }
+
+    public interface ServerSelectorRunnable {
+        void run(IOServerSocketChannel socket, Set<IOSelectionKey.Op> readyOperations);
     }
 }
