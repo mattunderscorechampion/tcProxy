@@ -30,6 +30,7 @@ import java.net.SocketAddress;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
@@ -49,7 +50,13 @@ final class IOServerSocketChannelImpl implements IOServerSocketChannel {
 
     @Override
     public IOSocketChannel accept() throws IOException {
-        return new IOSocketChannelImpl(socketDelegate.accept());
+        final SocketChannel socketChannel = socketDelegate.accept();
+        if (socketChannel == null) {
+            return null;
+        }
+        else {
+            return new IOSocketChannelImpl(socketChannel);
+        }
     }
 
     @Override
