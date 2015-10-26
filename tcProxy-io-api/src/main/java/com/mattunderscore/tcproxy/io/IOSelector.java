@@ -32,7 +32,7 @@ import java.util.Set;
  * Provides a selector that can be used with this package.
  * @author matt on 12/03/14.
  */
-public interface IOSelector {
+public interface IOSelector extends AutoCloseable {
 
     /**
      * Non-blocking selection operation. Updates the set of selected keys.

@@ -29,9 +29,10 @@ import java.io.IOException;
 import java.net.SocketAddress;
 
 /**
+ * A generic socket.
  * @author Matt Champion on 13/03/14.
  */
-public interface IOSocket {
+public interface IOSocket extends AutoCloseable {
 
     /**
      * Bind the socket to a local address.
