@@ -35,6 +35,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.nio.channels.ClosedChannelException;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.junit.Before;
@@ -42,7 +43,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
@@ -78,7 +78,7 @@ public final class MultipurposeSelectorTest {
         when(ioSelector.selectedKeys()).thenReturn(Collections.singleton(key));
 
         final MultipurposeSelector selector = new MultipurposeSelector(getLogger("test"), ioSelector);
-        selector.register(channel, READ, new MultipurposeSelector.SelectorRunnable() {
+        selector.register(channel, READ, new SelectorRunnable() {
             @Override
             public void run(IOSocketChannel socket, Set<IOSelectionKey.Op> readyOperations) {
                 try {
