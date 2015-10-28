@@ -93,6 +93,7 @@ public final class Acceptor implements Runnable {
     IOServerSocketChannel openServerSocket() throws IOException {
         return StaticIOFactory.socketFactory(IOServerSocketChannel.class)
             .receiveBuffer(inboundSettings.getReceiveBufferSize())
+            .reuseAddress(true)
             .bind(new InetSocketAddress(settings.getPort()))
             .create();
     }
