@@ -28,6 +28,7 @@ package com.mattunderscore.tcproxy.proxy;
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
@@ -79,7 +80,10 @@ public final class WriteSelector extends AbstractSelector {
 
     @Override
     protected void processKeys(Set<IOSelectionKey> keys) {
-        for (final IOSelectionKey key : keys) {
+        final Iterator<IOSelectionKey> keyIterator = keys.iterator();
+        while (keyIterator.hasNext()) {
+            final IOSelectionKey key = keyIterator.next();
+            keyIterator.remove();
             final DirectionAndConnection dc = (DirectionAndConnection) key.attachment();
             if (!key.isValid()) {
                 LOG.debug("{} : Selected key no longer valid, closing connection", this);

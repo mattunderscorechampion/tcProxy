@@ -30,6 +30,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
 import java.nio.channels.ClosedChannelException;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
@@ -91,7 +92,10 @@ public final class ReadSelector extends AbstractSelector {
 
     @Override
     protected void processKeys(Set<IOSelectionKey> selectedKeys) {
-        for (final IOSelectionKey key : selectedKeys) {
+        final Iterator<IOSelectionKey> keyIterator = selectedKeys.iterator();
+        while (keyIterator.hasNext()) {
+            final IOSelectionKey key = keyIterator.next();
+            keyIterator.remove();
             readBytes(key);
         }
     }
