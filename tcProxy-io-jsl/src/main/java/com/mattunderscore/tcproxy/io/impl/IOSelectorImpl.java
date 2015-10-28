@@ -25,14 +25,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.impl;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSelector;
-
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Collections;
 import java.util.Set;
+
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.IOSelector;
 
 /**
  * Implements {@link com.mattunderscore.tcproxy.io.IOSelector}. Delegates to {@link Selector}.
@@ -57,7 +57,7 @@ final class IOSelectorImpl implements IOSelector {
             return Collections.emptySet();
         }
         else {
-            return new IOSelectionKeyImplSet(keys);
+            return new SelectedKeySet(keys);
         }
     }
 
@@ -68,7 +68,7 @@ final class IOSelectorImpl implements IOSelector {
             return Collections.emptySet();
         }
         else {
-            return new IOSelectionKeyImplSet(keys);
+            return new KeySet(keys);
         }
     }
 

@@ -1,4 +1,4 @@
-/* Copyright © 2014 Matthew Champion
+/* Copyright © 2015 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -25,24 +25,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.impl;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-
 import java.lang.reflect.Array;
 import java.nio.channels.SelectionKey;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
+
 /**
- * Implementation of Set for IOSelectionKey that delegates to a Set for SelectionKey.
- * @author Matt Champion on 28/03/14.
+ * Implementation of {@link Set} for {@link IOSelectionKey} that delegates to a {@link Set} for {@link SelectionKey}.
+ * This set can only be removed from and is for the selected key set.
+ * @author Matt Champion on 28/10/2015
  */
-final class IOSelectionKeyImplSet implements Set<IOSelectionKey> {
+public final class SelectedKeySet implements Set<IOSelectionKey> {
     private final Set<SelectionKey> setDelegate;
 
-    IOSelectionKeyImplSet(Set<SelectionKey> setDelegate) {
-        this.setDelegate = setDelegate;
-    }
+    SelectedKeySet(Set<SelectionKey> setDelegate) {
+            this.setDelegate = setDelegate;
+        }
 
     @Override
     public int size() {
@@ -70,7 +72,7 @@ final class IOSelectionKeyImplSet implements Set<IOSelectionKey> {
 
     @Override
     public Iterator<IOSelectionKey> iterator() {
-        return new IOSelectionKeyImplIterator(setDelegate.iterator());
+        return new SelectedKeySetIterator(setDelegate.iterator());
     }
 
     @Override
@@ -85,7 +87,7 @@ final class IOSelectionKeyImplSet implements Set<IOSelectionKey> {
             array = a;
         }
         else {
-            array = (T[])Array.newInstance(a.getClass().getComponentType());
+            array = (T[]) Array.newInstance(a.getClass().getComponentType());
         }
 
         int i = 0;
@@ -98,12 +100,12 @@ final class IOSelectionKeyImplSet implements Set<IOSelectionKey> {
 
     @Override
     public boolean add(IOSelectionKey ioSelectionKey) {
-        throw new UnsupportedOperationException("This set is immutable");
+        throw new UnsupportedOperationException("This set can only be removed from");
     }
 
     @Override
     public boolean remove(Object o) {
-        throw new UnsupportedOperationException("This set is immutable");
+            return o instanceof IOSelectionKeyImpl && setDelegate.remove(((IOSelectionKeyImpl) o).keyDelegate);
     }
 
     @Override
@@ -113,31 +115,43 @@ final class IOSelectionKeyImplSet implements Set<IOSelectionKey> {
 
     @Override
     public boolean addAll(Collection<? extends IOSelectionKey> c) {
-        throw new UnsupportedOperationException("This set is immutable");
+        throw new UnsupportedOperationException("This set can only be removed from");
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        throw new UnsupportedOperationException("This set is immutable");
+        final Set<SelectionKey> retainSet = new HashSet<>();
+        for (Object o : c) {
+            if (o instanceof IOSelectionKeyImpl) {
+                retainSet.add(((IOSelectionKeyImpl) o).keyDelegate);
+            }
+        }
+        return setDelegate.retainAll(retainSet);
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        throw new UnsupportedOperationException("This set is immutable");
+        final Set<SelectionKey> retainSet = new HashSet<>();
+        for (Object o : c) {
+            if (o instanceof IOSelectionKeyImpl) {
+                retainSet.add(((IOSelectionKeyImpl) o).keyDelegate);
+            }
+        }
+        return setDelegate.retainAll(retainSet);
     }
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException("This set is immutable");
+        setDelegate.clear();
     }
 
     /**
      * Iterator for the set.
      */
-    private static final class IOSelectionKeyImplIterator implements Iterator<IOSelectionKey> {
+    private static final class SelectedKeySetIterator implements Iterator<IOSelectionKey> {
         private final Iterator<SelectionKey> iteratorDelegate;
 
-        private IOSelectionKeyImplIterator(Iterator<SelectionKey> iteratorDelegate) {
+        private SelectedKeySetIterator(Iterator<SelectionKey> iteratorDelegate) {
             this.iteratorDelegate = iteratorDelegate;
         }
 
@@ -153,7 +167,7 @@ final class IOSelectionKeyImplSet implements Set<IOSelectionKey> {
 
         @Override
         public void remove() {
-            throw new UnsupportedOperationException("This set being iterated over is immutable");
+            iteratorDelegate.remove();
         }
     }
 }
