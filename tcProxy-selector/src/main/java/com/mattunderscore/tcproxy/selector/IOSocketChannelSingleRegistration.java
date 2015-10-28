@@ -26,7 +26,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.selector;
 
 import java.nio.channels.ClosedChannelException;
-import java.util.Set;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
@@ -36,7 +35,7 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
  * {@link Registration} of a server runnable for an {@link IOSocketChannel} against a single operation.
  * @author Matt Champion on 26/10/2015
  */
-class IOSocketChannelSingleRegistration implements Registration {
+final class IOSocketChannelSingleRegistration implements Registration {
     private final IOSocketChannel channel;
     private final IOSelectionKey.Op op;
     private final SelectorRunnable runnable;
@@ -53,7 +52,7 @@ class IOSocketChannelSingleRegistration implements Registration {
     }
 
     @Override
-    public void run(Set<IOSelectionKey.Op> readyOperations) {
-        runnable.run(channel, readyOperations);
+    public void run(IOSelectionKey selectionKey) {
+        runnable.run(channel, selectionKey);
     }
 }

@@ -26,7 +26,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.selector;
 
 import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.READ;
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
@@ -34,8 +33,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.nio.channels.ClosedChannelException;
-import java.util.Collections;
-import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Before;
@@ -75,12 +73,14 @@ public final class MultipurposeSelectorTest {
                 return key;
             }
         });
-        when(ioSelector.selectedKeys()).thenReturn(Collections.singleton(key));
+        final Set<IOSelectionKey> selectionKeySet = new HashSet<>();
+        selectionKeySet.add(key);
+        when(ioSelector.selectedKeys()).thenReturn(selectionKeySet);
 
         final MultipurposeSelector selector = new MultipurposeSelector(getLogger("test"), ioSelector);
         selector.register(channel, READ, new SelectorRunnable() {
             @Override
-            public void run(IOSocketChannel socket, Set<IOSelectionKey.Op> readyOperations) {
+            public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {
                 try {
                     selector.waitForRunning();
                 }

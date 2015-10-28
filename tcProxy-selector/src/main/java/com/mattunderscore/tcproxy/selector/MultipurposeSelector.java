@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -82,10 +83,12 @@ public final class MultipurposeSelector implements Runnable {
                 }
             }
 
-            final Set<IOSelectionKey> selectedKeys = selector.selectedKeys();
-            for (final IOSelectionKey key : selectedKeys) {
+            final Iterator<IOSelectionKey> selectedKeys = selector.selectedKeys().iterator();
+            while (selectedKeys.hasNext()) {
+                final IOSelectionKey key = selectedKeys.next();
+                selectedKeys.remove();
                 final Registration registration = (Registration) key.attachment();
-                registration.run(key.readyOperations());
+                registration.run(key);
             }
         }
 

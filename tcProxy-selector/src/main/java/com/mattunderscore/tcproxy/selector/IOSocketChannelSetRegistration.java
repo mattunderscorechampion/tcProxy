@@ -53,7 +53,7 @@ final class IOSocketChannelSetRegistration implements Registration {
     }
 
     @Override
-    public void run(Set<IOSelectionKey.Op> readyOperations) {
-        runnable.run(channel, readyOperations);
+    public void run(IOSelectionKey selectionKey) {
+        runnable.run(channel, selectionKey);
     }
 }

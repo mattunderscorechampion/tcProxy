@@ -36,5 +36,5 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
  * @author Matt Champion on 26/10/2015
  */
 public interface ServerSelectorRunnable {
-    void run(IOServerSocketChannel socket, Set<IOSelectionKey.Op> readyOperations);
+    void run(IOServerSocketChannel socket, IOSelectionKey selectionKey);
 }

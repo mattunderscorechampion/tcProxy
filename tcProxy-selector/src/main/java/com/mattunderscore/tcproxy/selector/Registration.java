@@ -37,9 +37,9 @@ import com.mattunderscore.tcproxy.io.IOSelector;
 interface Registration {
     /**
      * Run the selector runnable.
-     * @param readyOperations The ready operation for the socket
+     * @param selectionKey The selection key
      */
-    void run(Set<IOSelectionKey.Op> readyOperations);
+    void run(IOSelectionKey selectionKey);
 
     /**
      * Perform the registration.
