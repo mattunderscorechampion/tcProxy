@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.EnumSet;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,8 +73,8 @@ public final class EchoServer {
         }
 
         @Override
-        public void run(IOServerSocketChannel socket, Set<IOSelectionKey.Op> readyOperations) {
-            if (readyOperations.contains(IOSelectionKey.Op.ACCEPT)) {
+        public void run(IOServerSocketChannel socket, IOSelectionKey selectionKey) {
+            if (selectionKey.isAcceptable()) {
                 final IOSocketChannel channel;
                 try {
                     channel = socket.accept();
@@ -111,9 +110,9 @@ public final class EchoServer {
         }
 
         @Override
-        public void run(IOSocketChannel socket, Set<IOSelectionKey.Op> readyOperations) {
+        public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {
             try {
-                if (readyOperations.contains(IOSelectionKey.Op.CONNECT)) {
+                if (selectionKey.isConnectable()) {
                     if (socket.finishConnect()) {
                         selector.register(socket, IOSelectionKey.Op.READ, new EchoTask(selector));
                     }
@@ -135,9 +134,8 @@ public final class EchoServer {
         }
 
         @Override
-        public void run(IOSocketChannel socket, Set<IOSelectionKey.Op> readyOperations) {
-            final Set<IOSelectionKey.Op> ops = EnumSet.of(IOSelectionKey.Op.READ);
-            if (readyOperations.contains(IOSelectionKey.Op.READ)) {
+        public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {
+            if (selectionKey.isReadable()) {
                 if (!reading) {
                     buffer.flip();
                     reading = true;
@@ -146,7 +144,7 @@ public final class EchoServer {
                 try {
                     final int read = socket.read(buffer);
                     if (read > 0) {
-                        ops.add(IOSelectionKey.Op.WRITE);
+                        selector.register(socket, EnumSet.of(IOSelectionKey.Op.READ, IOSelectionKey.Op.WRITE), this);
                     }
                     else if (read < 0) {
                         socket.close();
@@ -158,7 +156,7 @@ public final class EchoServer {
                 }
             }
 
-            if (readyOperations.contains(IOSelectionKey.Op.WRITE)) {
+            if (selectionKey.isWritable()) {
                 if (reading) {
                     buffer.flip();
                     reading = false;
@@ -167,8 +165,9 @@ public final class EchoServer {
                 if (buffer.hasRemaining()) {
                     try {
                         socket.write(buffer);
-                        if (buffer.hasRemaining()) {
-                            ops.add(IOSelectionKey.Op.WRITE);
+                        if (!buffer.hasRemaining()) {
+                            selectionKey.cancel();
+                            selector.register(socket, IOSelectionKey.Op.READ, this);
                         }
                     }
                     catch (IOException e) {
@@ -176,8 +175,6 @@ public final class EchoServer {
                     }
                 }
             }
-
-            selector.register(socket, ops, this);
         }
     }
 }
