@@ -83,7 +83,12 @@ public final class ActionQueueImpl implements ActionQueue {
                     actions.poll();
                 }
                 else {
-                    return batchedWrite;
+                    if (batchedData) {
+                        return batchedWrite;
+                    }
+                    else {
+                        return actions.poll();
+                    }
                 }
             }
             else {
