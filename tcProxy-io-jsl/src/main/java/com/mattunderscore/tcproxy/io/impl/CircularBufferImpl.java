@@ -25,8 +25,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.impl;
 
-import static java.lang.System.arraycopy;
-
 import java.nio.ByteBuffer;
 
 import com.mattunderscore.tcproxy.io.CircularBuffer;
@@ -36,22 +34,23 @@ import com.mattunderscore.tcproxy.io.CircularBuffer;
  * @author Matt Champion on 31/10/2015
  */
 public final class CircularBufferImpl implements CircularBuffer {
-    final byte[] buffer;
+    final ByteBuffer buffer;
     final int capacity;
-    int writePos = 0;
     int readPos = 0;
     int data = 0;
 
     public CircularBufferImpl(int capacity) {
         this.capacity = capacity;
-        buffer = new byte[capacity];
+        buffer = ByteBuffer.allocateDirect(capacity);
     }
 
     @Override
     public boolean put(byte b) {
         if (data < capacity) {
-            buffer[writePos] = b;
-            writePos = (writePos + 1) % capacity;
+            buffer.put(b);
+            if (!buffer.hasRemaining()) {
+                buffer.position(0);
+            }
             data = data + 1;
             return true;
         }
@@ -61,15 +60,18 @@ public final class CircularBufferImpl implements CircularBuffer {
     @Override
     public boolean put(byte[] bytes) {
         if (data + bytes.length <= capacity) {
-            final int maxWritableBeforeWrap = capacity - writePos;
+            final int maxWritableBeforeWrap = buffer.remaining();
             if (bytes.length <= maxWritableBeforeWrap) {
-                arraycopy(bytes, 0, buffer, writePos, bytes.length);
+                buffer.put(bytes);
+                if (!buffer.hasRemaining()) {
+                    buffer.position(0);
+                }
             }
             else {
-                arraycopy(bytes, 0, buffer, writePos, maxWritableBeforeWrap);
-                arraycopy(bytes, maxWritableBeforeWrap, buffer, 0, bytes.length - maxWritableBeforeWrap);
+                buffer.put(bytes, 0, maxWritableBeforeWrap);
+                buffer.position(0);
+                buffer.put(bytes, maxWritableBeforeWrap, bytes.length - maxWritableBeforeWrap);
             }
-            writePos = (writePos + bytes.length) % capacity;
             data = data + bytes.length;
             return true;
         }
@@ -77,17 +79,27 @@ public final class CircularBufferImpl implements CircularBuffer {
     }
 
     @Override
-    public int put(ByteBuffer bytes) {
-        final int length = Math.min(bytes.remaining(), capacity - data);
-        final int maxWritableBeforeWrap = capacity - writePos;
+    public int put(ByteBuffer src) {
+        final int length = Math.min(src.remaining(), capacity - data);
+        final int maxWritableBeforeWrap = buffer.remaining();
         if (length <= maxWritableBeforeWrap) {
-            bytes.get(buffer, writePos, length);
+            final int srcLimit = src.limit();
+            src.limit(length);
+            buffer.put(src);
+            if (!buffer.hasRemaining()) {
+                buffer.position(0);
+            }
+            src.limit(srcLimit);
         }
         else {
-            bytes.get(buffer, writePos, maxWritableBeforeWrap);
-            bytes.get(buffer, 0, length - maxWritableBeforeWrap);
+            final int srcLimit = src.limit();
+            src.limit(maxWritableBeforeWrap);
+            buffer.put(src);
+            buffer.position(0);
+            src.limit(length);
+            buffer.put(src);
+            src.limit(srcLimit);
         }
-        writePos = (writePos + length) % capacity;
         data = data + length;
         return length;
     }
@@ -95,13 +107,41 @@ public final class CircularBufferImpl implements CircularBuffer {
     @Override
     public byte get() {
         if (data > 0) {
-            final byte b = buffer[readPos];
+            final byte b = buffer.get(readPos);
             readPos = (readPos + 1) % capacity;
             data = data - 1;
             return b;
         }
         else {
             throw new IllegalStateException();
+        }
+    }
+
+    @Override
+    public int get(ByteBuffer dst) {
+        if (data > 0) {
+            final ByteBuffer readBuffer = buffer.asReadOnlyBuffer();
+            readBuffer.position(readPos);
+            final int lengthToCopy = Math.min(dst.remaining(), data);
+            final int maxReadableBeforeWrap = readBuffer.remaining();
+
+            if (lengthToCopy <= maxReadableBeforeWrap) {
+                readBuffer.limit(lengthToCopy);
+                dst.put(readBuffer);
+            }
+            else {
+                readBuffer.limit(readPos + maxReadableBeforeWrap);
+                dst.put(readBuffer);
+                readBuffer.position(0);
+                readBuffer.limit(lengthToCopy - maxReadableBeforeWrap);
+                dst.put(readBuffer);
+            }
+            readPos = (readPos + lengthToCopy) % capacity;
+            data = data - lengthToCopy;
+            return lengthToCopy;
+        }
+        else {
+            return 0;
         }
     }
 

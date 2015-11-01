@@ -95,6 +95,61 @@ public final class CircularBufferImplTest {
     }
 
     @Test
+    public void getBuffer() {
+        final CircularBuffer buffer = new CircularBufferImpl(3);
+        assertTrue(buffer.put((byte) 4));
+        assertTrue(buffer.put((byte) 5));
+        assertTrue(buffer.put((byte) 3));
+
+        final ByteBuffer byteBuffer = ByteBuffer.allocate(5);
+        assertEquals(3, buffer.get(byteBuffer));
+        assertEquals(0, buffer.usedCapacity());
+
+        byteBuffer.flip();
+        assertEquals(3, byteBuffer.remaining());
+        assertEquals(4, byteBuffer.get());
+        assertEquals(5, byteBuffer.get());
+        assertEquals(3, byteBuffer.get());
+    }
+
+    @Test
+    public void getBufferWrap() {
+        final CircularBuffer buffer = new CircularBufferImpl(3);
+        assertTrue(buffer.put((byte) 4));
+        assertTrue(buffer.put((byte) 5));
+        assertTrue(buffer.put((byte) 3));
+        buffer.get();
+        assertTrue(buffer.put((byte) 4));
+
+        final ByteBuffer byteBuffer = ByteBuffer.allocate(5);
+        assertEquals(3, buffer.get(byteBuffer));
+        assertEquals(0, buffer.usedCapacity());
+
+        byteBuffer.flip();
+        assertEquals(3, byteBuffer.remaining());
+        assertEquals(5, byteBuffer.get());
+        assertEquals(3, byteBuffer.get());
+        assertEquals(4, byteBuffer.get());
+    }
+
+    @Test
+    public void getBufferSome() {
+        final CircularBuffer buffer = new CircularBufferImpl(3);
+        assertTrue(buffer.put((byte) 4));
+        assertTrue(buffer.put((byte) 5));
+        assertTrue(buffer.put((byte) 3));
+
+        final ByteBuffer byteBuffer = ByteBuffer.allocate(2);
+        assertEquals(2, buffer.get(byteBuffer));
+        assertEquals(1, buffer.usedCapacity());
+
+        byteBuffer.flip();
+        assertEquals(2, byteBuffer.remaining());
+        assertEquals(4, byteBuffer.get());
+        assertEquals(5, byteBuffer.get());
+    }
+
+    @Test
     public void wrap() {
         final CircularBuffer buffer = new CircularBufferImpl(3);
         final byte[] bytes = { 0x0, 0x1, 0x2 };

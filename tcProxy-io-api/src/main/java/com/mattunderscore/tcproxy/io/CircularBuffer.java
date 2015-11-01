@@ -23,7 +23,8 @@ public interface CircularBuffer {
     boolean put(byte[] bytes);
 
     /**
-     * Put some data from a {@link ByteBuffer} into the buffer.
+     * Put some data from a {@link ByteBuffer} into the buffer. If the source contains more data then can fit into the
+     * buffer, some data will be written.
      * @param src The source buffer
      * @return The number of bytes copied into the buffer
      */
@@ -34,6 +35,12 @@ public interface CircularBuffer {
      * @throws IllegalStateException If no data can be read
      */
     byte get();
+
+    /**
+     * @param dst A {@link ByteBuffer} to copy data into
+     * @return A number of bytes copied to the destination
+     */
+    int get(ByteBuffer dst);
 
     /**
      * @return The number of bytes that can be written to the buffer
