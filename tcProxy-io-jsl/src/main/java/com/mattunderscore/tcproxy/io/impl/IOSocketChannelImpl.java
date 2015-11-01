@@ -32,6 +32,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 import java.util.Set;
 
+import com.mattunderscore.tcproxy.io.CircularBuffer;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
@@ -99,6 +100,53 @@ final class IOSocketChannelImpl implements IOSocketChannel {
     public IOSelectionKey register(final IOSelector selector, final Set<IOSelectionKey.Op> ops, final Object att) throws ClosedChannelException {
         final IOSelectorImpl selectorImpl = (IOSelectorImpl)selector;
         return new IOSelectionKeyImpl(channel.register(selectorImpl.selectorDelegate, IOUtils.mapToIntFromOps(ops), att));
+    }
+
+    @Override
+    public int read(CircularBuffer dst) throws IOException {
+        final CircularBufferImpl dstImpl = (CircularBufferImpl)dst;
+        if (dstImpl.readPos > dstImpl.buffer.position()) {
+            dstImpl.buffer.limit(dstImpl.readPos);
+            final int read = channel.read(dstImpl.buffer);
+            dstImpl.buffer.limit(dstImpl.capacity);
+            dstImpl.data = dstImpl.data + read;
+            return read;
+        }
+        else {
+            final int read = channel.read(dstImpl.buffer);
+            if (!dstImpl.buffer.hasRemaining()) {
+                dstImpl.buffer.position(0);
+            }
+            dstImpl.data = dstImpl.data + read;
+            return read;
+        }
+    }
+
+    @Override
+    public int write(CircularBuffer src) throws IOException {
+        final CircularBufferImpl srcImpl = (CircularBufferImpl)src;
+        final ByteBuffer readableBuffer = srcImpl.buffer.asReadOnlyBuffer();
+        readableBuffer.position(srcImpl.readPos);
+        final int lengthToCopy = srcImpl.data;
+        final int maxReadableBeforeWrap = readableBuffer.remaining();
+
+        int readFromBuffer;
+        if (lengthToCopy <= maxReadableBeforeWrap) {
+            readableBuffer.limit(srcImpl.readPos + lengthToCopy);
+            readFromBuffer = channel.write(readableBuffer);
+        }
+        else {
+            readableBuffer.limit(srcImpl.readPos + maxReadableBeforeWrap);
+            readFromBuffer = channel.write(readableBuffer);
+            if (!readableBuffer.hasRemaining()) {
+                readableBuffer.position(0);
+                readableBuffer.limit(lengthToCopy - maxReadableBeforeWrap);
+                readFromBuffer = readFromBuffer + channel.write(readableBuffer);
+            }
+        }
+        srcImpl.readPos = (srcImpl.readPos + readFromBuffer) % srcImpl.capacity;
+        srcImpl.data = srcImpl.data - readFromBuffer;
+        return readFromBuffer;
     }
 
     @Override

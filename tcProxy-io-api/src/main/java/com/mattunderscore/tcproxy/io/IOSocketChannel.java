@@ -77,4 +77,20 @@ public interface IOSocketChannel extends ByteChannel, IOSocket {
      * @throws ClosedChannelException
      */
     IOSelectionKey register(IOSelector selector, Set<IOSelectionKey.Op> ops, Object att) throws ClosedChannelException;
+
+    /**
+     * Reads data from the socket into a circular buffer
+     * @param dst The buffer
+     * @return The number of bytes read
+     * @throws IOException
+     */
+    int read(CircularBuffer dst) throws IOException;
+
+    /**
+     * Writes data from the circular buffer to the socket.
+     * @param src The buffer
+     * @return The number of bytes written
+     * @throws IOException
+     */
+    int write(CircularBuffer src) throws IOException;
 }
