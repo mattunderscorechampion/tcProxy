@@ -27,30 +27,17 @@ package com.mattunderscore.tcproxy.selector;
 
 import java.nio.channels.ClosedChannelException;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 
 /**
- * {@link Registration} of a server runnable for an {@link IOServerSocketChannel}.
- * @author Matt Champion on 26/10/2015
+ * @author Matt Champion on 31/10/2015
  */
-final class IOServerSocketChannelRegistration implements Registration {
-    private final IOServerSocketChannel channel;
-    private final ServerSelectorRunnable runnable;
+interface RegistrationRequest {
 
-    IOServerSocketChannelRegistration(IOServerSocketChannel channel, ServerSelectorRunnable runnable) {
-        this.channel = channel;
-        this.runnable = runnable;
-    }
-
-    @Override
-    public void register(IOSelector selector) throws ClosedChannelException {
-        channel.register(selector, this);
-    }
-
-    @Override
-    public void run(IOSelectionKey selectionKey) {
-        runnable.run(channel, selectionKey);
-    }
+    /**
+     * Perform the registration.
+     * @param selector The selector
+     * @throws ClosedChannelException
+     */
+    void register(IOSelector selector) throws ClosedChannelException;
 }

@@ -25,15 +25,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector;
 
-import java.util.Set;
-
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocket;
 
 /**
  * Selector runnable.
  * @author Matt Champion on 26/10/2015
+ * @param <T> The type of socket it expects
  */
-public interface SelectorRunnable {
-    void run(IOSocketChannel socket, IOSelectionKey selectionKey);
+public interface SelectorRunnable<T extends IOSocket> {
+    void run(T socket, IOSelectionKey selectionKey);
 }

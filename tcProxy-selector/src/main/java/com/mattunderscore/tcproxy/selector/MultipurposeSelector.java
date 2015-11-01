@@ -41,15 +41,16 @@ import org.slf4j.Logger;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocket;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
  * A multipurpose selector.
  * @author Matt Champion on 24/10/2015
  */
-public final class MultipurposeSelector implements Runnable {
+public final class MultipurposeSelector implements Runnable, EnhancedSelector {
     private final AtomicReference<State> state = new AtomicReference<>(State.STOPPED);
-    private final BlockingQueue<Registration> registrations = new ArrayBlockingQueue<>(64);
+    private final BlockingQueue<RegistrationRequest> registrations = new ArrayBlockingQueue<>(64);
     private final Logger log;
     private final IOSelector selector;
     private volatile CountDownLatch readyLatch = new CountDownLatch(1);
@@ -72,11 +73,11 @@ public final class MultipurposeSelector implements Runnable {
                 log.debug("{} : Error selecting keys", this, e);
             }
 
-            final Collection<Registration> newRegistrations = new HashSet<>();
+            final Collection<RegistrationRequest> newRegistrations = new HashSet<>();
             registrations.drainTo(newRegistrations);
-            for (final Registration registration : newRegistrations) {
+            for (final RegistrationRequest registrationRequest : newRegistrations) {
                 try {
-                    registration.register(selector);
+                    registrationRequest.register(selector);
                 }
                 catch (ClosedChannelException e) {
                     log.debug("{} : Problem registering key", this, e);
@@ -144,33 +145,19 @@ public final class MultipurposeSelector implements Runnable {
         }
     }
 
-    /**
-     * Register operations with the selector.
-     * @param channel The channel
-     * @param op The operation
-     * @param runnable The runnable
-     */
-    public void register(IOSocketChannel channel, IOSelectionKey.Op op, SelectorRunnable runnable) {
-        registrations.add(new IOSocketChannelSingleRegistration(channel, op, runnable));
+    @Override
+    public void register(IOSocketChannel channel, IOSelectionKey.Op op, SelectorRunnable<IOSocketChannel> runnable) {
+        registrations.add(new IOSocketChannelSingleRegistrationRequest(channel, op, runnable));
     }
 
-    /**
-     * Register operations with the selector.
-     * @param channel The channel
-     * @param ops The operations
-     * @param runnable The runnable
-     */
-    public void register(IOSocketChannel channel, Set<IOSelectionKey.Op> ops, SelectorRunnable runnable) {
-        registrations.add(new IOSocketChannelSetRegistration(channel, ops, runnable));
+    @Override
+    public void register(IOSocketChannel channel, Set<IOSelectionKey.Op> ops, SelectorRunnable<IOSocketChannel> runnable) {
+        registrations.add(new IOSocketChannelSetRegistrationRequest(channel, ops, runnable));
     }
 
-    /**
-     * Register accept with the selector.
-     * @param channel The channel
-     * @param runnable The runnable
-     */
-    public void register(IOServerSocketChannel channel, ServerSelectorRunnable runnable) {
-        registrations.add(new IOServerSocketChannelRegistration(channel, runnable));
+    @Override
+    public void register(IOServerSocketChannel channel, SelectorRunnable<IOServerSocketChannel> runnable) {
+        registrations.add(new IOServerSocketChannelRegistrationRequest(channel, runnable));
     }
 
     @Override
@@ -183,5 +170,4 @@ public final class MultipurposeSelector implements Runnable {
         RUNNING,
         STOPPING
     }
-
 }

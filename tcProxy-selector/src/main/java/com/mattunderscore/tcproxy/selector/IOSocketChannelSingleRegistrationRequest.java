@@ -35,12 +35,12 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
  * {@link Registration} of a server runnable for an {@link IOSocketChannel} against a single operation.
  * @author Matt Champion on 26/10/2015
  */
-final class IOSocketChannelSingleRegistration implements Registration {
+final class IOSocketChannelSingleRegistrationRequest implements RegistrationRequest {
     private final IOSocketChannel channel;
     private final IOSelectionKey.Op op;
-    private final SelectorRunnable runnable;
+    private final SelectorRunnable<IOSocketChannel> runnable;
 
-    IOSocketChannelSingleRegistration(IOSocketChannel channel, IOSelectionKey.Op op, SelectorRunnable runnable) {
+    IOSocketChannelSingleRegistrationRequest(IOSocketChannel channel, IOSelectionKey.Op op, SelectorRunnable<IOSocketChannel> runnable) {
         this.channel = channel;
         this.op = op;
         this.runnable = runnable;
@@ -48,11 +48,6 @@ final class IOSocketChannelSingleRegistration implements Registration {
 
     @Override
     public void register(IOSelector selector) throws ClosedChannelException {
-        channel.register(selector, op, this);
-    }
-
-    @Override
-    public void run(IOSelectionKey selectionKey) {
-        runnable.run(channel, selectionKey);
+        channel.register(selector, op, new IOSocketChannelRegistration(channel, runnable));
     }
 }

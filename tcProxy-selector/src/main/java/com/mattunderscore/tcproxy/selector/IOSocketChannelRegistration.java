@@ -25,35 +25,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector;
 
-import java.nio.channels.ClosedChannelException;
-import java.util.Set;
-
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
- * {@link Registration} of a server runnable for an {@link IOSocketChannel} against multiple operations.
- * @author Matt Champion on 26/10/2015
+ * @author Matt Champion on 31/10/2015
  */
-final class IOSocketChannelSetRegistration implements Registration {
+public final class IOSocketChannelRegistration implements Registration {
     private final IOSocketChannel channel;
-    private final Set<IOSelectionKey.Op> ops;
-    private final SelectorRunnable runnable;
+    private final SelectorRunnable<IOSocketChannel> runnable;
 
-    IOSocketChannelSetRegistration(IOSocketChannel channel, Set<IOSelectionKey.Op> ops, SelectorRunnable runnable) {
+    public IOSocketChannelRegistration(IOSocketChannel channel, SelectorRunnable<IOSocketChannel> runnable) {
         this.channel = channel;
-        this.ops = ops;
         this.runnable = runnable;
     }
 
     @Override
-    public void register(IOSelector selector) throws ClosedChannelException {
-        channel.register(selector, ops, this);
-    }
-
-    @Override
     public void run(IOSelectionKey selectionKey) {
-        runnable.run(channel, selectionKey);
+        runnable.run(channel ,selectionKey);
     }
 }

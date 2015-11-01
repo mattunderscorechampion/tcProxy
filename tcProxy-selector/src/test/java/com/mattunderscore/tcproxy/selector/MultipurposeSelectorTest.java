@@ -78,7 +78,7 @@ public final class MultipurposeSelectorTest {
         when(ioSelector.selectedKeys()).thenReturn(selectionKeySet);
 
         final MultipurposeSelector selector = new MultipurposeSelector(getLogger("test"), ioSelector);
-        selector.register(channel, READ, new SelectorRunnable() {
+        selector.register(channel, READ, new SelectorRunnable<IOSocketChannel>() {
             @Override
             public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {
                 try {
