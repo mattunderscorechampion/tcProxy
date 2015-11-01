@@ -27,9 +27,12 @@ package com.mattunderscore.tcproxy.io.impl;
 
 import static java.lang.System.arraycopy;
 
+import java.nio.ByteBuffer;
+
 import com.mattunderscore.tcproxy.io.CircularBuffer;
 
 /**
+ * Implementation of {@link CircularBuffer}.
  * @author Matt Champion on 31/10/2015
  */
 public final class CircularBufferImpl implements CircularBuffer {
@@ -74,6 +77,22 @@ public final class CircularBufferImpl implements CircularBuffer {
     }
 
     @Override
+    public int put(ByteBuffer bytes) {
+        final int length = Math.min(bytes.remaining(), capacity - data);
+        final int maxWritableBeforeWrap = capacity - writePos;
+        if (length <= maxWritableBeforeWrap) {
+            bytes.get(buffer, writePos, length);
+        }
+        else {
+            bytes.get(buffer, writePos, maxWritableBeforeWrap);
+            bytes.get(buffer, 0, length - maxWritableBeforeWrap);
+        }
+        writePos = (writePos + length) % capacity;
+        data = data + length;
+        return length;
+    }
+
+    @Override
     public byte get() {
         if (data > 0) {
             final byte b = buffer[readPos];
@@ -92,7 +111,7 @@ public final class CircularBufferImpl implements CircularBuffer {
     }
 
     @Override
-    public int occupied() {
+    public int usedCapacity() {
         return data;
     }
 }
