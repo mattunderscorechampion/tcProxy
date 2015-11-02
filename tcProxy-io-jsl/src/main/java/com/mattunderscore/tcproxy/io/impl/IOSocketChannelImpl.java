@@ -105,48 +105,13 @@ final class IOSocketChannelImpl implements IOSocketChannel {
     @Override
     public int read(CircularBuffer dst) throws IOException {
         final CircularBufferImpl dstImpl = (CircularBufferImpl)dst;
-        if (dstImpl.readPos > dstImpl.buffer.position()) {
-            dstImpl.buffer.limit(dstImpl.readPos);
-            final int read = channel.read(dstImpl.buffer);
-            dstImpl.buffer.limit(dstImpl.capacity);
-            dstImpl.data = dstImpl.data + read;
-            return read;
-        }
-        else {
-            final int read = channel.read(dstImpl.buffer);
-            if (!dstImpl.buffer.hasRemaining()) {
-                dstImpl.buffer.position(0);
-            }
-            dstImpl.data = dstImpl.data + read;
-            return read;
-        }
+        return dstImpl.doSocketRead(channel);
     }
 
     @Override
     public int write(CircularBuffer src) throws IOException {
         final CircularBufferImpl srcImpl = (CircularBufferImpl)src;
-        final ByteBuffer readableBuffer = srcImpl.buffer.asReadOnlyBuffer();
-        readableBuffer.position(srcImpl.readPos);
-        final int lengthToCopy = srcImpl.data;
-        final int maxReadableBeforeWrap = readableBuffer.remaining();
-
-        int readFromBuffer;
-        if (lengthToCopy <= maxReadableBeforeWrap) {
-            readableBuffer.limit(srcImpl.readPos + lengthToCopy);
-            readFromBuffer = channel.write(readableBuffer);
-        }
-        else {
-            readableBuffer.limit(srcImpl.readPos + maxReadableBeforeWrap);
-            readFromBuffer = channel.write(readableBuffer);
-            if (!readableBuffer.hasRemaining()) {
-                readableBuffer.position(0);
-                readableBuffer.limit(lengthToCopy - maxReadableBeforeWrap);
-                readFromBuffer = readFromBuffer + channel.write(readableBuffer);
-            }
-        }
-        srcImpl.readPos = (srcImpl.readPos + readFromBuffer) % srcImpl.capacity;
-        srcImpl.data = srcImpl.data - readFromBuffer;
-        return readFromBuffer;
+        return srcImpl.doSocketWrite(channel);
     }
 
     @Override

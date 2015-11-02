@@ -25,7 +25,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.impl;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 
 import com.mattunderscore.tcproxy.io.CircularBuffer;
 
@@ -34,10 +36,10 @@ import com.mattunderscore.tcproxy.io.CircularBuffer;
  * @author Matt Champion on 31/10/2015
  */
 public final class CircularBufferImpl implements CircularBuffer {
-    final ByteBuffer buffer;
-    final int capacity;
-    int readPos = 0;
-    int data = 0;
+    private final ByteBuffer buffer;
+    private final int capacity;
+    private int readPos = 0;
+    private int data = 0;
 
     public CircularBufferImpl(int capacity) {
         this.capacity = capacity;
@@ -153,5 +155,48 @@ public final class CircularBufferImpl implements CircularBuffer {
     @Override
     public int usedCapacity() {
         return data;
+    }
+
+    /*package*/ int doSocketRead(SocketChannel channel) throws IOException {
+        if (readPos > buffer.position()) {
+            buffer.limit(readPos);
+            final int read = channel.read(buffer);
+            buffer.limit(capacity);
+            data = data + read;
+            return read;
+        }
+        else {
+            final int read = channel.read(buffer);
+            if (!buffer.hasRemaining()) {
+                buffer.position(0);
+            }
+            data = data + read;
+            return read;
+        }
+    }
+
+    /*package*/ int doSocketWrite(SocketChannel channel) throws IOException {
+        final ByteBuffer readableBuffer = buffer.asReadOnlyBuffer();
+        readableBuffer.position(readPos);
+        final int lengthToCopy = data;
+        final int maxReadableBeforeWrap = readableBuffer.remaining();
+
+        int readFromBuffer;
+        if (lengthToCopy <= maxReadableBeforeWrap) {
+            readableBuffer.limit(readPos + lengthToCopy);
+            readFromBuffer = channel.write(readableBuffer);
+        }
+        else {
+            readableBuffer.limit(readPos + maxReadableBeforeWrap);
+            readFromBuffer = channel.write(readableBuffer);
+            if (!readableBuffer.hasRemaining()) {
+                readableBuffer.position(0);
+                readableBuffer.limit(lengthToCopy - maxReadableBeforeWrap);
+                readFromBuffer = readFromBuffer + channel.write(readableBuffer);
+            }
+        }
+        readPos = (readPos + readFromBuffer) % capacity;
+        data = data - readFromBuffer;
+        return readFromBuffer;
     }
 }
