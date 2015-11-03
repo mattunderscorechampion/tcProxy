@@ -48,12 +48,10 @@ public final class CircularBufferImpl implements CircularBuffer {
 
     @Override
     public boolean put(byte b) {
-        if (data < capacity) {
+        if (hasFreeCapacityFor(1)) {
             buffer.put(b);
-            if (!buffer.hasRemaining()) {
-                buffer.position(0);
-            }
             data = data + 1;
+            wrapWritableBufferIfNeeded();
             return true;
         }
         return false;
@@ -61,13 +59,11 @@ public final class CircularBufferImpl implements CircularBuffer {
 
     @Override
     public boolean put(byte[] bytes) {
-        if (data + bytes.length <= capacity) {
+        if (hasFreeCapacityFor(bytes.length)) {
             final int maxWritableBeforeWrap = buffer.remaining();
             if (bytes.length <= maxWritableBeforeWrap) {
                 buffer.put(bytes);
-                if (!buffer.hasRemaining()) {
-                    buffer.position(0);
-                }
+                wrapWritableBufferIfNeeded();
             }
             else {
                 buffer.put(bytes, 0, maxWritableBeforeWrap);
@@ -88,9 +84,7 @@ public final class CircularBufferImpl implements CircularBuffer {
             final int srcLimit = src.limit();
             src.limit(length);
             buffer.put(src);
-            if (!buffer.hasRemaining()) {
-                buffer.position(0);
-            }
+            wrapWritableBufferIfNeeded();
             src.limit(srcLimit);
         }
         else {
@@ -158,21 +152,18 @@ public final class CircularBufferImpl implements CircularBuffer {
     }
 
     /*package*/ int doSocketRead(SocketChannel channel) throws IOException {
+        final int read;
         if (readPos > buffer.position()) {
             buffer.limit(readPos);
-            final int read = channel.read(buffer);
+            read = channel.read(buffer);
             buffer.limit(capacity);
-            data = data + read;
-            return read;
         }
         else {
-            final int read = channel.read(buffer);
-            if (!buffer.hasRemaining()) {
-                buffer.position(0);
-            }
-            data = data + read;
-            return read;
+            read = channel.read(buffer);
+            wrapWritableBufferIfNeeded();
         }
+        data = data + read;
+        return read;
     }
 
     /*package*/ int doSocketWrite(SocketChannel channel) throws IOException {
@@ -198,5 +189,15 @@ public final class CircularBufferImpl implements CircularBuffer {
         readPos = (readPos + readFromBuffer) % capacity;
         data = data - readFromBuffer;
         return readFromBuffer;
+    }
+
+    private void wrapWritableBufferIfNeeded() {
+        if (!buffer.hasRemaining()) {
+            buffer.position(0);
+        }
+    }
+
+    private boolean hasFreeCapacityFor(int numberOfBytes) {
+        return data + numberOfBytes <= capacity;
     }
 }
