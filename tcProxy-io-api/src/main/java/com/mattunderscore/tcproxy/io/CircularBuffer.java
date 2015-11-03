@@ -1,5 +1,7 @@
 package com.mattunderscore.tcproxy.io;
 
+import java.nio.BufferOverflowException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
 /**
@@ -11,16 +13,16 @@ public interface CircularBuffer {
     /**
      * Put a single byte into the buffer.
      * @param b The byte
-     * @return false if there was no room in the buffer
+     * @throws BufferOverflowException if there is not enough room in the buffer
      */
-    boolean put(byte b);
+    void put(byte b) throws BufferOverflowException;
 
     /**
      * Put an entire array of bytes into the buffer.
      * @param bytes The byte array
-     * @return false if there was not enough room in the buffer
+     * @throws BufferOverflowException if there is not enough room in the buffer
      */
-    boolean put(byte[] bytes);
+    void put(byte[] bytes) throws BufferOverflowException;
 
     /**
      * Put some data from a {@link ByteBuffer} into the buffer. If the source contains more data then can fit into the
@@ -32,9 +34,9 @@ public interface CircularBuffer {
 
     /**
      * @return A single byte from the buffer
-     * @throws IllegalStateException If no data can be read
+     * @throws BufferUnderflowException if there is no data to read from the buffer
      */
-    byte get();
+    byte get() throws BufferUnderflowException;
 
     /**
      * @param dst A {@link ByteBuffer} to copy data into

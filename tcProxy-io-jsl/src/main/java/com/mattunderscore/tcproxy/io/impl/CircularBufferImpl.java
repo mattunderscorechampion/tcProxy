@@ -26,6 +26,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.io.impl;
 
 import java.io.IOException;
+import java.nio.BufferOverflowException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
@@ -47,18 +49,19 @@ public final class CircularBufferImpl implements CircularBuffer {
     }
 
     @Override
-    public boolean put(byte b) {
+    public void put(byte b) throws BufferOverflowException {
         if (hasFreeCapacityFor(1)) {
             buffer.put(b);
             data = data + 1;
             wrapWritableBufferIfNeeded();
-            return true;
         }
-        return false;
+        else {
+            throw new BufferOverflowException();
+        }
     }
 
     @Override
-    public boolean put(byte[] bytes) {
+    public void put(byte[] bytes) throws BufferOverflowException {
         if (hasFreeCapacityFor(bytes.length)) {
             final int maxWritableBeforeWrap = buffer.remaining();
             if (bytes.length <= maxWritableBeforeWrap) {
@@ -71,9 +74,10 @@ public final class CircularBufferImpl implements CircularBuffer {
                 buffer.put(bytes, maxWritableBeforeWrap, bytes.length - maxWritableBeforeWrap);
             }
             data = data + bytes.length;
-            return true;
         }
-        return false;
+        else {
+            throw new BufferOverflowException();
+        }
     }
 
     @Override
@@ -105,7 +109,7 @@ public final class CircularBufferImpl implements CircularBuffer {
     }
 
     @Override
-    public byte get() {
+    public byte get() throws BufferUnderflowException {
         if (data > 0) {
             final byte b = buffer.get(readPos);
             readPos = (readPos + 1) % capacity;
@@ -113,7 +117,7 @@ public final class CircularBufferImpl implements CircularBuffer {
             return b;
         }
         else {
-            throw new IllegalStateException();
+            throw new BufferUnderflowException();
         }
     }
 
