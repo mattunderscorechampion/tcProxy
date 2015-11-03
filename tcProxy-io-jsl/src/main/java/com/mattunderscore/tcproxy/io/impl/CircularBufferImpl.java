@@ -78,26 +78,30 @@ public final class CircularBufferImpl implements CircularBuffer {
 
     @Override
     public int put(ByteBuffer src) {
-        final int length = Math.min(src.remaining(), capacity - data);
+        final int lengthToCopyFromSrc = Math.min(src.remaining(), capacity - data);
         final int maxWritableBeforeWrap = buffer.remaining();
-        if (length <= maxWritableBeforeWrap) {
-            final int srcLimit = src.limit();
-            src.limit(length);
+        final int currentSrcLimit = src.limit();
+        final int initialSrcPosition = src.position();
+
+        if (lengthToCopyFromSrc <= maxWritableBeforeWrap) {
+            // Copy from source without wrapping circular buffer
+            src.limit(initialSrcPosition + lengthToCopyFromSrc);
             buffer.put(src);
             wrapWritableBufferIfNeeded();
-            src.limit(srcLimit);
         }
         else {
-            final int srcLimit = src.limit();
-            src.limit(maxWritableBeforeWrap);
+            // Copy from source with wrapping circular buffer
+            src.limit(initialSrcPosition + maxWritableBeforeWrap);
             buffer.put(src);
             buffer.position(0);
-            src.limit(length);
+            src.limit(initialSrcPosition + lengthToCopyFromSrc);
             buffer.put(src);
-            src.limit(srcLimit);
         }
-        data = data + length;
-        return length;
+
+        // Restore limit
+        src.limit(currentSrcLimit);
+        data = data + lengthToCopyFromSrc;
+        return lengthToCopyFromSrc;
     }
 
     @Override
