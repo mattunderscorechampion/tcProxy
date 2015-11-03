@@ -41,9 +41,9 @@ public final class CircularBufferImpl implements CircularBuffer {
     private int readPos = 0;
     private int data = 0;
 
-    public CircularBufferImpl(int capacity) {
+    private CircularBufferImpl(int capacity, ByteBuffer writableBuffer) {
         this.capacity = capacity;
-        buffer = ByteBuffer.allocateDirect(capacity);
+        buffer = writableBuffer;
     }
 
     @Override
@@ -199,5 +199,23 @@ public final class CircularBufferImpl implements CircularBuffer {
 
     private boolean hasFreeCapacityFor(int numberOfBytes) {
         return data + numberOfBytes <= capacity;
+    }
+
+    /**
+     * Allocate an array backed circular array.
+     * @param capacity The size of the buffer
+     * @return The buffer
+     */
+    public static CircularBuffer allocate(int capacity) {
+        return new CircularBufferImpl(capacity, ByteBuffer.allocate(capacity));
+    }
+
+    /**
+     * Allocate a circular array that uses a contiguous area of memory that can be accessed by native I/O operations.
+     * @param capacity The size of the buffer
+     * @return The buffer
+     */
+    public static CircularBuffer allocateDirect(int capacity) {
+        return new CircularBufferImpl(capacity, ByteBuffer.allocateDirect(capacity));
     }
 }

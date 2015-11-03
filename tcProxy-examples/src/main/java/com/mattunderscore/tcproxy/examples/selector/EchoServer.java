@@ -130,7 +130,7 @@ public final class EchoServer {
     }
 
     private static final class EchoTask implements SelectorRunnable<IOSocketChannel> {
-        private final CircularBuffer buffer = new CircularBufferImpl(64);
+        private final CircularBuffer buffer = CircularBufferImpl.allocateDirect(64);
         private final EnhancedSelector selector;
 
         private EchoTask(EnhancedSelector selector) {

@@ -14,14 +14,14 @@ public final class CircularBufferImplTest {
 
     @Test
     public void empty() {
-        final CircularBuffer buffer = new CircularBufferImpl(3);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
         assertEquals(0, buffer.usedCapacity());
         assertEquals(3, buffer.freeCapacity());
     }
 
     @Test
     public void put() {
-        final CircularBuffer buffer = new CircularBufferImpl(3);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
         assertTrue(buffer.put((byte) 4));
         assertTrue(buffer.put((byte) 4));
         assertTrue(buffer.put((byte) 4));
@@ -32,7 +32,7 @@ public final class CircularBufferImplTest {
 
     @Test
     public void putMany() {
-        final CircularBuffer buffer = new CircularBufferImpl(3);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
         final byte[] bytes = { 0x0, 0x1, 0x2 };
         assertTrue(buffer.put(bytes));
         assertEquals(3, buffer.usedCapacity());
@@ -46,7 +46,7 @@ public final class CircularBufferImplTest {
 
     @Test
     public void putManyBuffer() {
-        final CircularBuffer buffer = new CircularBufferImpl(3);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
         final byte[] bytes = { 0x0, 0x1, 0x2 };
         assertEquals(3, buffer.put(ByteBuffer.wrap(bytes)));
         assertEquals(3, buffer.usedCapacity());
@@ -60,21 +60,21 @@ public final class CircularBufferImplTest {
 
     @Test
     public void putTooMany() {
-        final CircularBuffer buffer = new CircularBufferImpl(2);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(2);
         final byte[] bytes = { 0x0, 0x1, 0x2 };
         assertFalse(buffer.put(bytes));
     }
 
     @Test
     public void putTooManyBuffer() {
-        final CircularBuffer buffer = new CircularBufferImpl(2);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(2);
         final byte[] bytes = { 0x0, 0x1, 0x2 };
         assertEquals(2, buffer.put(ByteBuffer.wrap(bytes)));
     }
 
     @Test
     public void putTooManyBufferFull() {
-        final CircularBuffer buffer = new CircularBufferImpl(2);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(2);
         final byte[] bytes = { 0x0, 0x1, 0x2 };
         buffer.put((byte) 0);
         buffer.put((byte) 0);
@@ -83,7 +83,7 @@ public final class CircularBufferImplTest {
 
     @Test(expected = IllegalStateException.class)
     public void get() {
-        final CircularBuffer buffer = new CircularBufferImpl(3);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
         assertTrue(buffer.put((byte) 4));
         assertTrue(buffer.put((byte) 5));
         assertTrue(buffer.put((byte) 3));
@@ -96,7 +96,7 @@ public final class CircularBufferImplTest {
 
     @Test
     public void getBuffer() {
-        final CircularBuffer buffer = new CircularBufferImpl(3);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
         assertTrue(buffer.put((byte) 4));
         assertTrue(buffer.put((byte) 5));
         assertTrue(buffer.put((byte) 3));
@@ -114,7 +114,7 @@ public final class CircularBufferImplTest {
 
     @Test
     public void getBufferWrap() {
-        final CircularBuffer buffer = new CircularBufferImpl(3);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
         assertTrue(buffer.put((byte) 4));
         assertTrue(buffer.put((byte) 5));
         assertTrue(buffer.put((byte) 3));
@@ -134,7 +134,7 @@ public final class CircularBufferImplTest {
 
     @Test
     public void getBufferSome() {
-        final CircularBuffer buffer = new CircularBufferImpl(3);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
         assertTrue(buffer.put((byte) 4));
         assertTrue(buffer.put((byte) 5));
         assertTrue(buffer.put((byte) 3));
@@ -151,7 +151,7 @@ public final class CircularBufferImplTest {
 
     @Test
     public void wrap() {
-        final CircularBuffer buffer = new CircularBufferImpl(3);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
         final byte[] bytes = { 0x0, 0x1, 0x2 };
         assertTrue(buffer.put(bytes));
         assertEquals(3, buffer.usedCapacity());
@@ -168,7 +168,7 @@ public final class CircularBufferImplTest {
 
     @Test
     public void wrapPut() {
-        final CircularBuffer buffer = new CircularBufferImpl(3);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
         final byte[] bytes = { 0x0, 0x1 };
         buffer.put((byte) 4);
         buffer.put((byte) 4);
@@ -181,7 +181,7 @@ public final class CircularBufferImplTest {
 
     @Test
     public void wrapPutBuffer() {
-        final CircularBuffer buffer = new CircularBufferImpl(3);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
         final byte[] bytes = { 0x0, 0x1 };
         buffer.put((byte) 4);
         buffer.put((byte) 4);
