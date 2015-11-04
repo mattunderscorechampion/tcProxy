@@ -41,12 +41,10 @@ import com.mattunderscore.tcproxy.io.CircularBuffer;
  */
 public final class CircularBufferImpl implements CircularBuffer {
     private final ByteBuffer buffer;
-    private final int capacity;
     private int readPos = 0;
     private int data = 0;
 
-    private CircularBufferImpl(int capacity, ByteBuffer writableBuffer) {
-        this.capacity = capacity;
+    private CircularBufferImpl(ByteBuffer writableBuffer) {
         buffer = writableBuffer;
     }
 
@@ -114,7 +112,7 @@ public final class CircularBufferImpl implements CircularBuffer {
     public byte get() throws BufferUnderflowException {
         if (data > 0) {
             final byte b = buffer.get(readPos);
-            readPos = (readPos + 1) % capacity;
+            readPos = (readPos + 1) % capacity();
             data = data - 1;
             return b;
         }
@@ -145,7 +143,7 @@ public final class CircularBufferImpl implements CircularBuffer {
                 readBuffer.limit(lengthToCopy - maxReadableBeforeWrap);
                 dst.put(readBuffer);
             }
-            readPos = (readPos + lengthToCopy) % capacity;
+            readPos = (readPos + lengthToCopy) % capacity();
             data = data - lengthToCopy;
             return lengthToCopy;
         }
@@ -156,7 +154,7 @@ public final class CircularBufferImpl implements CircularBuffer {
 
     @Override
     public int freeCapacity() {
-        return capacity - data;
+        return capacity() - data;
     }
 
     @Override
@@ -164,12 +162,16 @@ public final class CircularBufferImpl implements CircularBuffer {
         return data;
     }
 
+    private int capacity() {
+        return buffer.capacity();
+    }
+
     /*package*/ int doSocketRead(SocketChannel channel) throws IOException {
         final int read;
         if (readPos > buffer.position()) {
             buffer.limit(readPos);
             read = channel.read(buffer);
-            buffer.limit(capacity);
+            buffer.limit(capacity());
         }
         else {
             read = channel.read(buffer);
@@ -199,7 +201,7 @@ public final class CircularBufferImpl implements CircularBuffer {
                 readFromBuffer = readFromBuffer + channel.write(readableBuffer);
             }
         }
-        readPos = (readPos + readFromBuffer) % capacity;
+        readPos = (readPos + readFromBuffer) % capacity();
         data = data - readFromBuffer;
         return readFromBuffer;
     }
@@ -211,7 +213,7 @@ public final class CircularBufferImpl implements CircularBuffer {
     }
 
     private boolean hasFreeCapacityFor(int numberOfBytes) {
-        return data + numberOfBytes <= capacity;
+        return data + numberOfBytes <= capacity();
     }
 
     /**
@@ -220,7 +222,7 @@ public final class CircularBufferImpl implements CircularBuffer {
      * @return The buffer
      */
     public static CircularBuffer allocate(int capacity) {
-        return new CircularBufferImpl(capacity, ByteBuffer.allocate(capacity));
+        return new CircularBufferImpl(ByteBuffer.allocate(capacity));
     }
 
     /**
@@ -229,6 +231,6 @@ public final class CircularBufferImpl implements CircularBuffer {
      * @return The buffer
      */
     public static CircularBuffer allocateDirect(int capacity) {
-        return new CircularBufferImpl(capacity, ByteBuffer.allocateDirect(capacity));
+        return new CircularBufferImpl(ByteBuffer.allocateDirect(capacity));
     }
 }
