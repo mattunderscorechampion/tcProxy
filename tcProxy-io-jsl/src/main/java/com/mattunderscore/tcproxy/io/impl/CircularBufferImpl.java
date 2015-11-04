@@ -25,6 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.impl;
 
+import static java.lang.Math.min;
+
 import java.io.IOException;
 import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
@@ -82,7 +84,7 @@ public final class CircularBufferImpl implements CircularBuffer {
 
     @Override
     public int put(ByteBuffer src) {
-        final int lengthToCopyFromSrc = Math.min(src.remaining(), capacity - data);
+        final int lengthToCopyFromSrc = min(src.remaining(), freeCapacity());
         final int maxWritableBeforeWrap = buffer.remaining();
         final int currentSrcLimit = src.limit();
         final int initialSrcPosition = src.position();
@@ -125,16 +127,19 @@ public final class CircularBufferImpl implements CircularBuffer {
     public int get(ByteBuffer dst) {
         if (data > 0) {
             final ByteBuffer readBuffer = buffer.asReadOnlyBuffer();
-            readBuffer.position(readPos);
-            final int lengthToCopy = Math.min(dst.remaining(), data);
+            final int initialReadPosition = readPos;
+            readBuffer.position(initialReadPosition);
+            final int lengthToCopy = min(dst.remaining(), usedCapacity());
             final int maxReadableBeforeWrap = readBuffer.remaining();
 
             if (lengthToCopy <= maxReadableBeforeWrap) {
-                readBuffer.limit(lengthToCopy);
+                // Copy to destination without wrapping circular buffer
+                readBuffer.limit(initialReadPosition + lengthToCopy);
                 dst.put(readBuffer);
             }
             else {
-                readBuffer.limit(readPos + maxReadableBeforeWrap);
+                // Copy to destination with wrapping circular buffer
+                readBuffer.limit(initialReadPosition + maxReadableBeforeWrap);
                 dst.put(readBuffer);
                 readBuffer.position(0);
                 readBuffer.limit(lengthToCopy - maxReadableBeforeWrap);
