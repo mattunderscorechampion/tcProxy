@@ -53,9 +53,7 @@ public final class EchoServer {
     private static final Logger LOG = LoggerFactory.getLogger("selector");
 
     public static void main(String[] args) throws IOException {
-        final MultipurposeSelector selector = new MultipurposeSelector(
-            LOG,
-            StaticIOFactory.openSelector());
+        final MultipurposeSelector selector = new MultipurposeSelector(StaticIOFactory.openSelector());
         final IOServerSocketChannel channel = StaticIOFactory
             .socketFactory(IOServerSocketChannel.class)
             .reuseAddress(true)

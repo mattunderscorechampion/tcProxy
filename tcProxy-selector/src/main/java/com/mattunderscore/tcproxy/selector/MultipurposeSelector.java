@@ -37,11 +37,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocket;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
@@ -49,15 +49,14 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
  * @author Matt Champion on 24/10/2015
  */
 public final class MultipurposeSelector implements Runnable, EnhancedSelector {
+    private static final Logger LOG = LoggerFactory.getLogger("selector");
     private final AtomicReference<State> state = new AtomicReference<>(State.STOPPED);
     private final BlockingQueue<RegistrationRequest> registrations = new ArrayBlockingQueue<>(64);
-    private final Logger log;
     private final IOSelector selector;
     private volatile CountDownLatch readyLatch = new CountDownLatch(1);
     private volatile CountDownLatch stoppedLatch;
 
-    public MultipurposeSelector(Logger log, IOSelector selector) {
-        this.log = log;
+    public MultipurposeSelector(IOSelector selector) {
         this.selector = selector;
     }
 
@@ -70,7 +69,7 @@ public final class MultipurposeSelector implements Runnable, EnhancedSelector {
                 selector.selectNow();
             }
             catch (final IOException e) {
-                log.debug("{} : Error selecting keys", this, e);
+                LOG.debug("{} : Error selecting keys", this, e);
             }
 
             final Collection<RegistrationRequest> newRegistrations = new HashSet<>();
@@ -80,7 +79,7 @@ public final class MultipurposeSelector implements Runnable, EnhancedSelector {
                     registrationRequest.register(selector);
                 }
                 catch (ClosedChannelException e) {
-                    log.debug("{} : Problem registering key", this, e);
+                    LOG.debug("{} : Problem registering key", this, e);
                 }
             }
 
@@ -100,7 +99,7 @@ public final class MultipurposeSelector implements Runnable, EnhancedSelector {
         if (state.compareAndSet(State.STOPPED, State.RUNNING)) {
             stoppedLatch = new CountDownLatch(1);
             readyLatch.countDown();
-            log.debug("{} : Started", this);
+            LOG.debug("{} : Started", this);
         }
         else {
             throw new IllegalStateException("The selector is already running");
@@ -108,7 +107,7 @@ public final class MultipurposeSelector implements Runnable, EnhancedSelector {
     }
 
     private void resetShutdown() {
-        log.debug("{} : Stopped", this);
+        LOG.debug("{} : Stopped", this);
         stoppedLatch.countDown();
         readyLatch = new CountDownLatch(1);
         state.set(State.STOPPED);
@@ -119,7 +118,7 @@ public final class MultipurposeSelector implements Runnable, EnhancedSelector {
      */
     public void stop() {
         if (state.compareAndSet(State.RUNNING, State.STOPPING)) {
-            log.debug("{} : Stopping", this);
+            LOG.debug("{} : Stopping", this);
         }
         else {
             throw new IllegalStateException("The selector is not running");

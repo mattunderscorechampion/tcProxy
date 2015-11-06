@@ -30,7 +30,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.nio.channels.ClosedChannelException;
 import java.util.HashSet;
@@ -77,7 +76,7 @@ public final class MultipurposeSelectorTest {
         selectionKeySet.add(key);
         when(ioSelector.selectedKeys()).thenReturn(selectionKeySet);
 
-        final MultipurposeSelector selector = new MultipurposeSelector(getLogger("test"), ioSelector);
+        final MultipurposeSelector selector = new MultipurposeSelector(ioSelector);
         selector.register(channel, READ, new SelectorRunnable<IOSocketChannel>() {
             @Override
             public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {
