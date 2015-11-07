@@ -7,7 +7,6 @@ import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.task.AcceptingTask;
-import com.mattunderscore.tcproxy.selector.task.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.task.ConnectionHandlerFactory;
 
 /**
@@ -51,7 +50,17 @@ public final class ConnectingSelector implements Runnable, SocketChannelSelector
         selector.waitForStopped();
     }
 
-    public static ConnectingSelector open(IOSelector ioSelector, IOServerSocketChannel serverSocketChannel, ConnectionHandlerFactory connectionHandlerFactory) {
+    /**
+     * Open a new selector that will accept an complete the connection process.
+     * @param ioSelector Selector
+     * @param serverSocketChannel Channel
+     * @param connectionHandlerFactory Factory handler
+     * @return A connecting selector
+     */
+    public static ConnectingSelector open(
+            IOSelector ioSelector,
+            IOServerSocketChannel serverSocketChannel,
+            ConnectionHandlerFactory connectionHandlerFactory) {
         final MultipurposeSelector multipurposeSelector = new MultipurposeSelector(ioSelector);
         final ConnectingSelector selector = new ConnectingSelector(multipurposeSelector);
         multipurposeSelector.register(serverSocketChannel, new AcceptingTask(selector, connectionHandlerFactory.create(selector)));
