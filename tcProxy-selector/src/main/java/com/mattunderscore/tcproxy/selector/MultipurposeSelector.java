@@ -48,7 +48,7 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
  * A multipurpose selector.
  * @author Matt Champion on 24/10/2015
  */
-public final class MultipurposeSelector implements Runnable, EnhancedSelector {
+public final class MultipurposeSelector implements EnhancedSelector {
     private static final Logger LOG = LoggerFactory.getLogger("selector");
     private final AtomicReference<State> state = new AtomicReference<>(State.STOPPED);
     private final BlockingQueue<RegistrationRequest> registrations = new ArrayBlockingQueue<>(64);
@@ -113,9 +113,7 @@ public final class MultipurposeSelector implements Runnable, EnhancedSelector {
         state.set(State.STOPPED);
     }
 
-    /**
-     * Stop the selector.
-     */
+    @Override
     public void stop() {
         if (state.compareAndSet(State.RUNNING, State.STOPPING)) {
             LOG.debug("{} : Stopping", this);
@@ -125,18 +123,12 @@ public final class MultipurposeSelector implements Runnable, EnhancedSelector {
         }
     }
 
-    /**
-     * Block until the selector has started. Will return immediately after starting.
-     * @throws InterruptedException
-     */
+    @Override
     public void waitForRunning() throws InterruptedException {
         readyLatch.await();
     }
 
-    /**
-     * Block until the selector has stopped. Will return immediately before starting.
-     * @throws InterruptedException
-     */
+    @Override
     public void waitForStopped() throws InterruptedException {
         final CountDownLatch latch = this.stoppedLatch;
         if (latch != null) {

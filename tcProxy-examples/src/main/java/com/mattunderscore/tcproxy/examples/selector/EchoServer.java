@@ -37,12 +37,14 @@ import com.mattunderscore.tcproxy.io.CircularBuffer;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketOption;
 import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
 import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
-import com.mattunderscore.tcproxy.selector.EnhancedSelector;
+import com.mattunderscore.tcproxy.selector.ConnectingSelector;
 import com.mattunderscore.tcproxy.selector.MultipurposeSelector;
 import com.mattunderscore.tcproxy.selector.SelectorRunnable;
+import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
+import com.mattunderscore.tcproxy.selector.task.ConnectionHandler;
+import com.mattunderscore.tcproxy.selector.task.ConnectionHandlerFactory;
 
 /**
  * Added example of using a {@link MultipurposeSelector} as an echo server. Accepts, reads and writes on the main
@@ -53,7 +55,6 @@ public final class EchoServer {
     private static final Logger LOG = LoggerFactory.getLogger("selector");
 
     public static void main(String[] args) throws IOException {
-        final MultipurposeSelector selector = new MultipurposeSelector(StaticIOFactory.openSelector());
         final IOServerSocketChannel channel = StaticIOFactory
             .socketFactory(IOServerSocketChannel.class)
             .reuseAddress(true)
@@ -61,77 +62,26 @@ public final class EchoServer {
             .blocking(false)
             .create();
 
-        selector.register(channel, new AcceptingTask(selector));
-        selector.run();
-    }
-
-    private static class AcceptingTask implements SelectorRunnable<IOServerSocketChannel> {
-        private final EnhancedSelector selector;
-
-        public AcceptingTask(EnhancedSelector selector) {
-            this.selector = selector;
-        }
-
-        @Override
-        public void run(IOServerSocketChannel socket, IOSelectionKey selectionKey) {
-            LOG.debug("Calling accepting task {} {}", socket, selectionKey.readyOperations());
-            if (selectionKey.isAcceptable()) {
-                final IOSocketChannel channel;
-                try {
-                    channel = socket.accept();
-                }
-                catch (IOException e) {
-                    LOG.warn("Unable to connect socket", e);
-                    return;
-                }
-
-                try {
-                    if (channel != null) {
-                        channel.set(IOSocketOption.BLOCKING, false);
-                        if (channel.finishConnect()) {
-                            selector.register(channel, IOSelectionKey.Op.READ, new EchoTask(selector));
-                        }
-                        else {
-                            selector.register(channel, IOSelectionKey.Op.CONNECT, new ConnectingTask(selector));
-                        }
-                    }
-                }
-                catch (IOException e) {
-                    LOG.warn("Unable to connect socket", e);
-                }
-            }
-        }
-    }
-
-    private static final class ConnectingTask implements SelectorRunnable<IOSocketChannel> {
-        private final EnhancedSelector selector;
-
-        public ConnectingTask(EnhancedSelector selector) {
-            this.selector = selector;
-        }
-
-        @Override
-        public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {
-            LOG.debug("Calling connecting task {} {}", socket, selectionKey.readyOperations());
-            try {
-                if (selectionKey.isConnectable()) {
-                    if (socket.finishConnect()) {
-                        selectionKey.cancel();
+        final ConnectionHandlerFactory connectionHandlerFactory = new ConnectionHandlerFactory() {
+            @Override
+            public ConnectionHandler create(final SocketChannelSelector selector) {
+                return new ConnectionHandler() {
+                    @Override
+                    public void onConnect(IOSocketChannel socket) {
                         selector.register(socket, IOSelectionKey.Op.READ, new EchoTask(selector));
                     }
-                }
+                };
             }
-            catch (IOException e) {
-                LOG.warn("Unable to connect socket", e);
-            }
-        }
+        };
+        final SocketChannelSelector selector = ConnectingSelector.open(StaticIOFactory.openSelector(), channel, connectionHandlerFactory);
+        selector.run();
     }
 
     private static final class EchoTask implements SelectorRunnable<IOSocketChannel> {
         private final CircularBuffer buffer = CircularBufferImpl.allocateDirect(64);
-        private final EnhancedSelector selector;
+        private final SocketChannelSelector selector;
 
-        private EchoTask(EnhancedSelector selector) {
+        private EchoTask(SocketChannelSelector selector) {
             this.selector = selector;
         }
 
