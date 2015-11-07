@@ -26,7 +26,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.selector;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
@@ -43,6 +42,6 @@ public final class IOSocketChannelRegistration implements Registration {
 
     @Override
     public void run(IOSelectionKey selectionKey) {
-        runnable.run(channel ,selectionKey);
+        runnable.run(channel, selectionKey);
     }
 }

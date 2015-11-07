@@ -25,6 +25,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.task;
 
+import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.CONNECT;
+import static com.mattunderscore.tcproxy.io.IOSocketOption.BLOCKING;
+
 import java.io.IOException;
 
 import org.slf4j.Logger;
@@ -33,7 +36,6 @@ import org.slf4j.LoggerFactory;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketOption;
 import com.mattunderscore.tcproxy.selector.SelectorRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 
@@ -66,12 +68,12 @@ public final class AcceptingTask implements SelectorRunnable<IOServerSocketChann
 
             try {
                 if (channel != null) {
-                    channel.set(IOSocketOption.BLOCKING, false);
+                    channel.set(BLOCKING, false);
                     if (channel.finishConnect()) {
                         connectionHandler.onConnect(channel);
                     }
                     else {
-                        selector.register(channel, IOSelectionKey.Op.CONNECT, new ConnectingTask(connectionHandler));
+                        selector.register(channel, CONNECT, new ConnectingTask(connectionHandler));
                     }
                 }
             }

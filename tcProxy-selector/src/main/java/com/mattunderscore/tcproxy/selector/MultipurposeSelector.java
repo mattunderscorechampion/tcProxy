@@ -45,7 +45,9 @@ import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
- * A multipurpose selector.
+ * A multipurpose selector. {@link SelectorRunnable} can be registered against it for both
+ * {@link IOServerSocketChannel} and {@link IOSocketChannel}. These tasks can be registered from any thread. Selected
+ * keys will be removed from the selected set when they are processed but will not be cancelled.
  * @author Matt Champion on 24/10/2015
  */
 public final class MultipurposeSelector implements EnhancedSelector {

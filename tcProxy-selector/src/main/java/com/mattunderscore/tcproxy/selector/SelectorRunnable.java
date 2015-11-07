@@ -29,10 +29,15 @@ import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSocket;
 
 /**
- * Selector runnable.
+ * Selector runnable. A task run with a socket and a selection key.
  * @author Matt Champion on 26/10/2015
  * @param <T> The type of socket it expects
  */
 public interface SelectorRunnable<T extends IOSocket> {
+    /**
+     * The body of the task.
+     * @param socket The socket
+     * @param selectionKey The selection key
+     */
     void run(T socket, IOSelectionKey selectionKey);
 }

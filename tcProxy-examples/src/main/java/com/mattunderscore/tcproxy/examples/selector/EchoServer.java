@@ -25,6 +25,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.examples.selector;
 
+import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.READ;
+import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.WRITE;
+import static com.mattunderscore.tcproxy.io.impl.CircularBufferImpl.allocateDirect;
+import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.openSelector;
+import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.socketFactory;
+import static com.mattunderscore.tcproxy.selector.ConnectingSelector.open;
+import static java.util.EnumSet.of;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.EnumSet;
@@ -37,9 +45,6 @@ import com.mattunderscore.tcproxy.io.CircularBuffer;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
-import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
-import com.mattunderscore.tcproxy.selector.ConnectingSelector;
 import com.mattunderscore.tcproxy.selector.MultipurposeSelector;
 import com.mattunderscore.tcproxy.selector.SelectorRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
@@ -55,8 +60,7 @@ public final class EchoServer {
     private static final Logger LOG = LoggerFactory.getLogger("selector");
 
     public static void main(String[] args) throws IOException {
-        final IOServerSocketChannel channel = StaticIOFactory
-            .socketFactory(IOServerSocketChannel.class)
+        final IOServerSocketChannel channel = socketFactory(IOServerSocketChannel.class)
             .reuseAddress(true)
             .bind(new InetSocketAddress(34534))
             .blocking(false)
@@ -68,17 +72,17 @@ public final class EchoServer {
                 return new ConnectionHandler() {
                     @Override
                     public void onConnect(IOSocketChannel socket) {
-                        selector.register(socket, IOSelectionKey.Op.READ, new EchoTask(selector));
+                        selector.register(socket, READ, new EchoTask(selector));
                     }
                 };
             }
         };
-        final SocketChannelSelector selector = ConnectingSelector.open(StaticIOFactory.openSelector(), channel, connectionHandlerFactory);
+        final SocketChannelSelector selector = open(openSelector(), channel, connectionHandlerFactory);
         selector.run();
     }
 
     private static final class EchoTask implements SelectorRunnable<IOSocketChannel> {
-        private final CircularBuffer buffer = CircularBufferImpl.allocateDirect(64);
+        private final CircularBuffer buffer = allocateDirect(64);
         private final SocketChannelSelector selector;
 
         private EchoTask(SocketChannelSelector selector) {
@@ -89,7 +93,7 @@ public final class EchoServer {
         public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {
             final Set<IOSelectionKey.Op> readyOperations = selectionKey.readyOperations();
             LOG.debug("Calling echo task {} {}", socket, readyOperations);
-            if (readyOperations.contains(IOSelectionKey.Op.READ)) {
+            if (readyOperations.contains(READ)) {
 
                 try {
                     final int read = socket.read(buffer);
@@ -104,7 +108,7 @@ public final class EchoServer {
                 }
             }
 
-            if (readyOperations.contains(IOSelectionKey.Op.WRITE)) {
+            if (readyOperations.contains(WRITE)) {
                 if (buffer.usedCapacity() > 0) {
                     try {
                         socket.write(buffer);
@@ -117,13 +121,13 @@ public final class EchoServer {
 
             selectionKey.cancel();
             if (buffer.usedCapacity() > 0 && buffer.freeCapacity() > 0) {
-                selector.register(socket, EnumSet.of(IOSelectionKey.Op.READ, IOSelectionKey.Op.WRITE), this);
+                selector.register(socket, of(READ, WRITE), this);
             }
             else if (buffer.freeCapacity() > 0) {
-                selector.register(socket, IOSelectionKey.Op.READ, this);
+                selector.register(socket, READ, this);
             }
             else {
-                selector.register(socket, IOSelectionKey.Op.WRITE, this);
+                selector.register(socket, WRITE, this);
             }
         }
     }

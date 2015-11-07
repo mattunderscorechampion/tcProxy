@@ -25,14 +25,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector;
 
-import java.nio.channels.ClosedChannelException;
-import java.util.Set;
-
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSelector;
 
 /**
- * The representation of the registration of a selector runnable.
+ * The representation of the registration of a selector runnable against a socket for an interest set.
  */
 interface Registration {
     /**

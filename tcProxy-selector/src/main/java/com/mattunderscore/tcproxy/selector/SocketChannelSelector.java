@@ -6,6 +6,7 @@ import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
+ * A selector that can have tasks for {@link IOSocketChannel} registered against it.
  * @author Matt Champion on 06/11/2015
  */
 public interface SocketChannelSelector extends StartStopLifecycle {

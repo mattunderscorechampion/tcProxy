@@ -30,6 +30,7 @@ import java.nio.channels.ClosedChannelException;
 import com.mattunderscore.tcproxy.io.IOSelector;
 
 /**
+ * The request for the selector to register interest in the operation.
  * @author Matt Champion on 31/10/2015
  */
 interface RegistrationRequest {
