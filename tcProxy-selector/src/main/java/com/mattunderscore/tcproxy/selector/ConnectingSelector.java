@@ -1,5 +1,7 @@
 package com.mattunderscore.tcproxy.selector;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
@@ -17,8 +19,8 @@ import com.mattunderscore.tcproxy.selector.task.ConnectionHandlerFactory;
 public final class ConnectingSelector implements SocketChannelSelector {
     private final GeneralPurposeSelector selector;
 
-    private ConnectingSelector(GeneralPurposeSelector selector) {
-        this.selector = selector;;
+    /*package*/ ConnectingSelector(GeneralPurposeSelector selector) {
+        this.selector = selector;
     }
 
     @Override
@@ -62,9 +64,26 @@ public final class ConnectingSelector implements SocketChannelSelector {
             IOSelector ioSelector,
             IOServerSocketChannel serverSocketChannel,
             ConnectionHandlerFactory connectionHandlerFactory) {
+        return open(ioSelector, Collections.singleton(serverSocketChannel), connectionHandlerFactory);
+    }
+
+    /**
+     * Open a new selector that will accept an complete the connection process.
+     * @param ioSelector Selector
+     * @param serverSocketChannels A collection of the server channels to listen for new connections on
+     * @param connectionHandlerFactory Factory handler
+     * @return A connecting selector
+     */
+    public static ConnectingSelector open(
+        IOSelector ioSelector,
+        Collection<IOServerSocketChannel> serverSocketChannels,
+        ConnectionHandlerFactory connectionHandlerFactory) {
         final GeneralPurposeSelector generalPurposeSelector = new GeneralPurposeSelector(ioSelector);
         final ConnectingSelector selector = new ConnectingSelector(generalPurposeSelector);
-        generalPurposeSelector.register(serverSocketChannel, new AcceptingTask(selector, connectionHandlerFactory.create(selector)));
+        for (final IOServerSocketChannel serverSocketChannel : serverSocketChannels) {
+            generalPurposeSelector
+                .register(serverSocketChannel, new AcceptingTask(selector, connectionHandlerFactory.create(selector)));
+        }
         return selector;
     }
 }
