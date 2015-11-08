@@ -10,10 +10,11 @@ import com.mattunderscore.tcproxy.selector.task.AcceptingTask;
 import com.mattunderscore.tcproxy.selector.task.ConnectionHandlerFactory;
 
 /**
- * A selector that accepts and completes the connection of new sockets.
+ * A selector that accepts and completes the connection of new sockets. A task is registered to accept new connections.
+ * If the new connection cannot be completed immediately a task to complete the connection is registered.
  * @author Matt Champion on 06/11/2015
  */
-public final class ConnectingSelector implements Runnable, SocketChannelSelector, StartStopLifecycle {
+public final class ConnectingSelector implements SocketChannelSelector {
     private final MultipurposeSelector selector;
 
     private ConnectingSelector(MultipurposeSelector selector) {
@@ -53,7 +54,7 @@ public final class ConnectingSelector implements Runnable, SocketChannelSelector
     /**
      * Open a new selector that will accept an complete the connection process.
      * @param ioSelector Selector
-     * @param serverSocketChannel Channel
+     * @param serverSocketChannel Server channel to listen for new connections on
      * @param connectionHandlerFactory Factory handler
      * @return A connecting selector
      */
