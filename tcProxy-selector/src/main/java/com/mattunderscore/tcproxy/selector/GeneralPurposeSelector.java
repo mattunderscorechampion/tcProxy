@@ -50,7 +50,7 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
  * keys will be removed from the selected set when they are processed but will not be cancelled.
  * @author Matt Champion on 24/10/2015
  */
-public final class MultipurposeSelector implements SocketChannelSelector, ServerSocketChannelSelector {
+public final class GeneralPurposeSelector implements SocketChannelSelector, ServerSocketChannelSelector {
     private static final Logger LOG = LoggerFactory.getLogger("selector");
     private final AtomicReference<State> state = new AtomicReference<>(State.STOPPED);
     private final BlockingQueue<RegistrationRequest> registrations = new ArrayBlockingQueue<>(64);
@@ -58,7 +58,7 @@ public final class MultipurposeSelector implements SocketChannelSelector, Server
     private volatile CountDownLatch readyLatch = new CountDownLatch(1);
     private volatile CountDownLatch stoppedLatch;
 
-    public MultipurposeSelector(IOSelector selector) {
+    public GeneralPurposeSelector(IOSelector selector) {
         this.selector = selector;
     }
 

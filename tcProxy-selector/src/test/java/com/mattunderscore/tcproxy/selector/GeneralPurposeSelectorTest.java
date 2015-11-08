@@ -46,10 +46,10 @@ import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
- * Unit tests for {@link MultipurposeSelector}.
+ * Unit tests for {@link GeneralPurposeSelector}.
  * @author Matt Champion on 24/10/2015
  */
-public final class MultipurposeSelectorTest {
+public final class GeneralPurposeSelectorTest {
     @Mock
     private IOSelector ioSelector;
     @Mock
@@ -76,7 +76,7 @@ public final class MultipurposeSelectorTest {
         selectionKeySet.add(key);
         when(ioSelector.selectedKeys()).thenReturn(selectionKeySet);
 
-        final MultipurposeSelector selector = new MultipurposeSelector(ioSelector);
+        final GeneralPurposeSelector selector = new GeneralPurposeSelector(ioSelector);
         selector.register(channel, READ, new SelectorRunnable<IOSocketChannel>() {
             @Override
             public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {

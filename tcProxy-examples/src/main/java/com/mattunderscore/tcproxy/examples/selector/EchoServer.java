@@ -35,7 +35,6 @@ import static java.util.EnumSet.of;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.EnumSet;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -45,14 +44,14 @@ import com.mattunderscore.tcproxy.io.CircularBuffer;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.selector.MultipurposeSelector;
+import com.mattunderscore.tcproxy.selector.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.SelectorRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.task.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.task.ConnectionHandlerFactory;
 
 /**
- * Added example of using a {@link MultipurposeSelector} as an echo server. Accepts, reads and writes on the main
+ * Added example of using a {@link GeneralPurposeSelector} as an echo server. Accepts, reads and writes on the main
  * thread.
  * @author Matt Champion on 24/10/2015
  */

@@ -15,9 +15,9 @@ import com.mattunderscore.tcproxy.selector.task.ConnectionHandlerFactory;
  * @author Matt Champion on 06/11/2015
  */
 public final class ConnectingSelector implements SocketChannelSelector {
-    private final MultipurposeSelector selector;
+    private final GeneralPurposeSelector selector;
 
-    private ConnectingSelector(MultipurposeSelector selector) {
+    private ConnectingSelector(GeneralPurposeSelector selector) {
         this.selector = selector;;
     }
 
@@ -62,9 +62,9 @@ public final class ConnectingSelector implements SocketChannelSelector {
             IOSelector ioSelector,
             IOServerSocketChannel serverSocketChannel,
             ConnectionHandlerFactory connectionHandlerFactory) {
-        final MultipurposeSelector multipurposeSelector = new MultipurposeSelector(ioSelector);
-        final ConnectingSelector selector = new ConnectingSelector(multipurposeSelector);
-        multipurposeSelector.register(serverSocketChannel, new AcceptingTask(selector, connectionHandlerFactory.create(selector)));
+        final GeneralPurposeSelector generalPurposeSelector = new GeneralPurposeSelector(ioSelector);
+        final ConnectingSelector selector = new ConnectingSelector(generalPurposeSelector);
+        generalPurposeSelector.register(serverSocketChannel, new AcceptingTask(selector, connectionHandlerFactory.create(selector)));
         return selector;
     }
 }
