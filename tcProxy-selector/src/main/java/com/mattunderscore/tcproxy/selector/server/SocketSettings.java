@@ -25,12 +25,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.server;
 
+import lombok.Builder;
 import lombok.Value;
 
 /**
  * Settings for sockets.
  * @author Matt Champion on 08/11/2015
  */
+@Builder
 @Value
 public final class SocketSettings {
     int sendBufferSize;

@@ -38,6 +38,7 @@ import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectorRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
+import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 
 /**
  * A task that accepts and completes socket connections.
@@ -47,10 +48,12 @@ public final class AcceptingTask implements SelectorRunnable<IOServerSocketChann
     private static final Logger LOG = LoggerFactory.getLogger("accept");
     private final SocketChannelSelector selector;
     private final ConnectionHandler connectionHandler;
+    private final SocketConfigurator socketConfigurator;
 
-    public AcceptingTask(SocketChannelSelector selector, ConnectionHandler connectionHandler) {
+    public AcceptingTask(SocketChannelSelector selector, ConnectionHandler connectionHandler, SocketConfigurator socketConfigurator) {
         this.selector = selector;
         this.connectionHandler = connectionHandler;
+        this.socketConfigurator = socketConfigurator;
     }
 
     @Override
@@ -60,6 +63,7 @@ public final class AcceptingTask implements SelectorRunnable<IOServerSocketChann
             final IOSocketChannel channel;
             try {
                 channel = socket.accept();
+                socketConfigurator.apply(channel);
             }
             catch (IOException e) {
                 LOG.warn("Unable to connect socket", e);

@@ -33,6 +33,7 @@ import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 import com.mattunderscore.tcproxy.selector.task.AcceptingTask;
 import com.mattunderscore.tcproxy.selector.task.ConnectionHandlerFactory;
 
@@ -83,13 +84,15 @@ public final class ConnectingSelector implements SocketChannelSelector {
      * @param ioSelector Selector
      * @param serverSocketChannel Server channel to listen for new connections on
      * @param connectionHandlerFactory Factory handler
+     * @param socketConfigurator A configurator for accepted sockets
      * @return A connecting selector
      */
     public static ConnectingSelector open(
             IOSelector ioSelector,
             IOServerSocketChannel serverSocketChannel,
-            ConnectionHandlerFactory connectionHandlerFactory) {
-        return open(ioSelector, Collections.singleton(serverSocketChannel), connectionHandlerFactory);
+            ConnectionHandlerFactory connectionHandlerFactory,
+            SocketConfigurator socketConfigurator) {
+        return open(ioSelector, Collections.singleton(serverSocketChannel), connectionHandlerFactory, socketConfigurator);
     }
 
     /**
@@ -97,17 +100,20 @@ public final class ConnectingSelector implements SocketChannelSelector {
      * @param ioSelector Selector
      * @param serverSocketChannels A collection of the server channels to listen for new connections on
      * @param connectionHandlerFactory Factory handler
+     * @param socketConfigurator A configurator for accepted sockets
      * @return A connecting selector
      */
     public static ConnectingSelector open(
-        IOSelector ioSelector,
-        Collection<IOServerSocketChannel> serverSocketChannels,
-        ConnectionHandlerFactory connectionHandlerFactory) {
+            IOSelector ioSelector,
+            Collection<IOServerSocketChannel> serverSocketChannels,
+            ConnectionHandlerFactory connectionHandlerFactory,
+            SocketConfigurator socketConfigurator) {
         final GeneralPurposeSelector generalPurposeSelector = new GeneralPurposeSelector(ioSelector);
         final ConnectingSelector selector = new ConnectingSelector(generalPurposeSelector);
         for (final IOServerSocketChannel serverSocketChannel : serverSocketChannels) {
-            generalPurposeSelector
-                .register(serverSocketChannel, new AcceptingTask(selector, connectionHandlerFactory.create(selector)));
+            generalPurposeSelector.register(
+                serverSocketChannel,
+                new AcceptingTask(selector, connectionHandlerFactory.create(selector), socketConfigurator));
         }
         return selector;
     }

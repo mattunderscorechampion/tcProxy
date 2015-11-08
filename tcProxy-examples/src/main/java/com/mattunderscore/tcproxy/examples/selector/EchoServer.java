@@ -47,6 +47,8 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.SelectorRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
+import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
+import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 import com.mattunderscore.tcproxy.selector.task.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.task.ConnectionHandlerFactory;
 
@@ -76,7 +78,17 @@ public final class EchoServer {
                 };
             }
         };
-        final SocketChannelSelector selector = open(openSelector(), channel, connectionHandlerFactory);
+        final SocketConfigurator socketConfigurator = new SocketConfigurator(
+            SocketSettings
+                .builder()
+                .receiveBufferSize(1024)
+                .sendBufferSize(1024)
+                .build());
+        final SocketChannelSelector selector = open(
+            openSelector(),
+            channel,
+            connectionHandlerFactory,
+            socketConfigurator);
         selector.run();
     }
 
