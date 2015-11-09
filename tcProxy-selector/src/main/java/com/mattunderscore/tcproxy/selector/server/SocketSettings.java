@@ -35,6 +35,6 @@ import lombok.Value;
 @Builder
 @Value
 public final class SocketSettings {
-    int sendBufferSize;
-    int receiveBufferSize;
+    int sendBuffer;
+    int receiveBuffer;
 }

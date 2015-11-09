@@ -81,8 +81,8 @@ public final class EchoServer {
         final SocketConfigurator socketConfigurator = new SocketConfigurator(
             SocketSettings
                 .builder()
-                .receiveBufferSize(1024)
-                .sendBufferSize(1024)
+                .receiveBuffer(1024)
+                .sendBuffer(1024)
                 .build());
         final SocketChannelSelector selector = open(
             openSelector(),

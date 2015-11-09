@@ -51,7 +51,7 @@ public final class SocketConfigurator {
      * @throws IOException If there was a problem applying the settings
      */
     public void apply(IOSocket socket) throws IOException {
-        socket.set(IOSocketOption.RECEIVE_BUFFER, settings.getReceiveBufferSize());
-        socket.set(IOSocketOption.SEND_BUFFER, settings.getSendBufferSize());
+        socket.set(IOSocketOption.RECEIVE_BUFFER, settings.getReceiveBuffer());
+        socket.set(IOSocketOption.SEND_BUFFER, settings.getSendBuffer());
     }
 }
