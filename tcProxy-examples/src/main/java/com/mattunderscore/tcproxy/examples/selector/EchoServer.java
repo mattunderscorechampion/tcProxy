@@ -28,9 +28,7 @@ package com.mattunderscore.tcproxy.examples.selector;
 import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.READ;
 import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.WRITE;
 import static com.mattunderscore.tcproxy.io.impl.CircularBufferImpl.allocateDirect;
-import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.openSelector;
 import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.socketFactory;
-import static com.mattunderscore.tcproxy.selector.ConnectingSelector.open;
 import static java.util.EnumSet.of;
 
 import java.io.IOException;
@@ -44,6 +42,8 @@ import com.mattunderscore.tcproxy.io.CircularBuffer;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.impl.IOFactoryImpl;
+import com.mattunderscore.tcproxy.selector.ConnectingSelectorFactory;
 import com.mattunderscore.tcproxy.selector.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.SelectorRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
@@ -61,34 +61,32 @@ public final class EchoServer {
     private static final Logger LOG = LoggerFactory.getLogger("selector");
 
     public static void main(String[] args) throws IOException {
-        final IOServerSocketChannel channel = socketFactory(IOServerSocketChannel.class)
-            .reuseAddress(true)
-            .bind(new InetSocketAddress(34534))
-            .blocking(false)
-            .create();
+        final ConnectingSelectorFactory selectorFactory = new ConnectingSelectorFactory(
+            new IOFactoryImpl(),
+            socketFactory(IOServerSocketChannel.class)
+                .reuseAddress(true)
+                .bind(new InetSocketAddress(34534))
+                .blocking(false)
+                .create(),
+            new ConnectionHandlerFactory() {
+                @Override
+                public ConnectionHandler create(final SocketChannelSelector selector) {
+                    return new ConnectionHandler() {
+                        @Override
+                        public void onConnect(IOSocketChannel socket) {
+                            selector.register(socket, READ, new EchoTask(selector));
+                        }
+                    };
+                }
+            },
+            new SocketConfigurator(
+                SocketSettings
+                    .builder()
+                    .receiveBuffer(1024)
+                    .sendBuffer(1024)
+                    .build()));
 
-        final ConnectionHandlerFactory connectionHandlerFactory = new ConnectionHandlerFactory() {
-            @Override
-            public ConnectionHandler create(final SocketChannelSelector selector) {
-                return new ConnectionHandler() {
-                    @Override
-                    public void onConnect(IOSocketChannel socket) {
-                        selector.register(socket, READ, new EchoTask(selector));
-                    }
-                };
-            }
-        };
-        final SocketConfigurator socketConfigurator = new SocketConfigurator(
-            SocketSettings
-                .builder()
-                .receiveBuffer(1024)
-                .sendBuffer(1024)
-                .build());
-        final SocketChannelSelector selector = open(
-            openSelector(),
-            channel,
-            connectionHandlerFactory,
-            socketConfigurator);
+        final SocketChannelSelector selector = selectorFactory.create();
         selector.run();
     }
 
