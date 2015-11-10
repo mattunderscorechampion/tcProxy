@@ -27,6 +27,8 @@ package com.mattunderscore.tcproxy.selector;
 
 import java.io.IOException;
 
+import com.mattunderscore.tcproxy.selector.threads.StartStopLifecycle;
+
 /**
  * Factory for selectors.
  * @author Matt Champion on 09/11/2015

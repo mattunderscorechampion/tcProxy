@@ -33,8 +33,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +41,7 @@ import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.selector.threads.LifecycleState;
 
 /**
  * A multipurpose selector. {@link SelectorRunnable} can be registered against it for both
@@ -52,11 +51,9 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
  */
 public final class GeneralPurposeSelector implements SocketChannelSelector, ServerSocketChannelSelector {
     private static final Logger LOG = LoggerFactory.getLogger("selector");
-    private final AtomicReference<State> state = new AtomicReference<>(State.STOPPED);
     private final BlockingQueue<RegistrationRequest> registrations = new ArrayBlockingQueue<>(64);
+    private final LifecycleState lifecycleState = new LifecycleState();
     private final IOSelector selector;
-    private volatile CountDownLatch readyLatch = new CountDownLatch(1);
-    private volatile CountDownLatch stoppedLatch;
 
     public GeneralPurposeSelector(IOSelector selector) {
         this.selector = selector;
@@ -64,9 +61,9 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
 
     @Override
     public void start() {
-        resetStartup();
+        lifecycleState.beginStartup();
 
-        while (state.get() == State.RUNNING) {
+        while (lifecycleState.isRunning()) {
             try {
                 selector.selectNow();
             }
@@ -94,48 +91,22 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
             }
         }
 
-        resetShutdown();
-    }
-
-    private void resetStartup() {
-        if (state.compareAndSet(State.STOPPED, State.RUNNING)) {
-            stoppedLatch = new CountDownLatch(1);
-            readyLatch.countDown();
-            LOG.debug("{} : Started", this);
-        }
-        else {
-            throw new IllegalStateException("The selector is already running");
-        }
-    }
-
-    private void resetShutdown() {
-        LOG.debug("{} : Stopped", this);
-        stoppedLatch.countDown();
-        readyLatch = new CountDownLatch(1);
-        state.set(State.STOPPED);
+        lifecycleState.endShutdown();
     }
 
     @Override
     public void stop() {
-        if (state.compareAndSet(State.RUNNING, State.STOPPING)) {
-            LOG.debug("{} : Stopping", this);
-        }
-        else {
-            throw new IllegalStateException("The selector is not running");
-        }
+        lifecycleState.beginShutdown();
     }
 
     @Override
     public void waitForRunning() throws InterruptedException {
-        readyLatch.await();
+        lifecycleState.waitForRunning();
     }
 
     @Override
     public void waitForStopped() throws InterruptedException {
-        final CountDownLatch latch = this.stoppedLatch;
-        if (latch != null) {
-            latch.await();
-        }
+        lifecycleState.waitForStopped();
     }
 
     @Override
@@ -156,11 +127,5 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
     @Override
     public String toString() {
         return "Multipurpose selector";
-    }
-
-    private enum State {
-        STOPPED,
-        RUNNING,
-        STOPPING
     }
 }

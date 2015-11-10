@@ -29,6 +29,7 @@ import java.util.Set;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.selector.threads.StartStopLifecycle;
 
 /**
  * A selector that can have tasks for {@link IOSocketChannel} registered against it.
