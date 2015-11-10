@@ -25,69 +25,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.threads;
 
-import java.util.concurrent.ThreadFactory;
-
 /**
- * This "thread" can be started and stopped. A new {@link Thread} is created every time this "thread" is started.
+ * Unchecked version of {@link InterruptedException}.
  * @author Matt Champion on 10/11/2015
  */
-public final class RestartableThread implements RestartableTask {
-    private final LifecycleState state = new LifecycleState();
-    private final ThreadFactory threadFactory;
-    private final InnerTask innerTask;
-
-    public RestartableThread(ThreadFactory threadFactory, RestartableTask task) {
-        this.threadFactory = threadFactory;
-        this.innerTask = new InnerTask(state, task);
+public final class UncheckedInterruptedException extends RuntimeException {
+    public UncheckedInterruptedException() {
     }
 
-    @Override
-    public void start() {
-        state.beginStartup();
-
-        threadFactory.newThread(innerTask).start();
-    }
-
-    @Override
-    public void stop() {
-        state.beginShutdown();
-        innerTask.stop();
-    }
-
-    @Override
-    public void restart() {
-        stop();
-        waitForStopped();
-        start();
-    }
-
-    @Override
-    public void waitForRunning() {
-        state.waitForRunning();
-    }
-
-    @Override
-    public void waitForStopped() {
-        state.waitForStopped();
-    }
-
-    private static final class InnerTask implements Runnable {
-        private LifecycleState state;
-        private RestartableTask task;
-
-        public InnerTask(LifecycleState state, RestartableTask task) {
-            this.state = state;
-            this.task = task;
-        }
-
-        @Override
-        public void run() {
-            task.start();
-            state.endShutdown();
-        }
-
-        public void stop() {
-            task.stop();
-        }
+    public UncheckedInterruptedException(InterruptedException e) {
+        super(e);
     }
 }

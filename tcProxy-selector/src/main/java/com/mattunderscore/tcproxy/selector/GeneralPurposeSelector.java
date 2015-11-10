@@ -100,12 +100,19 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
     }
 
     @Override
-    public void waitForRunning() throws InterruptedException {
+    public void restart() {
+        stop();
+        waitForStopped();
+        start();
+    }
+
+    @Override
+    public void waitForRunning() {
         lifecycleState.waitForRunning();
     }
 
     @Override
-    public void waitForStopped() throws InterruptedException {
+    public void waitForStopped() {
         lifecycleState.waitForStopped();
     }
 

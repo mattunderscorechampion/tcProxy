@@ -63,7 +63,7 @@ public final class GeneralPurposeSelectorTest {
     }
 
     @Test
-    public void startAndStop() throws ClosedChannelException, InterruptedException {
+    public void startAndStop() throws ClosedChannelException {
         when(channel.register(eq(ioSelector), eq(READ), any())).thenAnswer(new Answer<IOSelectionKey>() {
             @Override
             public IOSelectionKey answer(InvocationOnMock invocationOnMock) throws Throwable {
@@ -80,12 +80,7 @@ public final class GeneralPurposeSelectorTest {
         selector.register(channel, READ, new SelectorRunnable<IOSocketChannel>() {
             @Override
             public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {
-                try {
-                    selector.waitForRunning();
-                }
-                catch (InterruptedException e) {
-                    throw new AssertionError(e);
-                }
+                selector.waitForRunning();
                 selector.stop();
             }
         });

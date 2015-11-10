@@ -70,12 +70,17 @@ public final class ConnectingSelector implements SocketChannelSelector {
     }
 
     @Override
-    public void waitForRunning() throws InterruptedException {
+    public void restart() {
+        selector.restart();
+    }
+
+    @Override
+    public void waitForRunning() {
         selector.waitForRunning();
     }
 
     @Override
-    public void waitForStopped() throws InterruptedException {
+    public void waitForStopped() {
         selector.waitForStopped();
     }
 

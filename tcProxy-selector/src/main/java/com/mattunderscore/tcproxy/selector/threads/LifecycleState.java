@@ -82,20 +82,30 @@ public final class LifecycleState {
 
     /**
      * Wait until running.
-     * @throws InterruptedException
+     * @throws UncheckedInterruptedException
      */
-    public void waitForRunning() throws InterruptedException {
-        readyLatch.await();
+    public void waitForRunning() {
+        try {
+            readyLatch.await();
+        }
+        catch (InterruptedException e) {
+            throw new UncheckedInterruptedException(e);
+        }
     }
 
     /**
      * Wait until stopped.
-     * @throws InterruptedException
+     * @throws UncheckedInterruptedException
      */
-    public void waitForStopped() throws InterruptedException {
+    public void waitForStopped() {
         final CountDownLatch latch = this.stoppedLatch;
         if (latch != null) {
-            latch.await();
+            try {
+                latch.await();
+            }
+            catch (InterruptedException e) {
+                throw new UncheckedInterruptedException(e);
+            }
         }
     }
 

@@ -41,14 +41,20 @@ public interface RestartableTask {
     void stop();
 
     /**
-     * Block until it has started. Will return immediately after starting.
-     * @throws InterruptedException
+     * Restart it.
+     * @throws UncheckedInterruptedException It the task was interrupted while waiting for stop
      */
-    void waitForRunning() throws InterruptedException;
+    void restart();
+
+    /**
+     * Block until it has started. Will return immediately after starting.
+     * @throws UncheckedInterruptedException It the task was interrupted while waiting for start
+     */
+    void waitForRunning();
 
     /**
      * Block until it has stopped. Will return immediately before starting.
-     * @throws InterruptedException
+     * @throws UncheckedInterruptedException It the task was interrupted while waiting for stop
      */
-    void waitForStopped() throws InterruptedException;
+    void waitForStopped();
 }
