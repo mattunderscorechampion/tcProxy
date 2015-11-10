@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import net.jcip.annotations.ThreadSafe;
 
 /**
- * Helper for managing {@link StartStopLifecycle}.
+ * Helper for managing {@link RestartableTask}.
  * @author Matt Champion on 10/11/2015
  */
 @ThreadSafe

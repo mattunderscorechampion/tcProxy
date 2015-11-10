@@ -27,13 +27,13 @@ package com.mattunderscore.tcproxy.selector;
 
 import java.io.IOException;
 
-import com.mattunderscore.tcproxy.selector.threads.StartStopLifecycle;
+import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
 
 /**
  * Factory for selectors.
  * @author Matt Champion on 09/11/2015
  */
-public interface SelectorFactory<T extends StartStopLifecycle> {
+public interface SelectorFactory<T extends RestartableTask> {
     /**
      * @return Create a new selector
      */

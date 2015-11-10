@@ -29,7 +29,7 @@ package com.mattunderscore.tcproxy.selector.threads;
  * A task that can be repeated started and stopped.
  * @author Matt Champion on 06/11/2015
  */
-public interface StartStopLifecycle {
+public interface RestartableTask {
     /**
      * Start it.
      */

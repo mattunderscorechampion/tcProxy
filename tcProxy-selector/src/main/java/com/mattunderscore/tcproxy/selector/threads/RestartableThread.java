@@ -31,12 +31,12 @@ import java.util.concurrent.ThreadFactory;
  * This "thread" can be started and stopped. A new {@link Thread} is created every time this "thread" is started.
  * @author Matt Champion on 10/11/2015
  */
-public final class RestartableThread implements StartStopLifecycle {
+public final class RestartableThread implements RestartableTask {
     private final LifecycleState state = new LifecycleState();
     private final ThreadFactory threadFactory;
     private final InnerTask innerTask;
 
-    public RestartableThread(ThreadFactory threadFactory, StartStopLifecycle task) {
+    public RestartableThread(ThreadFactory threadFactory, RestartableTask task) {
         this.threadFactory = threadFactory;
         this.innerTask = new InnerTask(state, task);
     }
@@ -66,9 +66,9 @@ public final class RestartableThread implements StartStopLifecycle {
 
     private static final class InnerTask implements Runnable {
         private LifecycleState state;
-        private StartStopLifecycle task;
+        private RestartableTask task;
 
-        public InnerTask(LifecycleState state, StartStopLifecycle task) {
+        public InnerTask(LifecycleState state, RestartableTask task) {
             this.state = state;
             this.task = task;
         }

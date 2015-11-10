@@ -26,13 +26,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.selector;
 
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.selector.threads.StartStopLifecycle;
+import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
 
 /**
  * A selector that can have tasks for {@link IOServerSocketChannel} registered against it.
  * @author Matt Champion on 06/11/2015
  */
-public interface ServerSocketChannelSelector extends StartStopLifecycle {
+public interface ServerSocketChannelSelector extends RestartableTask {
     /**
      * Register accept with the selector.
      * @param channel The channel

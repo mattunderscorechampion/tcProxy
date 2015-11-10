@@ -29,13 +29,13 @@ import java.util.Set;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.selector.threads.StartStopLifecycle;
+import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
 
 /**
  * A selector that can have tasks for {@link IOSocketChannel} registered against it.
  * @author Matt Champion on 06/11/2015
  */
-public interface SocketChannelSelector extends StartStopLifecycle {
+public interface SocketChannelSelector extends RestartableTask {
     /**
      * Register operations with the selector.
      * @param channel The channel
