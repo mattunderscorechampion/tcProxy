@@ -87,7 +87,7 @@ public final class EchoServer {
                     .build()));
 
         final SocketChannelSelector selector = selectorFactory.create();
-        selector.run();
+        selector.start();
     }
 
     private static final class EchoTask implements SelectorRunnable<IOSocketChannel> {

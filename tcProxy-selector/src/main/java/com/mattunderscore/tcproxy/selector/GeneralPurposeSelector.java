@@ -63,7 +63,7 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
     }
 
     @Override
-    public final void run() {
+    public void start() {
         resetStartup();
 
         while (state.get() == State.RUNNING) {

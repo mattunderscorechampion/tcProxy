@@ -60,8 +60,8 @@ public final class ConnectingSelector implements SocketChannelSelector {
     }
 
     @Override
-    public void run() {
-        selector.run();
+    public void start() {
+        selector.start();
     }
 
     @Override

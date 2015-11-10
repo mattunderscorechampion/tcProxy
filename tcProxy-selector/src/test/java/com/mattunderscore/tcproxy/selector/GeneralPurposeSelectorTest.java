@@ -90,7 +90,7 @@ public final class GeneralPurposeSelectorTest {
             }
         });
 
-        selector.run();
+        selector.start();
         selector.waitForStopped();
     }
 }

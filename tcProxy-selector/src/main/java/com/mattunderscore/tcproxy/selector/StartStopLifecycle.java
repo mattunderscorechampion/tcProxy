@@ -29,7 +29,12 @@ package com.mattunderscore.tcproxy.selector;
  * A task that can be repeated started and stopped.
  * @author Matt Champion on 06/11/2015
  */
-public interface StartStopLifecycle extends Runnable {
+public interface StartStopLifecycle {
+    /**
+     * Start it.
+     */
+    void start();
+
     /**
      * Stop it.
      */
