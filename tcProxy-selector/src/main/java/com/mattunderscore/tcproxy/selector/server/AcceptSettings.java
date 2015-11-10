@@ -39,7 +39,7 @@ public final class AcceptSettings {
         this.listenOn = listenOn;
     }
 
-    public Iterable<Integer> listenOn() {
+    public Iterable<Integer> getListenOn() {
         return listenOn;
     }
 
