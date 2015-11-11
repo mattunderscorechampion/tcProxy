@@ -63,7 +63,6 @@ public final class AcceptingTask implements SelectorRunnable<IOServerSocketChann
             final IOSocketChannel channel;
             try {
                 channel = socket.accept();
-                socketConfigurator.apply(channel);
             }
             catch (IOException e) {
                 LOG.warn("Unable to connect socket", e);
@@ -72,6 +71,7 @@ public final class AcceptingTask implements SelectorRunnable<IOServerSocketChann
 
             try {
                 if (channel != null) {
+                    socketConfigurator.apply(channel);
                     channel.set(BLOCKING, false);
                     if (channel.finishConnect()) {
                         connectionHandler.onConnect(channel);
