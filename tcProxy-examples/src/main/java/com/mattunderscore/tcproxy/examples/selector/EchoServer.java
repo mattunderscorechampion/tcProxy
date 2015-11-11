@@ -33,7 +33,10 @@ import static java.util.EnumSet.of;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,12 +48,18 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.impl.IOFactoryImpl;
 import com.mattunderscore.tcproxy.selector.ConnectingSelectorFactory;
 import com.mattunderscore.tcproxy.selector.GeneralPurposeSelector;
+import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SelectorRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
+import com.mattunderscore.tcproxy.selector.server.AbstractServerFactory;
+import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
+import com.mattunderscore.tcproxy.selector.server.Server;
+import com.mattunderscore.tcproxy.selector.server.ServerConfig;
 import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 import com.mattunderscore.tcproxy.selector.task.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.task.ConnectionHandlerFactory;
+import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
 
 /**
  * Added example of using a {@link GeneralPurposeSelector} as an echo server. Accepts, reads and writes on the main
@@ -61,33 +70,26 @@ public final class EchoServer {
     private static final Logger LOG = LoggerFactory.getLogger("selector");
 
     public static void main(String[] args) throws IOException {
-        final ConnectingSelectorFactory selectorFactory = new ConnectingSelectorFactory(
-            new IOFactoryImpl(),
-            socketFactory(IOServerSocketChannel.class)
-                .reuseAddress(true)
-                .bind(new InetSocketAddress(34534))
-                .blocking(false)
-                .create(),
-            new ConnectionHandlerFactory() {
-                @Override
-                public ConnectionHandler create(final SocketChannelSelector selector) {
-                    return new ConnectionHandler() {
-                        @Override
-                        public void onConnect(IOSocketChannel socket) {
-                            selector.register(socket, READ, new EchoTask(selector));
-                        }
-                    };
-                }
-            },
-            new SocketConfigurator(
-                SocketSettings
-                    .builder()
-                    .receiveBuffer(1024)
-                    .sendBuffer(1024)
-                    .build()));
+        final EchoServerFactory serverFactory = new EchoServerFactory();
+        final Server server = serverFactory.build(
+            ServerConfig
+                .builder()
+                .selectorThreads(2)
+                .socketSettings(
+                    SocketSettings
+                        .builder()
+                        .receiveBuffer(1024)
+                        .sendBuffer(1024)
+                        .build())
+                .acceptSettings(
+                    AcceptSettings
+                        .builder()
+                        .listenOn(34534)
+                        .build())
+                .build());
 
-        final SocketChannelSelector selector = selectorFactory.create();
-        selector.start();
+        server.start();
+        server.waitForStopped();
     }
 
     private static final class EchoTask implements SelectorRunnable<IOSocketChannel> {
@@ -138,6 +140,34 @@ public final class EchoServer {
             else {
                 selector.register(socket, WRITE, this);
             }
+        }
+    }
+
+    private final static class EchoServerFactory extends AbstractServerFactory {
+        public EchoServerFactory() {
+            super(new IOFactoryImpl());
+        }
+
+        @Override
+        protected SelectorFactory<? extends RestartableTask> getSelectorFactory(
+                Collection<IOServerSocketChannel> listenChannels,
+                ServerConfig serverConfig) {
+
+            return new ConnectingSelectorFactory(
+                ioFactory,
+                listenChannels,
+                new ConnectionHandlerFactory() {
+                    @Override
+                    public ConnectionHandler create(final SocketChannelSelector selector) {
+                        return new ConnectionHandler() {
+                            @Override
+                            public void onConnect(IOSocketChannel socket) {
+                                selector.register(socket, READ, new EchoTask(selector));
+                            }
+                        };
+                    }
+                },
+                new SocketConfigurator(serverConfig.getSocketSettings()));
         }
     }
 }
