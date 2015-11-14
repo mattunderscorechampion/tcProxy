@@ -42,7 +42,9 @@ import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
 import com.mattunderscore.tcproxy.selector.threads.RestartableThread;
 
 /**
- * An abstract server factory.
+ * An abstract server factory. Creates {@link IOServerSocketChannel}s based on the {@link AcceptSettings}. Creates a
+ * {@link RestartableThread} for each requested selector thread, that runs a task returned by
+ * {@link #getSelectorFactory(Collection, ServerConfig)}.
  * @author Matt Champion on 09/11/2015
  */
 public abstract class AbstractServerFactory implements ServerFactory {

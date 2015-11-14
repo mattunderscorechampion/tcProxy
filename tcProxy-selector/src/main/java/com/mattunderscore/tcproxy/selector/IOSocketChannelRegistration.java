@@ -29,6 +29,7 @@ import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
+ * Registration for {@link SelectorRunnable}s against an {@link IOSocketChannel}.
  * @author Matt Champion on 31/10/2015
  */
 public final class IOSocketChannelRegistration implements Registration {

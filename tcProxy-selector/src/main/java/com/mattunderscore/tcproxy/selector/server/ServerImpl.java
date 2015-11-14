@@ -32,7 +32,7 @@ import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
 import com.mattunderscore.tcproxy.selector.threads.RestartableThread;
 
 /**
- * A basic server implementation.
+ * A basic server implementation. Groups several {@link RestartableThread}s together that are expected to run selectors.
  * @author Matt Champion on 09/11/2015
  */
 public final class ServerImpl implements Server {

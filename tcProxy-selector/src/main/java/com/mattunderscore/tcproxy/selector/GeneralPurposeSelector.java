@@ -44,7 +44,7 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.threads.LifecycleState;
 
 /**
- * A multipurpose selector. {@link SelectorRunnable} can be registered against it for both
+ * A general purpose selector. {@link SelectorRunnable}s can be registered against it for both
  * {@link IOServerSocketChannel} and {@link IOSocketChannel}. These tasks can be registered from any thread. Selected
  * keys will be removed from the selected set when they are processed but will not be cancelled.
  * @author Matt Champion on 24/10/2015
@@ -64,6 +64,7 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
         lifecycleState.beginStartup();
 
         while (lifecycleState.isRunning()) {
+            // Populate the selected set
             try {
                 selector.selectNow();
             }
@@ -71,6 +72,7 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
                 LOG.debug("{} : Error selecting keys", this, e);
             }
 
+            // Process any new registrations that have been requested
             final Collection<RegistrationRequest> newRegistrations = new HashSet<>();
             registrations.drainTo(newRegistrations);
             for (final RegistrationRequest registrationRequest : newRegistrations) {
@@ -82,6 +84,7 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
                 }
             }
 
+            // Process the selector set
             final Iterator<IOSelectionKey> selectedKeys = selector.selectedKeys().iterator();
             while (selectedKeys.hasNext()) {
                 final IOSelectionKey key = selectedKeys.next();
@@ -133,6 +136,6 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
 
     @Override
     public String toString() {
-        return "Multipurpose selector";
+        return "General Purpose selector";
     }
 }
