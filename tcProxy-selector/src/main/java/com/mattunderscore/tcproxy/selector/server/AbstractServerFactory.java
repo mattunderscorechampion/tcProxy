@@ -34,6 +34,9 @@ import java.util.HashSet;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
@@ -48,6 +51,7 @@ import com.mattunderscore.tcproxy.selector.threads.RestartableThread;
  * @author Matt Champion on 09/11/2015
  */
 public abstract class AbstractServerFactory implements ServerFactory {
+    private static final Logger LOG = LoggerFactory.getLogger("selector-factory");
     protected final IOFactory ioFactory;
 
     public AbstractServerFactory(IOFactory ioFactory) {
@@ -65,23 +69,40 @@ public abstract class AbstractServerFactory implements ServerFactory {
             .reuseAddress(true);
 
         final Collection<IOServerSocketChannel> listenChannels = new HashSet<>();
-        for (final Integer port : acceptSettings.getListenOn()) {
-            listenChannels.add(
-                factory
-                    .bind(new InetSocketAddress(port))
-                    .create());
+        try {
+
+            for (final Integer port : acceptSettings.getListenOn()) {
+                listenChannels.add(
+                    factory
+                        .bind(new InetSocketAddress(port))
+                        .create());
+            }
+
+            final SelectorFactory<? extends RestartableTask> selectorFactory =
+                getSelectorFactory(listenChannels, serverConfig);
+
+            final ThreadFactory threadFactory = getThreadFactory();
+            final Collection<RestartableThread> threads = new HashSet<>();
+            for (int i = 0; i < selectorThreads; i++) {
+                threads.add(new RestartableThread(threadFactory, selectorFactory.create()));
+            }
+
+            return new ServerImpl(threads);
         }
+        catch (IOException createException) {
+            // If there was a problem creating either a socket or a selector close any opened sockets and propagate the
+            // exception
+            for (IOServerSocketChannel channel : listenChannels) {
+                try {
+                    channel.close();
+                }
+                catch (IOException closeException) {
+                    LOG.warn("Problem closing channel {}", channel, closeException);
+                }
+            }
 
-        final SelectorFactory<? extends RestartableTask> selectorFactory =
-            getSelectorFactory(listenChannels, serverConfig);
-
-        final ThreadFactory threadFactory = getThreadFactory();
-        final Collection<RestartableThread> threads = new HashSet<>();
-        for (int i = 0; i < selectorThreads; i++) {
-            threads.add(new RestartableThread(threadFactory, selectorFactory.create()));
+            throw createException;
         }
-
-        return new ServerImpl(threads);
     }
 
     /**
