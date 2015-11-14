@@ -23,7 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.selector;
+package com.mattunderscore.tcproxy.selector.connecting;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -33,9 +33,11 @@ import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
+import com.mattunderscore.tcproxy.selector.SelectorRunnable;
+import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
-import com.mattunderscore.tcproxy.selector.task.AcceptingTask;
-import com.mattunderscore.tcproxy.selector.task.ConnectionHandlerFactory;
+import com.mattunderscore.tcproxy.selector.connecting.task.AcceptingTask;
 
 /**
  * A selector that accepts and completes the connection of new sockets. A task is registered to accept new connections.

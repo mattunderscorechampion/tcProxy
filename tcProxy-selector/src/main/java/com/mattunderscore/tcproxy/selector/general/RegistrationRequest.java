@@ -23,35 +23,22 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.selector;
+package com.mattunderscore.tcproxy.selector.general;
 
 import java.nio.channels.ClosedChannelException;
-import java.util.Set;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
- * {@link Registration} of a server runnable for an {@link IOSocketChannel} against multiple operations.
- * @author Matt Champion on 26/10/2015
+ * The request for the selector to register interest in the operation.
+ * @author Matt Champion on 31/10/2015
  */
-final class IOSocketChannelSetRegistrationRequest implements RegistrationRequest {
-    private final IOSocketChannel channel;
-    private final Set<IOSelectionKey.Op> ops;
-    private final Registration registration;
+interface RegistrationRequest {
 
-    IOSocketChannelSetRegistrationRequest(
-            IOSocketChannel channel,
-            Set<IOSelectionKey.Op> ops,
-            SelectorRunnable<IOSocketChannel> runnable) {
-        this.channel = channel;
-        this.ops = ops;
-        this.registration = new IOSocketChannelRegistration(channel, runnable);
-    }
-
-    @Override
-    public void register(IOSelector selector) throws ClosedChannelException {
-        channel.register(selector, ops, registration);
-    }
+    /**
+     * Perform the registration.
+     * @param selector The selector
+     * @throws ClosedChannelException
+     */
+    void register(IOSelector selector) throws ClosedChannelException;
 }

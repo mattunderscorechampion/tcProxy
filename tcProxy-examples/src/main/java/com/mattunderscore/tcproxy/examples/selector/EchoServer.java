@@ -28,15 +28,11 @@ package com.mattunderscore.tcproxy.examples.selector;
 import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.READ;
 import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.WRITE;
 import static com.mattunderscore.tcproxy.io.impl.CircularBufferImpl.allocateDirect;
-import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.socketFactory;
 import static java.util.EnumSet.of;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Set;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +42,8 @@ import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.impl.IOFactoryImpl;
-import com.mattunderscore.tcproxy.selector.ConnectingSelectorFactory;
-import com.mattunderscore.tcproxy.selector.GeneralPurposeSelector;
+import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelectorFactory;
+import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SelectorRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
@@ -57,8 +53,8 @@ import com.mattunderscore.tcproxy.selector.server.Server;
 import com.mattunderscore.tcproxy.selector.server.ServerConfig;
 import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
-import com.mattunderscore.tcproxy.selector.task.ConnectionHandler;
-import com.mattunderscore.tcproxy.selector.task.ConnectionHandlerFactory;
+import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
+import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
 
 /**

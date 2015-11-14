@@ -23,19 +23,17 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.selector.task;
+package com.mattunderscore.tcproxy.selector.general;
 
-import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
 
 /**
- * Factory for connection handlers.
- * @author Matt Champion on 07/11/2015
+ * The representation of the registration of a selector runnable against a socket for an interest set.
  */
-public interface ConnectionHandlerFactory {
+interface Registration {
     /**
-     * Creates a connection handler for a selector.
-     * @param selector the selector.
-     * @return The connection handler
+     * Run the selector runnable.
+     * @param selectionKey The selection key
      */
-    ConnectionHandler create(SocketChannelSelector selector);
+    void run(IOSelectionKey selectionKey);
 }

@@ -23,34 +23,43 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.selector;
+package com.mattunderscore.tcproxy.selector.connecting.task;
 
-import java.nio.channels.ClosedChannelException;
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.selector.SelectorRunnable;
+import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 
 /**
- * {@link Registration} of a server runnable for an {@link IOServerSocketChannel}.
- * @author Matt Champion on 26/10/2015
+ * A task that completes socket connections.
+ * @author Matt Champion on 06/11/2015
  */
-final class IOServerSocketChannelRegistrationRequest implements RegistrationRequest, Registration {
-    private final IOServerSocketChannel channel;
-    private final SelectorRunnable<IOServerSocketChannel> runnable;
+public final class ConnectingTask implements SelectorRunnable<IOSocketChannel> {
+    private static final Logger LOG = LoggerFactory.getLogger("connect");
+    private final ConnectionHandler handler;
 
-    IOServerSocketChannelRegistrationRequest(IOServerSocketChannel channel, SelectorRunnable<IOServerSocketChannel> runnable) {
-        this.channel = channel;
-        this.runnable = runnable;
+    public ConnectingTask(ConnectionHandler handler) {
+        this.handler = handler;
     }
 
     @Override
-    public void register(IOSelector selector) throws ClosedChannelException {
-        channel.register(selector, this);
-    }
-
-    @Override
-    public void run(IOSelectionKey selectionKey) {
-        runnable.run(channel, selectionKey);
+    public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {
+        LOG.debug("Calling connecting task {} {}", socket, selectionKey.readyOperations());
+        try {
+            if (selectionKey.isConnectable()) {
+                if (socket.finishConnect()) {
+                    selectionKey.cancel();
+                    handler.onConnect(socket);
+                }
+            }
+        }
+        catch (IOException e) {
+            LOG.warn("Unable to connect socket", e);
+        }
     }
 }

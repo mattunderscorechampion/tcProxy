@@ -23,22 +23,35 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.selector;
+package com.mattunderscore.tcproxy.selector.general;
 
 import java.nio.channels.ClosedChannelException;
 
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.selector.SelectorRunnable;
 
 /**
- * The request for the selector to register interest in the operation.
- * @author Matt Champion on 31/10/2015
+ * {@link Registration} of a server runnable for an {@link IOServerSocketChannel}.
+ * @author Matt Champion on 26/10/2015
  */
-interface RegistrationRequest {
+final class IOServerSocketChannelRegistrationRequest implements RegistrationRequest, Registration {
+    private final IOServerSocketChannel channel;
+    private final SelectorRunnable<IOServerSocketChannel> runnable;
 
-    /**
-     * Perform the registration.
-     * @param selector The selector
-     * @throws ClosedChannelException
-     */
-    void register(IOSelector selector) throws ClosedChannelException;
+    IOServerSocketChannelRegistrationRequest(IOServerSocketChannel channel, SelectorRunnable<IOServerSocketChannel> runnable) {
+        this.channel = channel;
+        this.runnable = runnable;
+    }
+
+    @Override
+    public void register(IOSelector selector) throws ClosedChannelException {
+        channel.register(selector, this);
+    }
+
+    @Override
+    public void run(IOSelectionKey selectionKey) {
+        runnable.run(channel, selectionKey);
+    }
 }

@@ -23,42 +23,48 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.selector.task;
+package com.mattunderscore.tcproxy.selector.general;
 
-import java.io.IOException;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.nio.channels.ClosedChannelException;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectorRunnable;
 
 /**
- * A task that completes socket connections.
- * @author Matt Champion on 06/11/2015
+ * Unit tests for {@link IOServerSocketChannelRegistrationRequest}.
+ *
+ * @author Matt Champion on 14/11/2015
  */
-public final class ConnectingTask implements SelectorRunnable<IOSocketChannel> {
-    private static final Logger LOG = LoggerFactory.getLogger("connect");
-    private final ConnectionHandler handler;
+public final class IOServerSocketChannelRegistrationRequestTest {
+    @Mock
+    private IOSelector selector;
+    @Mock
+    private IOServerSocketChannel channel;
+    @Mock
+    private SelectorRunnable<IOServerSocketChannel> task;
 
-    public ConnectingTask(ConnectionHandler handler) {
-        this.handler = handler;
+    @Before
+    public void setUp() {
+        initMocks(this);
     }
 
-    @Override
-    public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {
-        LOG.debug("Calling connecting task {} {}", socket, selectionKey.readyOperations());
-        try {
-            if (selectionKey.isConnectable()) {
-                if (socket.finishConnect()) {
-                    selectionKey.cancel();
-                    handler.onConnect(socket);
-                }
-            }
-        }
-        catch (IOException e) {
-            LOG.warn("Unable to connect socket", e);
-        }
+
+    @Test
+    public void register() throws ClosedChannelException {
+        final RegistrationRequest registrationRequest = new IOServerSocketChannelRegistrationRequest(channel, task);
+
+        registrationRequest.register(selector);
+
+        verify(channel).register(eq(selector), isA(Registration.class));
     }
 }

@@ -23,34 +23,19 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.selector;
+package com.mattunderscore.tcproxy.selector.connecting;
 
-import java.nio.channels.ClosedChannelException;
-
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 
 /**
- * {@link Registration} of a server runnable for an {@link IOSocketChannel} against a single operation.
- * @author Matt Champion on 26/10/2015
+ * Factory for connection handlers.
+ * @author Matt Champion on 07/11/2015
  */
-final class IOSocketChannelSingleRegistrationRequest implements RegistrationRequest {
-    private final IOSocketChannel channel;
-    private final IOSelectionKey.Op op;
-    private final Registration registration;
-
-    IOSocketChannelSingleRegistrationRequest(
-            IOSocketChannel channel,
-            IOSelectionKey.Op op,
-            SelectorRunnable<IOSocketChannel> runnable) {
-        this.channel = channel;
-        this.op = op;
-        this.registration = new IOSocketChannelRegistration(channel, runnable);
-    }
-
-    @Override
-    public void register(IOSelector selector) throws ClosedChannelException {
-        channel.register(selector, op, registration);
-    }
+public interface ConnectionHandlerFactory {
+    /**
+     * Creates a connection handler for a selector.
+     * @param selector the selector.
+     * @return The connection handler
+     */
+    ConnectionHandler create(SocketChannelSelector selector);
 }

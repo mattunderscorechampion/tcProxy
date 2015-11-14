@@ -23,69 +23,51 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.selector;
+package com.mattunderscore.tcproxy.selector.general;
 
 import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.READ;
-import static org.mockito.Matchers.any;
+import static java.util.EnumSet.of;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.isA;
+import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.nio.channels.ClosedChannelException;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.selector.SelectorRunnable;
 
 /**
- * Unit tests for {@link GeneralPurposeSelector}.
- * @author Matt Champion on 24/10/2015
+ * Unit tests for {@link IOSocketChannelSetRegistrationRequest}.
+ *
+ * @author Matt Champion on 14/11/2015
  */
-public final class GeneralPurposeSelectorTest {
+public final class IOSocketChannelSetRegistrationRequestTest {
     @Mock
-    private IOSelector ioSelector;
+    private IOSelector selector;
     @Mock
     private IOSocketChannel channel;
     @Mock
-    private IOSelectionKey key;
+    private SelectorRunnable<IOSocketChannel> task;
 
     @Before
     public void setUp() {
         initMocks(this);
     }
 
+
     @Test
-    public void startAndStop() throws ClosedChannelException {
-        when(channel.register(eq(ioSelector), eq(READ), any())).thenAnswer(new Answer<IOSelectionKey>() {
-            @Override
-            public IOSelectionKey answer(InvocationOnMock invocationOnMock) throws Throwable {
-                // Return the attachment registered
-                when(key.attachment()).thenReturn(invocationOnMock.getArguments()[2]);
-                return key;
-            }
-        });
-        final Set<IOSelectionKey> selectionKeySet = new HashSet<>();
-        selectionKeySet.add(key);
-        when(ioSelector.selectedKeys()).thenReturn(selectionKeySet);
+    public void register() throws ClosedChannelException {
+        final RegistrationRequest registrationRequest =
+            new IOSocketChannelSetRegistrationRequest(channel, of(READ), task);
 
-        final GeneralPurposeSelector selector = new GeneralPurposeSelector(ioSelector);
-        selector.register(channel, READ, new SelectorRunnable<IOSocketChannel>() {
-            @Override
-            public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {
-                selector.waitForRunning();
-                selector.stop();
-            }
-        });
+        registrationRequest.register(selector);
 
-        selector.start();
-        selector.waitForStopped();
+        verify(channel).register(eq(selector), eq(of(READ)), isA(Registration.class));
     }
 }

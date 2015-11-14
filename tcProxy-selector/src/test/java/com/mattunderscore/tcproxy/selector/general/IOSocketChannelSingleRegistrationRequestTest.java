@@ -23,17 +23,50 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.selector;
+package com.mattunderscore.tcproxy.selector.general;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.READ;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+import java.nio.channels.ClosedChannelException;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.selector.SelectorRunnable;
 
 /**
- * The representation of the registration of a selector runnable against a socket for an interest set.
+ * Unit tests for {@link IOSocketChannelSingleRegistrationRequest}.
+ *
+ * @author Matt Champion on 14/11/2015
  */
-interface Registration {
-    /**
-     * Run the selector runnable.
-     * @param selectionKey The selection key
-     */
-    void run(IOSelectionKey selectionKey);
+public final class IOSocketChannelSingleRegistrationRequestTest {
+    @Mock
+    private IOSelector selector;
+    @Mock
+    private IOSocketChannel channel;
+    @Mock
+    private SelectorRunnable<IOSocketChannel> task;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+    }
+
+
+    @Test
+    public void register() throws ClosedChannelException {
+        final RegistrationRequest registrationRequest =
+            new IOSocketChannelSingleRegistrationRequest(channel, READ, task);
+
+        registrationRequest.register(selector);
+
+        verify(channel).register(eq(selector), eq(READ), isA(Registration.class));
+    }
 }
