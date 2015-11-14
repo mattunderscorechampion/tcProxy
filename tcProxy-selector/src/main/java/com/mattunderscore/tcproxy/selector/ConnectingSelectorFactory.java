@@ -36,7 +36,7 @@ import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 import com.mattunderscore.tcproxy.selector.task.ConnectionHandlerFactory;
 
 /**
- * Factory for {@link ConnectingSelector}s.
+ * Factory for {@link ConnectingSelector}.
  * @author Matt Champion on 09/11/2015
  */
 public final class ConnectingSelectorFactory implements SelectorFactory<ConnectingSelector> {
