@@ -39,16 +39,19 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
 final class IOSocketChannelSetRegistrationRequest implements RegistrationRequest {
     private final IOSocketChannel channel;
     private final Set<IOSelectionKey.Op> ops;
-    private final SelectorRunnable<IOSocketChannel> runnable;
+    private final Registration registration;
 
-    IOSocketChannelSetRegistrationRequest(IOSocketChannel channel, Set<IOSelectionKey.Op> ops, SelectorRunnable<IOSocketChannel> runnable) {
+    IOSocketChannelSetRegistrationRequest(
+            IOSocketChannel channel,
+            Set<IOSelectionKey.Op> ops,
+            SelectorRunnable<IOSocketChannel> runnable) {
         this.channel = channel;
         this.ops = ops;
-        this.runnable = runnable;
+        this.registration = new IOSocketChannelRegistration(channel, runnable);
     }
 
     @Override
     public void register(IOSelector selector) throws ClosedChannelException {
-        channel.register(selector, ops, new IOSocketChannelRegistration(channel, runnable));
+        channel.register(selector, ops, registration);
     }
 }
