@@ -31,6 +31,7 @@ import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionFactory;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
+import com.mattunderscore.tcproxy.proxy.selector.AcceptorTask;
 import com.mattunderscore.tcproxy.proxy.settings.*;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
@@ -48,7 +49,7 @@ import java.util.concurrent.BlockingQueue;
  */
 public final class ProxyServer {
     private static final Logger LOG = LoggerFactory.getLogger("proxy");
-    private final Acceptor acceptor;
+    private final AcceptorTask acceptor;
     private final WriteSelector writer;
     private final ReadSelector proxy;
 
@@ -68,7 +69,7 @@ public final class ProxyServer {
         final IOSelector readSelector = StaticIOFactory.openSelector();
         final IOSelector writeSelector = StaticIOFactory.openSelector();
 
-        acceptor = new Acceptor(acceptorSettings, inboundSocketSettings, connectionFactory, socketFactory);
+        acceptor = new AcceptorTask(acceptorSettings, inboundSocketSettings, connectionFactory, socketFactory);
         proxy = new ReadSelector(readSelector,readSelectorSettings, newConnections);
         writer = new WriteSelector(writeSelector, newDirections);
 
