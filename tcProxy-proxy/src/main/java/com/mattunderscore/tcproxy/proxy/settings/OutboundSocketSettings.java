@@ -25,36 +25,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.settings;
 
+import lombok.Builder;
+import lombok.Value;
+
 /**
  * Settings for the outbound socket.
  * @author Matt Champion on 18/02/14.
  */
+@Value
+@Builder
 public final class OutboundSocketSettings {
-    private final int port;
-    private final String host;
-    private final int receiveBuffer;
-    private final int sendBuffer;
-
-    public OutboundSocketSettings(final int port, final String host, final int receiveBuffer, final int sendBuffer) {
-        this.port = port;
-        this.host = host;
-        this.receiveBuffer = receiveBuffer;
-        this.sendBuffer = sendBuffer;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public int getReceiveBuffer() {
-        return receiveBuffer;
-    }
-
-    public int getSendBuffer() {
-        return sendBuffer;
-    }
+    int port;
+    String host;
+    int receiveBuffer;
+    int sendBuffer;
 }

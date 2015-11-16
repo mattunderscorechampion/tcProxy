@@ -164,7 +164,12 @@ public final class SettingsPanel extends JPanel {
     }
 
     public OutboundSocketSettings getOutboundSocketSettings() {
-        return new OutboundSocketSettings(parseInt(targetPort.getText()), targetHost.getText(), parseInt(outboundReceiveBufferSize.getText()), parseInt(outboundSendBufferSize.getText()));
+        return OutboundSocketSettings
+            .builder()
+            .port(parseInt(targetPort.getText()))
+            .host(targetHost.getText()).receiveBuffer(parseInt(outboundReceiveBufferSize.getText()))
+            .sendBuffer(parseInt(outboundSendBufferSize.getText()))
+            .build();
     }
 
     public ReadSelectorSettings getReadSelectorSettings() {

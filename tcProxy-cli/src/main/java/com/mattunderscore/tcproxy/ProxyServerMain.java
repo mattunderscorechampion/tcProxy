@@ -25,23 +25,36 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy;
 
-import com.mattunderscore.tcproxy.cli.arguments.*;
-import com.mattunderscore.tcproxy.proxy.connection.Connection;
-import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
-import com.mattunderscore.tcproxy.proxy.direction.Direction;
-import com.mattunderscore.tcproxy.proxy.ProxyServer;
-import com.mattunderscore.tcproxy.proxy.settings.*;
-import com.mattunderscore.tcproxy.selector.server.SocketSettings;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.LogManager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.mattunderscore.tcproxy.cli.arguments.HelpDisplay;
+import com.mattunderscore.tcproxy.cli.arguments.IntegerParser;
+import com.mattunderscore.tcproxy.cli.arguments.Option;
+import com.mattunderscore.tcproxy.cli.arguments.OptionsParser;
+import com.mattunderscore.tcproxy.cli.arguments.Setting;
+import com.mattunderscore.tcproxy.cli.arguments.StringParser;
+import com.mattunderscore.tcproxy.proxy.ProxyServer;
+import com.mattunderscore.tcproxy.proxy.connection.Connection;
+import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
+import com.mattunderscore.tcproxy.proxy.direction.Direction;
+import com.mattunderscore.tcproxy.proxy.settings.AcceptorSettings;
+import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
+import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
+import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
+import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
  * @author matt on 18/02/14.
@@ -78,11 +91,13 @@ public final class ProxyServerMain {
                     .receiveBuffer((Integer) settings.get(RECEIVE_BUFFER))
                     .sendBuffer((Integer) settings.get(SEND_BUFFER))
                     .build(),
-                new OutboundSocketSettings(
-                    (Integer)settings.get(OUTBOUND_PORT),
-                    (String)settings.get(OUTBOUND_HOST),
-                    (Integer)settings.get(RECEIVE_BUFFER),
-                    (Integer)settings.get(SEND_BUFFER)),
+                OutboundSocketSettings
+                    .builder()
+                    .port((Integer)settings.get(OUTBOUND_PORT))
+                    .host((String)settings.get(OUTBOUND_HOST))
+                    .receiveBuffer((Integer)settings.get(RECEIVE_BUFFER))
+                    .sendBuffer((Integer)settings.get(SEND_BUFFER))
+                    .build(),
                 new ReadSelectorSettings((Integer)settings.get(RECEIVE_BUFFER)),
                 manager);
 

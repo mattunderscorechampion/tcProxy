@@ -67,11 +67,13 @@ public final class SimpleExample {
                 .receiveBuffer(1024)
                 .sendBuffer(1024)
                 .build(),
-            new OutboundSocketSettings(
-                8080,
-                "localhost",
-                1024,
-                1024),
+            OutboundSocketSettings
+                .builder()
+                .port(8080)
+                .host("localhost")
+                .receiveBuffer(1024)
+                .sendBuffer(1024)
+                .build(),
             new ReadSelectorSettings(1024),
             new ConnectionManager());
         server.start();
