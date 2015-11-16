@@ -25,16 +25,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcProxy.gui;
 
-import com.mattunderscore.tcproxy.proxy.settings.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.lang.Integer.parseInt;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import static java.lang.Integer.parseInt;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.mattunderscore.tcproxy.proxy.settings.AcceptorSettings;
+import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
+import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
+import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
+import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
  * @author matt on 15/03/14.
@@ -144,8 +155,12 @@ public final class SettingsPanel extends JPanel {
         return new ConnectionSettings(parseInt(writeQueueBound.getText()), parseInt(batchSize.getText()));
     }
 
-    public InboundSocketSettings getInboundSocketSettings() {
-        return new InboundSocketSettings(parseInt(inboundReceiveBufferSize.getText()), parseInt(inboundSendBufferSize.getText()));
+    public SocketSettings getInboundSocketSettings() {
+        return SocketSettings
+            .builder()
+            .receiveBuffer(parseInt(inboundReceiveBufferSize.getText()))
+            .sendBuffer(parseInt(inboundSendBufferSize.getText()))
+            .build();
     }
 
     public OutboundSocketSettings getOutboundSocketSettings() {

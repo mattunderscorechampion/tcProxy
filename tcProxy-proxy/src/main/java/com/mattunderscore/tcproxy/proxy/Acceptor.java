@@ -39,7 +39,7 @@ import com.mattunderscore.tcproxy.io.IOSocketOption;
 import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionFactory;
 import com.mattunderscore.tcproxy.proxy.settings.AcceptorSettings;
-import com.mattunderscore.tcproxy.proxy.settings.InboundSocketSettings;
+import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
  * The acceptor.
@@ -49,7 +49,7 @@ public final class Acceptor implements Runnable {
     public static final Logger LOG = LoggerFactory.getLogger("acceptor");
     private final CountDownLatch readyLatch = new CountDownLatch(1);
     private final AcceptorSettings settings;
-    private final InboundSocketSettings inboundSettings;
+    private final SocketSettings inboundSettings;
     private final ConnectionFactory connectionFactory;
     private final OutboundSocketFactory factory;
     private volatile boolean running = false;
@@ -63,7 +63,7 @@ public final class Acceptor implements Runnable {
      * @param factory The outbound socket factory.
      */
     public Acceptor(final AcceptorSettings settings,
-                    final InboundSocketSettings inboundSettings,
+                    final SocketSettings inboundSettings,
                     final ConnectionFactory connectionFactory,
                     final OutboundSocketFactory factory) {
         this.settings = settings;
@@ -92,7 +92,7 @@ public final class Acceptor implements Runnable {
      */
     IOServerSocketChannel openServerSocket() throws IOException {
         return StaticIOFactory.socketFactory(IOServerSocketChannel.class)
-            .receiveBuffer(inboundSettings.getReceiveBufferSize())
+            .receiveBuffer(inboundSettings.getReceiveBuffer())
             .reuseAddress(true)
             .bind(new InetSocketAddress(settings.getPort()))
             .create();
@@ -108,7 +108,7 @@ public final class Acceptor implements Runnable {
         while (running) {
             try {
                 final IOSocketChannel clientSide = channel.accept();
-                clientSide.set(IOSocketOption.SEND_BUFFER, inboundSettings.getReceiveBufferSize());
+                clientSide.set(IOSocketOption.SEND_BUFFER, inboundSettings.getSendBuffer());
                 clientSide.set(IOSocketOption.BLOCKING, false);
                 LOG.info("{} : Accepted {}", this, clientSide);
                 final IOSocketChannel serverSide = factory.createSocket();

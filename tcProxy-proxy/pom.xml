@@ -25,6 +25,10 @@
             <artifactId>tcProxy-io-jsl</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.mattunderscore.tcproxy</groupId>
+            <artifactId>tcProxy-selector</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>

@@ -31,6 +31,8 @@ import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
 import com.mattunderscore.tcproxy.proxy.ProxyServer;
 import com.mattunderscore.tcproxy.proxy.settings.*;
+import com.mattunderscore.tcproxy.selector.server.SocketSettings;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +73,11 @@ public final class ProxyServerMain {
             final ProxyServer server = new ProxyServer(
                 new AcceptorSettings((Integer)settings.get(INBOUND_PORT)),
                 new ConnectionSettings((Integer)settings.get(QUEUE_SIZE), (Integer)settings.get(BATCH_SIZE)),
-                new InboundSocketSettings((Integer)settings.get(RECEIVE_BUFFER), (Integer)settings.get(SEND_BUFFER)),
+                SocketSettings
+                    .builder()
+                    .receiveBuffer((Integer) settings.get(RECEIVE_BUFFER))
+                    .sendBuffer((Integer) settings.get(SEND_BUFFER))
+                    .build(),
                 new OutboundSocketSettings(
                     (Integer)settings.get(OUTBOUND_PORT),
                     (String)settings.get(OUTBOUND_HOST),

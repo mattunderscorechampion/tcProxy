@@ -45,9 +45,9 @@ import com.mattunderscore.tcproxy.proxy.ProxyServer;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.settings.AcceptorSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
-import com.mattunderscore.tcproxy.proxy.settings.InboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
+import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
  * Simple example with a single consumer and producer. The producer sends throttled random data to the consumer through
@@ -62,7 +62,11 @@ public final class SimpleExample {
         final ProxyServer server = new ProxyServer(
             new AcceptorSettings(8085),
             new ConnectionSettings(1024, 1024),
-            new InboundSocketSettings(1024, 1024),
+            SocketSettings
+                .builder()
+                .receiveBuffer(1024)
+                .sendBuffer(1024)
+                .build(),
             new OutboundSocketSettings(
                 8080,
                 "localhost",

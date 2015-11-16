@@ -32,6 +32,8 @@ import com.mattunderscore.tcproxy.proxy.connection.ConnectionFactory;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.proxy.settings.*;
+import com.mattunderscore.tcproxy.selector.server.SocketSettings;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +54,7 @@ public final class ProxyServer {
     public ProxyServer(
         final AcceptorSettings acceptorSettings,
         final ConnectionSettings connectionSettings,
-        final InboundSocketSettings inboundSocketSettings,
+        final SocketSettings inboundSocketSettings,
         final OutboundSocketSettings outboundSocketSettings,
         final ReadSelectorSettings readSelectorSettings,
         final ConnectionManager manager) throws IOException {

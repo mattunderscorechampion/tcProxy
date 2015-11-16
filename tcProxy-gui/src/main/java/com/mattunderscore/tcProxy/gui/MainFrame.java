@@ -25,14 +25,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcProxy.gui;
 
-import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
-import com.mattunderscore.tcproxy.proxy.ProxyServer;
-import com.mattunderscore.tcproxy.proxy.settings.*;
+import java.io.IOException;
+
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import java.io.IOException;
+import com.mattunderscore.tcproxy.proxy.ProxyServer;
+import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
+import com.mattunderscore.tcproxy.proxy.settings.AcceptorSettings;
+import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
+import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
+import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
+import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
  * @author matt on 15/03/14.
@@ -51,7 +58,7 @@ public final class MainFrame extends JFrame {
                 try {
                     final AcceptorSettings acceptorSettings = settingsPanel.getAcceptorSettings();
                     final ConnectionSettings connectionSettings = settingsPanel.getConnectionSettings();
-                    final InboundSocketSettings inboundSocketSettings = settingsPanel.getInboundSocketSettings();
+                    final SocketSettings inboundSocketSettings = settingsPanel.getInboundSocketSettings();
                     final OutboundSocketSettings outboundSocketSettings = settingsPanel.getOutboundSocketSettings();
                     final ReadSelectorSettings readSelectorSettings = settingsPanel.getReadSelectorSettings();
                     final ConnectionManager manager = new ConnectionManager();
