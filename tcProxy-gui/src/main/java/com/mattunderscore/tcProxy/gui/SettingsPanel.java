@@ -41,10 +41,10 @@ import javax.swing.JTextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mattunderscore.tcproxy.proxy.settings.AcceptorSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
+import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
@@ -147,8 +147,11 @@ public final class SettingsPanel extends JPanel {
         add(ok, c);
     }
 
-    public AcceptorSettings getAcceptorSettings() {
-        return new AcceptorSettings(parseInt(listeningPort.getText()));
+    public AcceptSettings getAcceptorSettings() {
+        return AcceptSettings
+            .builder()
+            .listenOn(parseInt(listeningPort.getText()))
+            .build();
     }
 
     public ConnectionSettings getConnectionSettings() {

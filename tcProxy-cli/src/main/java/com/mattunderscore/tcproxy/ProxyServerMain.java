@@ -50,10 +50,10 @@ import com.mattunderscore.tcproxy.proxy.ProxyServer;
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
-import com.mattunderscore.tcproxy.proxy.settings.AcceptorSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
+import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
@@ -84,7 +84,10 @@ public final class ProxyServerMain {
         try {
             final ConnectionManager manager = new ConnectionManager();
             final ProxyServer server = new ProxyServer(
-                new AcceptorSettings((Integer)settings.get(INBOUND_PORT)),
+                AcceptSettings
+                    .builder()
+                    .listenOn((Integer) settings.get(INBOUND_PORT))
+                    .build(),
                 new ConnectionSettings((Integer)settings.get(QUEUE_SIZE), (Integer)settings.get(BATCH_SIZE)),
                 SocketSettings
                     .builder()

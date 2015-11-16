@@ -39,6 +39,7 @@ import com.mattunderscore.tcproxy.proxy.settings.AcceptorSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
+import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
@@ -56,7 +57,7 @@ public final class MainFrame extends JFrame {
             public void run() {
                 remove(settingsPanel);
                 try {
-                    final AcceptorSettings acceptorSettings = settingsPanel.getAcceptorSettings();
+                    final AcceptSettings acceptorSettings = settingsPanel.getAcceptorSettings();
                     final ConnectionSettings connectionSettings = settingsPanel.getConnectionSettings();
                     final SocketSettings inboundSocketSettings = settingsPanel.getInboundSocketSettings();
                     final OutboundSocketSettings outboundSocketSettings = settingsPanel.getOutboundSocketSettings();

@@ -38,7 +38,7 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketOption;
 import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionFactory;
-import com.mattunderscore.tcproxy.proxy.settings.AcceptorSettings;
+import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
@@ -48,7 +48,7 @@ import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 public final class Acceptor implements Runnable {
     public static final Logger LOG = LoggerFactory.getLogger("acceptor");
     private final CountDownLatch readyLatch = new CountDownLatch(1);
-    private final AcceptorSettings settings;
+    private final AcceptSettings settings;
     private final SocketSettings inboundSettings;
     private final ConnectionFactory connectionFactory;
     private final OutboundSocketFactory factory;
@@ -62,7 +62,7 @@ public final class Acceptor implements Runnable {
      * @param connectionFactory The connection factory.
      * @param factory The outbound socket factory.
      */
-    public Acceptor(final AcceptorSettings settings,
+    public Acceptor(final AcceptSettings settings,
                     final SocketSettings inboundSettings,
                     final ConnectionFactory connectionFactory,
                     final OutboundSocketFactory factory) {
@@ -94,7 +94,7 @@ public final class Acceptor implements Runnable {
         return StaticIOFactory.socketFactory(IOServerSocketChannel.class)
             .receiveBuffer(inboundSettings.getReceiveBuffer())
             .reuseAddress(true)
-            .bind(new InetSocketAddress(settings.getPort()))
+            .bind(new InetSocketAddress(settings.getListenOn().iterator().next()))
             .create();
     }
 
@@ -130,7 +130,7 @@ public final class Acceptor implements Runnable {
 
     @Override
     public String toString() {
-        return "Acceptor - " + settings.getPort();
+        return "Acceptor - " + settings.getListenOn().iterator().next();
     }
 
     public void stop() {

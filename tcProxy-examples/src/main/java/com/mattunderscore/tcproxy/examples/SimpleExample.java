@@ -43,10 +43,10 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
 import com.mattunderscore.tcproxy.proxy.ProxyServer;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
-import com.mattunderscore.tcproxy.proxy.settings.AcceptorSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
+import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
@@ -60,7 +60,10 @@ public final class SimpleExample {
     public static void main(String[] args) throws IOException {
         // Start the proxy
         final ProxyServer server = new ProxyServer(
-            new AcceptorSettings(8085),
+            AcceptSettings
+                .builder()
+                .listenOn(8085)
+                .build(),
             new ConnectionSettings(1024, 1024),
             SocketSettings
                 .builder()

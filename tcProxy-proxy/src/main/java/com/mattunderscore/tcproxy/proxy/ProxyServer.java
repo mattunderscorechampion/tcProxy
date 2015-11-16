@@ -32,6 +32,7 @@ import com.mattunderscore.tcproxy.proxy.connection.ConnectionFactory;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.proxy.settings.*;
+import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 import org.slf4j.Logger;
@@ -52,7 +53,7 @@ public final class ProxyServer {
     private final ReadSelector proxy;
 
     public ProxyServer(
-        final AcceptorSettings acceptorSettings,
+        final AcceptSettings acceptorSettings,
         final ConnectionSettings connectionSettings,
         final SocketSettings inboundSocketSettings,
         final OutboundSocketSettings outboundSocketSettings,
