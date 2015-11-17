@@ -25,13 +25,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.direction;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
+import com.mattunderscore.tcproxy.io.CircularBuffer;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessor;
 import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
  * A direction.
@@ -67,7 +68,7 @@ public interface Direction {
 
     int write(ByteBuffer data) throws IOException;
 
-    int read(ByteBuffer data) throws IOException;
+    int read(CircularBuffer data) throws IOException;
 
     void close() throws IOException;
 

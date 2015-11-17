@@ -33,7 +33,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -44,9 +43,11 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.mattunderscore.tcproxy.io.CircularBuffer;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
 import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessor;
 import com.mattunderscore.tcproxy.proxy.action.processor.DefaultActionProcessor;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
@@ -59,7 +60,7 @@ import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
  * @author Matt Champion on 12/03/14.
  */
 public final class ReadSelectorTest {
-    private final ByteBuffer buffer = ByteBuffer.allocate(16);
+    private final CircularBuffer buffer = CircularBufferImpl.allocate(16);
 
     @Mock
     private IOSelectionKey key;
@@ -82,7 +83,6 @@ public final class ReadSelectorTest {
     @Before
     public void setUp() {
         initMocks(this);
-        buffer.clear();
         newConnections = new ArrayBlockingQueue<>(5);
         newDirections = new ArrayBlockingQueue<>(5);
         readSelector = new ReadSelector(selector, newConnections, buffer);

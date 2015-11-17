@@ -25,20 +25,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.direction;
 
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessor;
-import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
-import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.mattunderscore.tcproxy.io.CircularBuffer;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessor;
+import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
+import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
 
 /**
  * Implementation of {@link Direction}.
@@ -147,8 +148,8 @@ public final class DirectionImpl implements Direction {
     }
 
     @Override
-    public int read(final ByteBuffer source) throws IOException {
-        final int newlyRead = from.read(source);
+    public int read(final CircularBuffer destination) throws IOException {
+        final int newlyRead = from.read(destination);
         if (newlyRead > 0) {
             read += newlyRead;
             for (final Listener listener : listeners) {

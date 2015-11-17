@@ -37,9 +37,11 @@ import java.util.concurrent.BlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mattunderscore.tcproxy.io.CircularBuffer;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
 import com.mattunderscore.tcproxy.proxy.action.Close;
 import com.mattunderscore.tcproxy.proxy.action.Write;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
@@ -56,13 +58,13 @@ public final class ReadSelector extends AbstractSelector {
     public static final Logger LOG = LoggerFactory.getLogger("reader");
     private final Set<Connection> connections = new HashSet<>();
     private final BlockingQueue<Connection> newConnections;
-    private final ByteBuffer readBuffer;
+    private final CircularBuffer readBuffer;
 
     public ReadSelector(final IOSelector selector, final ReadSelectorSettings settings, final BlockingQueue<Connection> newConnections) {
-        this(selector, newConnections, ByteBuffer.allocate(settings.getReadBufferSize()));
+        this(selector, newConnections, CircularBufferImpl.allocateDirect(settings.getReadBufferSize()));
     }
 
-    ReadSelector(final IOSelector selector, final BlockingQueue<Connection> newConnections, ByteBuffer readBuffer) {
+    ReadSelector(final IOSelector selector, final BlockingQueue<Connection> newConnections, CircularBuffer readBuffer) {
         super(IOSelectionKey.Op.READ, selector, new BinaryBackoff(1L));
         this.newConnections = newConnections;
         this.readBuffer = readBuffer;
@@ -117,11 +119,9 @@ public final class ReadSelector extends AbstractSelector {
 
                     if (bytes > 0) {
                         // Copy the data read to a write buffer and prepare for the next read
-                        readBuffer.flip();
-                        final ByteBuffer writeBuffer = ByteBuffer.allocate(readBuffer.limit());
-                        writeBuffer.put(readBuffer);
+                        final ByteBuffer writeBuffer = ByteBuffer.allocate(readBuffer.usedCapacity());
+                        readBuffer.get(writeBuffer);
                         writeBuffer.flip();
-                        readBuffer.clear();
 
                         informOfData(direction, writeBuffer);
                     }
