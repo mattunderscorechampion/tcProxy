@@ -108,7 +108,7 @@ public final class SimpleExample {
                 producerChannel,
                 new ThrottledDataProducer(
                     100L,
-                    new RandomDataProducer(32)));
+                    new RandomDataProducer(8, 32)));
             producer.start();
         }
         catch (IOException e) {
