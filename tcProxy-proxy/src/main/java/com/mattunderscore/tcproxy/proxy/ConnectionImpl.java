@@ -25,12 +25,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
-
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Implementation of {@link Connection}.
@@ -69,7 +69,11 @@ public final class ConnectionImpl implements Connection {
         serverToClient.close();
     }
 
-    Direction otherDirection(final Direction direction) {
+    /**
+     * @param direction A direction
+     * @return The other direction of the connection
+     */
+    public Direction otherDirection(final Direction direction) {
         if (direction == clientToServer) {
             return serverToClient;
         }

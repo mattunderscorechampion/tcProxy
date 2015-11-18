@@ -33,12 +33,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
 import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
-import com.mattunderscore.tcproxy.proxy.selector.ProxyConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.proxy.selector.AcceptorTask;
+import com.mattunderscore.tcproxy.proxy.selector.ProxyConnectionHandlerFactory;
+import com.mattunderscore.tcproxy.proxy.selector.ReadTask;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
@@ -54,7 +56,7 @@ public final class ProxyServer {
     private static final Logger LOG = LoggerFactory.getLogger("proxy");
     private final AcceptorTask acceptor;
     private final WriteSelector writer;
-    private final ReadSelector proxy;
+    private final ReadTask proxy;
 
     public ProxyServer(
         final AcceptSettings acceptorSettings,
@@ -64,11 +66,9 @@ public final class ProxyServer {
         final ReadSelectorSettings readSelectorSettings,
         final ConnectionManager manager) throws IOException {
 
-        final BlockingQueue<Connection> newConnections = new ArrayBlockingQueue<>(5000);
         final BlockingQueue<DirectionAndConnection> newDirections = new ArrayBlockingQueue<>(5000);
         final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
 
-        final IOSelector readSelector = StaticIOFactory.openSelector();
         final IOSelector writeSelector = StaticIOFactory.openSelector();
 
         final ConnectionHandlerFactory connectionHandlerFactory = new ProxyConnectionHandlerFactory(
@@ -77,13 +77,13 @@ public final class ProxyServer {
             manager,
             newDirections);
         acceptor = new AcceptorTask(acceptorSettings, inboundSocketSettings, connectionHandlerFactory);
-        proxy = new ReadSelector(readSelector,readSelectorSettings, newConnections);
+        proxy = new ReadTask(CircularBufferImpl.allocateDirect(readSelectorSettings.getReadBufferSize()));
         writer = new WriteSelector(writeSelector, newDirections);
 
         manager.addListener(new ConnectionManager.Listener() {
             @Override
             public void newConnection(final Connection connection) {
-                newConnections.add(connection);
+                proxy.queueNewConnection(connection);
             }
 
             @Override
