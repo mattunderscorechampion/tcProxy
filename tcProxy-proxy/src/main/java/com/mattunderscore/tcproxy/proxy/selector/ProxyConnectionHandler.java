@@ -26,24 +26,43 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy.selector;
 
 import java.io.IOException;
+import java.util.Queue;
 
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.proxy.ConnectionImpl;
 import com.mattunderscore.tcproxy.proxy.OutboundSocketFactory;
 import com.mattunderscore.tcproxy.proxy.ProxyServer;
-import com.mattunderscore.tcproxy.proxy.connection.ConnectionFactory;
+import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
+import com.mattunderscore.tcproxy.proxy.action.processor.DefaultActionProcessorFactory;
+import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
+import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueueImpl;
+import com.mattunderscore.tcproxy.proxy.connection.Connection;
+import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
+import com.mattunderscore.tcproxy.proxy.direction.Direction;
+import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
+import com.mattunderscore.tcproxy.proxy.direction.DirectionImpl;
+import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 
 /**
- * Implementation of {@link ConnectionHandler} for the {@link AcceptorTask} of the {@link ProxyServer}.
+ * Implementation of {@link ConnectionHandler} for the {@link ProxyServer}.
  * @author Matt Champion on 18/11/2015
  */
-class AcceptorConnectionHandler implements ConnectionHandler {
-    private ConnectionFactory connectionFactory;
-    private OutboundSocketFactory factory;
+class ProxyConnectionHandler implements ConnectionHandler {
+    private final OutboundSocketFactory factory;
+    private final ConnectionSettings settings;
+    private final ConnectionManager manager;
+    private final Queue<DirectionAndConnection> directions;
 
-    public AcceptorConnectionHandler(ConnectionFactory connectionFactory, OutboundSocketFactory factory) {
-        this.connectionFactory = connectionFactory;
+    public ProxyConnectionHandler(
+            OutboundSocketFactory factory,
+            ConnectionSettings settings,
+            ConnectionManager manager,
+            Queue<DirectionAndConnection> directions) {
         this.factory = factory;
+        this.settings = settings;
+        this.manager = manager;
+        this.directions = directions;
     }
 
     @Override
@@ -52,7 +71,15 @@ class AcceptorConnectionHandler implements ConnectionHandler {
             AcceptorTask.LOG.info("{} : Accepted {}", this, clientSide);
             final IOSocketChannel serverSide = factory.createSocket();
             AcceptorTask.LOG.info("{} : Opened {}", this, serverSide);
-            connectionFactory.create(clientSide, serverSide);
+            final ActionQueue actionQueue0 = new ActionQueueImpl(settings.getWriteQueueSize(), settings.getBatchSize());
+            final ActionQueue actionQueue1 = new ActionQueueImpl(settings.getWriteQueueSize(), settings.getBatchSize());
+            final Direction direction0 = new DirectionImpl(clientSide, serverSide, actionQueue0);
+            final Direction direction1 = new DirectionImpl(serverSide, clientSide, actionQueue1);
+            final Connection conn = new ConnectionImpl(manager, direction0, direction1);
+            final ActionProcessorFactory processorFactory = new DefaultActionProcessorFactory(conn, directions);
+            manager.register(conn);
+            direction0.chainProcessor(processorFactory);
+            direction1.chainProcessor(processorFactory);
         }
         catch (IOException e) {
             AcceptorTask.LOG.warn("{} : There was an unhandled exception in the main loop - continuing", this, e);

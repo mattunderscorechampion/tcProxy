@@ -87,6 +87,7 @@ public final class SimpleExample {
             // Start an acceptor
             final IOServerSocketChannel acceptorChannel = StaticIOFactory
                 .socketFactory(IOServerSocketChannel.class)
+                .reuseAddress(true)
                 .bind(new InetSocketAddress("localhost", 8080))
                 .create();
             acceptor = new Acceptor(acceptorChannel, channels);

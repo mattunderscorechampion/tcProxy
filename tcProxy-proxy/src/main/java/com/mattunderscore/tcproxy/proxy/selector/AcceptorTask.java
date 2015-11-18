@@ -35,9 +35,8 @@ import org.slf4j.LoggerFactory;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.impl.IOFactoryImpl;
 import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
-import com.mattunderscore.tcproxy.proxy.OutboundSocketFactory;
-import com.mattunderscore.tcproxy.proxy.connection.ConnectionFactory;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelectorFactory;
+import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
@@ -52,26 +51,22 @@ public final class AcceptorTask implements Runnable {
     private final CountDownLatch readyLatch = new CountDownLatch(1);
     private final AcceptSettings settings;
     private final SocketSettings inboundSettings;
-    private final ConnectionFactory connectionFactory;
-    private final OutboundSocketFactory factory;
+    private final ConnectionHandlerFactory connectionHandlerFactory;
     private volatile RestartableTask task;
 
     /**
      * Constructor.
      * @param settings The acceptor settings.
      * @param inboundSettings The inbound socket settings.
-     * @param connectionFactory The connection factory.
-     * @param factory The outbound socket factory.
+     * @param connectionHandlerFactory The connection handler factory.
      */
     public AcceptorTask(
             final AcceptSettings settings,
             final SocketSettings inboundSettings,
-            final ConnectionFactory connectionFactory,
-            final OutboundSocketFactory factory) {
+            final ConnectionHandlerFactory connectionHandlerFactory) {
         this.settings = settings;
         this.inboundSettings = inboundSettings;
-        this.connectionFactory = connectionFactory;
-        this.factory = factory;
+        this.connectionHandlerFactory = connectionHandlerFactory;
     }
 
     @Override
@@ -88,7 +83,7 @@ public final class AcceptorTask implements Runnable {
             final ConnectingSelectorFactory connectingSelectorFactory = new ConnectingSelectorFactory(
                 new IOFactoryImpl(),
                 channel,
-                new AcceptorConnectionHandlerFactory(connectionFactory, factory),
+                connectionHandlerFactory,
                 new SocketConfigurator(inboundSettings));
 
             final RestartableTask acceptor = connectingSelectorFactory.create();

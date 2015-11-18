@@ -25,23 +25,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
-import com.mattunderscore.tcproxy.proxy.connection.Connection;
-import com.mattunderscore.tcproxy.proxy.connection.ConnectionFactory;
-import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
-import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
-import com.mattunderscore.tcproxy.proxy.selector.AcceptorTask;
-import com.mattunderscore.tcproxy.proxy.settings.*;
-import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
-import com.mattunderscore.tcproxy.selector.server.SocketSettings;
+import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
+import com.mattunderscore.tcproxy.proxy.connection.Connection;
+import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
+import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
+import com.mattunderscore.tcproxy.proxy.selector.ProxyConnectionHandlerFactory;
+import com.mattunderscore.tcproxy.proxy.selector.AcceptorTask;
+import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
+import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
+import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
+import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
+import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
+import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
  * The proxy.
@@ -64,12 +67,16 @@ public final class ProxyServer {
         final BlockingQueue<Connection> newConnections = new ArrayBlockingQueue<>(5000);
         final BlockingQueue<DirectionAndConnection> newDirections = new ArrayBlockingQueue<>(5000);
         final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
-        final ConnectionFactory connectionFactory = new ConnectionFactory(connectionSettings, manager, newDirections);
 
         final IOSelector readSelector = StaticIOFactory.openSelector();
         final IOSelector writeSelector = StaticIOFactory.openSelector();
 
-        acceptor = new AcceptorTask(acceptorSettings, inboundSocketSettings, connectionFactory, socketFactory);
+        final ConnectionHandlerFactory connectionHandlerFactory = new ProxyConnectionHandlerFactory(
+            socketFactory,
+            connectionSettings,
+            manager,
+            newDirections);
+        acceptor = new AcceptorTask(acceptorSettings, inboundSocketSettings, connectionHandlerFactory);
         proxy = new ReadSelector(readSelector,readSelectorSettings, newConnections);
         writer = new WriteSelector(writeSelector, newDirections);
 

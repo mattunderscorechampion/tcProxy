@@ -25,28 +25,40 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.selector;
 
+import java.util.Queue;
+
 import com.mattunderscore.tcproxy.proxy.OutboundSocketFactory;
 import com.mattunderscore.tcproxy.proxy.ProxyServer;
-import com.mattunderscore.tcproxy.proxy.connection.ConnectionFactory;
+import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
+import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
+import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
 
 /**
- * Implementation of {@link ConnectionHandlerFactory} for the {@link AcceptorTask} of the {@link ProxyServer}.
+ * Implementation of {@link ConnectionHandlerFactory} for the {@link ProxyServer}.
  * @author Matt Champion on 18/11/2015
  */
-class AcceptorConnectionHandlerFactory implements ConnectionHandlerFactory {
-    private ConnectionFactory connectionFactory;
-    private OutboundSocketFactory factory;
+public final class ProxyConnectionHandlerFactory implements ConnectionHandlerFactory {
+    private final OutboundSocketFactory factory;
+    private final ConnectionSettings settings;
+    private final ConnectionManager manager;
+    private final Queue<DirectionAndConnection> directions;
 
-    public AcceptorConnectionHandlerFactory(ConnectionFactory connectionFactory, OutboundSocketFactory factory) {
-        this.connectionFactory = connectionFactory;
+    public ProxyConnectionHandlerFactory(
+            OutboundSocketFactory factory,
+            ConnectionSettings settings,
+            ConnectionManager manager,
+            Queue<DirectionAndConnection> directions) {
         this.factory = factory;
+        this.settings = settings;
+        this.manager = manager;
+        this.directions = directions;
     }
 
     @Override
     public ConnectionHandler create(SocketChannelSelector selector) {
-        return new AcceptorConnectionHandler(connectionFactory, factory);
+        return new ProxyConnectionHandler(factory, settings, manager, directions);
     }
 }
