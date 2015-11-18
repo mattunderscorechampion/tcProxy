@@ -45,7 +45,7 @@ import com.mattunderscore.tcproxy.io.impl.IOFactoryImpl;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelectorFactory;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
-import com.mattunderscore.tcproxy.selector.SelectorRunnable;
+import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.server.AbstractServerFactory;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
@@ -88,7 +88,7 @@ public final class EchoServer {
         server.waitForStopped();
     }
 
-    private static final class EchoTask implements SelectorRunnable<IOSocketChannel> {
+    private static final class EchoTask implements SelectionRunnable<IOSocketChannel> {
         private final CircularBuffer buffer = allocateDirect(64);
         private final SocketChannelSelector selector;
 

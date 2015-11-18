@@ -41,13 +41,13 @@ import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.selector.SelectorRunnable;
+import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.ServerSocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.threads.LifecycleState;
 
 /**
- * A general purpose selector. {@link SelectorRunnable}s can be registered against it for both
+ * A general purpose selector. {@link SelectionRunnable}s can be registered against it for both
  * {@link IOServerSocketChannel} and {@link IOSocketChannel}. These tasks can be registered from any thread. Selected
  * keys will be removed from the selected set when they are processed but will not be cancelled.
  * @author Matt Champion on 24/10/2015
@@ -123,17 +123,17 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
     }
 
     @Override
-    public void register(IOSocketChannel channel, IOSelectionKey.Op op, SelectorRunnable<IOSocketChannel> runnable) {
+    public void register(IOSocketChannel channel, IOSelectionKey.Op op, SelectionRunnable<IOSocketChannel> runnable) {
         registrations.add(new IOSocketChannelSingleRegistrationRequest(channel, op, runnable));
     }
 
     @Override
-    public void register(IOSocketChannel channel, Set<IOSelectionKey.Op> ops, SelectorRunnable<IOSocketChannel> runnable) {
+    public void register(IOSocketChannel channel, Set<IOSelectionKey.Op> ops, SelectionRunnable<IOSocketChannel> runnable) {
         registrations.add(new IOSocketChannelSetRegistrationRequest(channel, ops, runnable));
     }
 
     @Override
-    public void register(IOServerSocketChannel channel, SelectorRunnable<IOServerSocketChannel> runnable) {
+    public void register(IOServerSocketChannel channel, SelectionRunnable<IOServerSocketChannel> runnable) {
         registrations.add(new IOServerSocketChannelRegistrationRequest(channel, runnable));
     }
 

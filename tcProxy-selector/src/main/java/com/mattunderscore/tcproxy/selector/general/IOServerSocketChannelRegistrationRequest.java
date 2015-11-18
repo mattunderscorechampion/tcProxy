@@ -30,7 +30,7 @@ import java.nio.channels.ClosedChannelException;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.selector.SelectorRunnable;
+import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 
 /**
  * {@link Registration} of a server runnable for an {@link IOServerSocketChannel}.
@@ -38,9 +38,9 @@ import com.mattunderscore.tcproxy.selector.SelectorRunnable;
  */
 final class IOServerSocketChannelRegistrationRequest implements RegistrationRequest, Registration {
     private final IOServerSocketChannel channel;
-    private final SelectorRunnable<IOServerSocketChannel> runnable;
+    private final SelectionRunnable<IOServerSocketChannel> runnable;
 
-    IOServerSocketChannelRegistrationRequest(IOServerSocketChannel channel, SelectorRunnable<IOServerSocketChannel> runnable) {
+    IOServerSocketChannelRegistrationRequest(IOServerSocketChannel channel, SelectionRunnable<IOServerSocketChannel> runnable) {
         this.channel = channel;
         this.runnable = runnable;
     }

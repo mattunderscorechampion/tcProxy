@@ -33,7 +33,7 @@ import com.mattunderscore.tcproxy.io.IOSocket;
  * @author Matt Champion on 26/10/2015
  * @param <T> The type of socket it expects
  */
-public interface SelectorRunnable<T extends IOSocket> {
+public interface SelectionRunnable<T extends IOSocket> {
     /**
      * The body of the task.
      * @param socket The socket

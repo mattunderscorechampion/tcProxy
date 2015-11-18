@@ -32,14 +32,14 @@ import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.selector.SelectorRunnable;
+import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 
 /**
  * A task that completes socket connections.
  * @author Matt Champion on 06/11/2015
  */
-public final class ConnectingTask implements SelectorRunnable<IOSocketChannel> {
+public final class ConnectingTask implements SelectionRunnable<IOSocketChannel> {
     private static final Logger LOG = LoggerFactory.getLogger("connect");
     private final ConnectionHandler handler;
 

@@ -27,17 +27,17 @@ package com.mattunderscore.tcproxy.selector.general;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.selector.SelectorRunnable;
+import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 
 /**
- * Registration for {@link SelectorRunnable}s against an {@link IOSocketChannel}.
+ * Registration for {@link SelectionRunnable}s against an {@link IOSocketChannel}.
  * @author Matt Champion on 31/10/2015
  */
 public final class IOSocketChannelRegistration implements Registration {
     private final IOSocketChannel channel;
-    private final SelectorRunnable<IOSocketChannel> runnable;
+    private final SelectionRunnable<IOSocketChannel> runnable;
 
-    public IOSocketChannelRegistration(IOSocketChannel channel, SelectorRunnable<IOSocketChannel> runnable) {
+    public IOSocketChannelRegistration(IOSocketChannel channel, SelectionRunnable<IOSocketChannel> runnable) {
         this.channel = channel;
         this.runnable = runnable;
     }

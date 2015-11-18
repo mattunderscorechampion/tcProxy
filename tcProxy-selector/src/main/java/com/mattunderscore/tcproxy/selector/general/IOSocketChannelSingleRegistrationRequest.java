@@ -30,7 +30,7 @@ import java.nio.channels.ClosedChannelException;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.selector.SelectorRunnable;
+import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 
 /**
  * {@link Registration} of a server runnable for an {@link IOSocketChannel} against a single operation.
@@ -44,7 +44,7 @@ final class IOSocketChannelSingleRegistrationRequest implements RegistrationRequ
     IOSocketChannelSingleRegistrationRequest(
             IOSocketChannel channel,
             IOSelectionKey.Op op,
-            SelectorRunnable<IOSocketChannel> runnable) {
+            SelectionRunnable<IOSocketChannel> runnable) {
         this.channel = channel;
         this.op = op;
         this.registration = new IOSocketChannelRegistration(channel, runnable);

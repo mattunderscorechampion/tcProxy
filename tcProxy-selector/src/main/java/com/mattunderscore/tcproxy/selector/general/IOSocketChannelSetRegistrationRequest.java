@@ -31,7 +31,7 @@ import java.util.Set;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.selector.SelectorRunnable;
+import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 
 /**
  * {@link Registration} of a server runnable for an {@link IOSocketChannel} against multiple operations.
@@ -45,7 +45,7 @@ final class IOSocketChannelSetRegistrationRequest implements RegistrationRequest
     IOSocketChannelSetRegistrationRequest(
             IOSocketChannel channel,
             Set<IOSelectionKey.Op> ops,
-            SelectorRunnable<IOSocketChannel> runnable) {
+            SelectionRunnable<IOSocketChannel> runnable) {
         this.channel = channel;
         this.ops = ops;
         this.registration = new IOSocketChannelRegistration(channel, runnable);

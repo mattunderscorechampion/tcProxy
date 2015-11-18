@@ -34,7 +34,7 @@ import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
-import com.mattunderscore.tcproxy.selector.SelectorRunnable;
+import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 import com.mattunderscore.tcproxy.selector.connecting.task.AcceptingTask;
@@ -52,12 +52,12 @@ public final class ConnectingSelector implements SocketChannelSelector {
     }
 
     @Override
-    public void register(IOSocketChannel channel, IOSelectionKey.Op op, SelectorRunnable<IOSocketChannel> runnable) {
+    public void register(IOSocketChannel channel, IOSelectionKey.Op op, SelectionRunnable<IOSocketChannel> runnable) {
         selector.register(channel, op, runnable);
     }
 
     @Override
-    public void register(IOSocketChannel channel, Set<IOSelectionKey.Op> ops, SelectorRunnable<IOSocketChannel> runnable) {
+    public void register(IOSocketChannel channel, Set<IOSelectionKey.Op> ops, SelectionRunnable<IOSocketChannel> runnable) {
         selector.register(channel, ops, runnable);
     }
 

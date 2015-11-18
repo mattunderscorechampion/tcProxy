@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.selector.SelectorRunnable;
+import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
@@ -45,7 +45,7 @@ import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
  * A task that accepts and completes socket connections.
  * @author Matt Champion on 06/11/2015
  */
-public final class AcceptingTask implements SelectorRunnable<IOServerSocketChannel> {
+public final class AcceptingTask implements SelectionRunnable<IOServerSocketChannel> {
     private static final Logger LOG = LoggerFactory.getLogger("accept");
     private final SocketChannelSelector selector;
     private final ConnectionHandler connectionHandler;

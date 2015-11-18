@@ -38,5 +38,5 @@ public interface ServerSocketChannelSelector extends RestartableTask {
      * @param channel The channel
      * @param runnable The runnable
      */
-    void register(IOServerSocketChannel channel, SelectorRunnable<IOServerSocketChannel> runnable);
+    void register(IOServerSocketChannel channel, SelectionRunnable<IOServerSocketChannel> runnable);
 }

@@ -38,7 +38,7 @@ import org.mockito.Mock;
 
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.selector.SelectorRunnable;
+import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 
 /**
  * Unit tests for {@link IOServerSocketChannelRegistrationRequest}.
@@ -51,7 +51,7 @@ public final class IOServerSocketChannelRegistrationRequestTest {
     @Mock
     private IOServerSocketChannel channel;
     @Mock
-    private SelectorRunnable<IOServerSocketChannel> task;
+    private SelectionRunnable<IOServerSocketChannel> task;
 
     @Before
     public void setUp() {

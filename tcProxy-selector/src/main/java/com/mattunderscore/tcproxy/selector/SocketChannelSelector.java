@@ -42,7 +42,7 @@ public interface SocketChannelSelector extends RestartableTask {
      * @param op The operation
      * @param runnable The runnable
      */
-    void register(IOSocketChannel channel, IOSelectionKey.Op op, SelectorRunnable<IOSocketChannel> runnable);
+    void register(IOSocketChannel channel, IOSelectionKey.Op op, SelectionRunnable<IOSocketChannel> runnable);
 
     /**
      * Register operations with the selector.
@@ -50,5 +50,5 @@ public interface SocketChannelSelector extends RestartableTask {
      * @param ops The operations
      * @param runnable The runnable
      */
-    void register(IOSocketChannel channel, Set<IOSelectionKey.Op> ops, SelectorRunnable<IOSocketChannel> runnable);
+    void register(IOSocketChannel channel, Set<IOSelectionKey.Op> ops, SelectionRunnable<IOSocketChannel> runnable);
 }
