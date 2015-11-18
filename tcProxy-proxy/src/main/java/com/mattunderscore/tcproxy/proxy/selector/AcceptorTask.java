@@ -33,15 +33,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.impl.IOFactoryImpl;
 import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
 import com.mattunderscore.tcproxy.proxy.OutboundSocketFactory;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionFactory;
-import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelectorFactory;
-import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
-import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
@@ -118,43 +114,5 @@ public final class AcceptorTask implements Runnable {
     public void waitForReady() throws InterruptedException {
         readyLatch.await();
         task.waitForRunning();
-    }
-
-    private static class AcceptorConnectionHandler implements ConnectionHandler {
-        private ConnectionFactory connectionFactory;
-        private OutboundSocketFactory factory;
-
-        public AcceptorConnectionHandler(ConnectionFactory connectionFactory, OutboundSocketFactory factory) {
-            this.connectionFactory = connectionFactory;
-            this.factory = factory;
-        }
-
-        @Override
-        public void onConnect(IOSocketChannel clientSide) {
-            try {
-                LOG.info("{} : Accepted {}", this, clientSide);
-                final IOSocketChannel serverSide = factory.createSocket();
-                LOG.info("{} : Opened {}", this, serverSide);
-                connectionFactory.create(clientSide, serverSide);
-            }
-            catch (IOException e) {
-                LOG.warn("{} : There was an unhandled exception in the main loop - continuing", this, e);
-            }
-        }
-    }
-
-    private static class AcceptorConnectionHandlerFactory implements ConnectionHandlerFactory {
-        private ConnectionFactory connectionFactory;
-        private OutboundSocketFactory factory;
-
-        public AcceptorConnectionHandlerFactory(ConnectionFactory connectionFactory, OutboundSocketFactory factory) {
-            this.connectionFactory = connectionFactory;
-            this.factory = factory;
-        }
-
-        @Override
-        public ConnectionHandler create(SocketChannelSelector selector) {
-            return new AcceptorConnectionHandler(connectionFactory, factory);
-        }
     }
 }
