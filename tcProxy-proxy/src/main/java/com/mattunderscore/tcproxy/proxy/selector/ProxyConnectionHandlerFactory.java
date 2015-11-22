@@ -25,12 +25,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.selector;
 
-import java.util.Queue;
-
 import com.mattunderscore.tcproxy.proxy.OutboundSocketFactory;
 import com.mattunderscore.tcproxy.proxy.ProxyServer;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
-import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
@@ -44,21 +41,21 @@ public final class ProxyConnectionHandlerFactory implements ConnectionHandlerFac
     private final OutboundSocketFactory factory;
     private final ConnectionSettings settings;
     private final ConnectionManager manager;
-    private final Queue<DirectionAndConnection> directions;
+    private final WriteTask writer;
 
     public ProxyConnectionHandlerFactory(
             OutboundSocketFactory factory,
             ConnectionSettings settings,
             ConnectionManager manager,
-            Queue<DirectionAndConnection> directions) {
+            WriteTask writer) {
         this.factory = factory;
         this.settings = settings;
         this.manager = manager;
-        this.directions = directions;
+        this.writer = writer;
     }
 
     @Override
     public ConnectionHandler create(SocketChannelSelector selector) {
-        return new ProxyConnectionHandler(factory, settings, manager, directions);
+        return new ProxyConnectionHandler(factory, settings, manager, writer);
     }
 }

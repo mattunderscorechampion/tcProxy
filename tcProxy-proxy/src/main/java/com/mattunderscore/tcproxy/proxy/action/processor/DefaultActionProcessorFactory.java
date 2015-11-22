@@ -28,8 +28,7 @@ package com.mattunderscore.tcproxy.proxy.action.processor;
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
 import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
-
-import java.util.Queue;
+import com.mattunderscore.tcproxy.proxy.selector.WriteTask;
 
 /**
  * Factory for default action processors.
@@ -37,15 +36,15 @@ import java.util.Queue;
  */
 public final class DefaultActionProcessorFactory implements ActionProcessorFactory {
     private final Connection connection;
-    private final Queue<DirectionAndConnection> directions;
+    private final WriteTask writer;
 
-    public DefaultActionProcessorFactory(final Connection connection, final Queue<DirectionAndConnection> directions) {
+    public DefaultActionProcessorFactory(Connection connection, WriteTask writer) {
         this.connection = connection;
-        this.directions = directions;
+        this.writer = writer;
     }
 
     @Override
     public ActionProcessor create(final Direction direction) {
-        return new DefaultActionProcessor(new DirectionAndConnection(direction, connection), directions);
+        return new DefaultActionProcessor(new DirectionAndConnection(direction, connection), writer);
     }
 }

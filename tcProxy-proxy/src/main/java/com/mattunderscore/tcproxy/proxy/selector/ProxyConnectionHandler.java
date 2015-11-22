@@ -26,7 +26,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy.selector;
 
 import java.io.IOException;
-import java.util.Queue;
 
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.ConnectionImpl;
@@ -39,7 +38,6 @@ import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueueImpl;
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
-import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.proxy.direction.DirectionImpl;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
@@ -52,17 +50,17 @@ class ProxyConnectionHandler implements ConnectionHandler {
     private final OutboundSocketFactory factory;
     private final ConnectionSettings settings;
     private final ConnectionManager manager;
-    private final Queue<DirectionAndConnection> directions;
+    private final WriteTask writer;
 
     public ProxyConnectionHandler(
             OutboundSocketFactory factory,
             ConnectionSettings settings,
             ConnectionManager manager,
-            Queue<DirectionAndConnection> directions) {
+            WriteTask writer) {
         this.factory = factory;
         this.settings = settings;
         this.manager = manager;
-        this.directions = directions;
+        this.writer = writer;
     }
 
     @Override
@@ -76,7 +74,7 @@ class ProxyConnectionHandler implements ConnectionHandler {
             final Direction direction0 = new DirectionImpl(clientSide, serverSide, actionQueue0);
             final Direction direction1 = new DirectionImpl(serverSide, clientSide, actionQueue1);
             final Connection conn = new ConnectionImpl(manager, direction0, direction1);
-            final ActionProcessorFactory processorFactory = new DefaultActionProcessorFactory(conn, directions);
+            final ActionProcessorFactory processorFactory = new DefaultActionProcessorFactory(conn, writer);
             manager.register(conn);
             direction0.chainProcessor(processorFactory);
             direction1.chainProcessor(processorFactory);

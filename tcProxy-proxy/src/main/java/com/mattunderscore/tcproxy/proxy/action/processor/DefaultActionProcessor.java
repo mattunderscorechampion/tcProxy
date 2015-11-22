@@ -25,11 +25,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.action.processor;
 
-import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.proxy.action.Action;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
-
-import java.util.Queue;
+import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
+import com.mattunderscore.tcproxy.proxy.selector.WriteTask;
 
 /**
  * ActionProcessor that puts the action on the directions action queue and the direction on the new direction queue if
@@ -39,17 +38,17 @@ import java.util.Queue;
 public final class DefaultActionProcessor implements ActionProcessor {
     private final DirectionAndConnection direction;
     private final ActionQueue actionQueue;
-    private final Queue<DirectionAndConnection> directions;
+    private final WriteTask writer;
 
     /**
      * Constructor for the default behaviour.
      * @param direction The direction the processor is for.
-     * @param directions The queue of new directions.
+     * @param writer The writer.
      */
-    public DefaultActionProcessor(final DirectionAndConnection direction, final Queue<DirectionAndConnection> directions) {
+    public DefaultActionProcessor(DirectionAndConnection direction, WriteTask writer) {
         this.direction = direction;
+        this.writer = writer;
         this.actionQueue = direction.getDirection().getQueue();
-        this.directions = directions;
     }
 
     @Override
@@ -58,7 +57,7 @@ public final class DefaultActionProcessor implements ActionProcessor {
             final boolean hasData = actionQueue.hasData();
             actionQueue.add(action);
             if (!hasData) {
-                directions.add(direction);
+                writer.registerNewWork(direction);
             }
         }
     }

@@ -26,21 +26,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy;
 
 import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
-import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
-import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.proxy.selector.AcceptorTask;
 import com.mattunderscore.tcproxy.proxy.selector.ProxyConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.proxy.selector.ReadTask;
+import com.mattunderscore.tcproxy.proxy.selector.WriteTask;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
@@ -55,7 +51,7 @@ import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 public final class ProxyServer {
     private static final Logger LOG = LoggerFactory.getLogger("proxy");
     private final AcceptorTask acceptor;
-    private final WriteSelector writer;
+    private final WriteTask writer;
     private final ReadTask proxy;
 
     public ProxyServer(
@@ -66,19 +62,16 @@ public final class ProxyServer {
         final ReadSelectorSettings readSelectorSettings,
         final ConnectionManager manager) throws IOException {
 
-        final BlockingQueue<DirectionAndConnection> newDirections = new ArrayBlockingQueue<>(5000);
         final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
 
-        final IOSelector writeSelector = StaticIOFactory.openSelector();
-
+        writer = new WriteTask();
         final ConnectionHandlerFactory connectionHandlerFactory = new ProxyConnectionHandlerFactory(
             socketFactory,
             connectionSettings,
             manager,
-            newDirections);
+            writer);
         acceptor = new AcceptorTask(acceptorSettings, inboundSocketSettings, connectionHandlerFactory);
         proxy = new ReadTask(CircularBufferImpl.allocateDirect(readSelectorSettings.getReadBufferSize()));
-        writer = new WriteSelector(writeSelector, newDirections);
 
         manager.addListener(new ConnectionManager.Listener() {
             @Override

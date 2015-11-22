@@ -31,13 +31,9 @@ import java.util.concurrent.CountDownLatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mattunderscore.tcproxy.io.CircularBuffer;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
-import com.mattunderscore.tcproxy.proxy.connection.Connection;
-import com.mattunderscore.tcproxy.proxy.direction.Direction;
 import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
@@ -46,19 +42,16 @@ import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
 /**
  * @author Matt Champion on 18/11/2015
  */
-public class ReadTask implements Runnable {
+public class WriteTask implements Runnable {
     public static final Logger LOG = LoggerFactory.getLogger("reader");
     private final CountDownLatch readyLatch = new CountDownLatch(1);
     private volatile RestartableTask task;
     private volatile SocketChannelSelector selector;
-    private final CircularBuffer circularBuffer;
 
     /**
      * Constructor.
-     * @param circularBuffer The read buffer
      */
-    public ReadTask(CircularBuffer circularBuffer) {
-        this.circularBuffer = circularBuffer;
+    public WriteTask() {
     }
 
     @Override
@@ -92,17 +85,7 @@ public class ReadTask implements Runnable {
         task.waitForRunning();
     }
 
-    public void queueNewConnection(Connection connection) {
-        final SocketChannelSelector currentSelector = selector;
-
-        final Direction cTs = connection.clientToServer();
-        final DirectionAndConnection dc0 = new DirectionAndConnection(cTs, connection);
-        final IOSocketChannel channel0 = cTs.getFrom();
-        currentSelector.register(channel0, IOSelectionKey.Op.READ, new ReadSelectionRunnable(dc0, circularBuffer));
-
-        final Direction sTc = connection.serverToClient();
-        final DirectionAndConnection dc1 = new DirectionAndConnection(sTc, connection);
-        final IOSocketChannel channel1 = sTc.getFrom();
-        currentSelector.register(channel1, IOSelectionKey.Op.READ, new ReadSelectionRunnable(dc1, circularBuffer));
+    public void registerNewWork(DirectionAndConnection dc) {
+        selector.register(dc.getDirection().getTo(), IOSelectionKey.Op.WRITE, new WriteSelectionRunnable(dc));
     }
 }
