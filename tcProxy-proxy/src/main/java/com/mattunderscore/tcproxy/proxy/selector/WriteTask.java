@@ -42,7 +42,7 @@ import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
 /**
  * @author Matt Champion on 18/11/2015
  */
-public class WriteTask implements Runnable {
+public class WriteTask implements Runnable, Writer {
     public static final Logger LOG = LoggerFactory.getLogger("reader");
     private final CountDownLatch readyLatch = new CountDownLatch(1);
     private volatile RestartableTask task;
@@ -85,6 +85,7 @@ public class WriteTask implements Runnable {
         task.waitForRunning();
     }
 
+    @Override
     public void registerNewWork(DirectionAndConnection dc) {
         selector.register(dc.getDirection().getTo(), IOSelectionKey.Op.WRITE, new WriteSelectionRunnable(dc));
     }

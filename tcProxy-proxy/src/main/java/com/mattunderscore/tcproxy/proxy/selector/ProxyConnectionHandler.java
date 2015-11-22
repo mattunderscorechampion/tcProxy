@@ -50,13 +50,13 @@ class ProxyConnectionHandler implements ConnectionHandler {
     private final OutboundSocketFactory factory;
     private final ConnectionSettings settings;
     private final ConnectionManager manager;
-    private final WriteTask writer;
+    private final Writer writer;
 
     public ProxyConnectionHandler(
             OutboundSocketFactory factory,
             ConnectionSettings settings,
             ConnectionManager manager,
-            WriteTask writer) {
+            Writer writer) {
         this.factory = factory;
         this.settings = settings;
         this.manager = manager;

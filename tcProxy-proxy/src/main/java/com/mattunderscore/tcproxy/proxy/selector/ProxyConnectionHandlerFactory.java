@@ -41,13 +41,13 @@ public final class ProxyConnectionHandlerFactory implements ConnectionHandlerFac
     private final OutboundSocketFactory factory;
     private final ConnectionSettings settings;
     private final ConnectionManager manager;
-    private final WriteTask writer;
+    private final Writer writer;
 
     public ProxyConnectionHandlerFactory(
             OutboundSocketFactory factory,
             ConnectionSettings settings,
             ConnectionManager manager,
-            WriteTask writer) {
+            Writer writer) {
         this.factory = factory;
         this.settings = settings;
         this.manager = manager;

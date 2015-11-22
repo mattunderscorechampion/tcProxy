@@ -28,7 +28,7 @@ package com.mattunderscore.tcproxy.proxy.action.processor;
 import com.mattunderscore.tcproxy.proxy.action.Action;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
 import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
-import com.mattunderscore.tcproxy.proxy.selector.WriteTask;
+import com.mattunderscore.tcproxy.proxy.selector.Writer;
 
 /**
  * ActionProcessor that puts the action on the directions action queue and the direction on the new direction queue if
@@ -38,14 +38,14 @@ import com.mattunderscore.tcproxy.proxy.selector.WriteTask;
 public final class DefaultActionProcessor implements ActionProcessor {
     private final DirectionAndConnection direction;
     private final ActionQueue actionQueue;
-    private final WriteTask writer;
+    private final Writer writer;
 
     /**
      * Constructor for the default behaviour.
      * @param direction The direction the processor is for.
      * @param writer The writer.
      */
-    public DefaultActionProcessor(DirectionAndConnection direction, WriteTask writer) {
+    public DefaultActionProcessor(DirectionAndConnection direction, Writer writer) {
         this.direction = direction;
         this.writer = writer;
         this.actionQueue = direction.getDirection().getQueue();
