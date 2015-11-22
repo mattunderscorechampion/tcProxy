@@ -25,6 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.connecting;
 
+import static java.util.Collections.singleton;
+
 import java.io.IOException;
 import java.util.Collection;
 
@@ -42,6 +44,15 @@ public final class SharedConnectingSelectorFactory implements SelectorFactory<Co
     private final Collection<IOServerSocketChannel> serverSocketChannels;
     private final ConnectionHandlerFactory connectionHandlerFactory;
     private final SocketConfigurator socketConfigurator;
+
+    public SharedConnectingSelectorFactory(
+        GeneralPurposeSelector generalPurposeSelector,
+        IOServerSocketChannel serverSocketChannel,
+        ConnectionHandlerFactory connectionHandlerFactory,
+        SocketConfigurator socketConfigurator) {
+
+        this(generalPurposeSelector, singleton(serverSocketChannel), connectionHandlerFactory, socketConfigurator);
+    }
 
     public SharedConnectingSelectorFactory(
         GeneralPurposeSelector generalPurposeSelector,

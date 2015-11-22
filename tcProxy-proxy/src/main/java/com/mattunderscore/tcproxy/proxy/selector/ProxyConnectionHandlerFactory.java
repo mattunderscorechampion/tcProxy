@@ -25,9 +25,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.selector;
 
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.proxy.OutboundSocketFactory;
 import com.mattunderscore.tcproxy.proxy.ProxyServer;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
+import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
@@ -41,21 +43,23 @@ public final class ProxyConnectionHandlerFactory implements ConnectionHandlerFac
     private final OutboundSocketFactory factory;
     private final ConnectionSettings settings;
     private final ConnectionManager manager;
-    private final Writer writer;
 
     public ProxyConnectionHandlerFactory(
             OutboundSocketFactory factory,
             ConnectionSettings settings,
-            ConnectionManager manager,
-            Writer writer) {
+            ConnectionManager manager) {
         this.factory = factory;
         this.settings = settings;
         this.manager = manager;
-        this.writer = writer;
     }
 
     @Override
-    public ConnectionHandler create(SocketChannelSelector selector) {
-        return new ProxyConnectionHandler(factory, settings, manager, writer);
+    public ConnectionHandler create(final SocketChannelSelector selector) {
+        return new ProxyConnectionHandler(factory, settings, manager, new Writer() {
+            @Override
+            public void registerNewWork(DirectionAndConnection dc) {
+                selector.register(dc.getDirection().getTo(), IOSelectionKey.Op.WRITE, new WriteSelectionRunnable(dc));
+            }
+        });
     }
 }

@@ -25,24 +25,40 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
+import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.openSelector;
+
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.concurrent.ThreadFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mattunderscore.tcproxy.io.CircularBuffer;
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
+import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
-import com.mattunderscore.tcproxy.proxy.selector.AcceptorTask;
+import com.mattunderscore.tcproxy.proxy.direction.Direction;
+import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.proxy.selector.ProxyConnectionHandlerFactory;
-import com.mattunderscore.tcproxy.proxy.selector.ReadTask;
-import com.mattunderscore.tcproxy.proxy.selector.WriteTask;
+import com.mattunderscore.tcproxy.proxy.selector.ReadSelectionRunnable;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
+import com.mattunderscore.tcproxy.selector.SelectorFactory;
+import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
+import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
+import com.mattunderscore.tcproxy.selector.connecting.SharedConnectingSelectorFactory;
+import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
+import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
+import com.mattunderscore.tcproxy.selector.threads.RestartableThread;
 
 /**
  * The proxy.
@@ -50,9 +66,13 @@ import com.mattunderscore.tcproxy.selector.server.SocketSettings;
  */
 public final class ProxyServer {
     private static final Logger LOG = LoggerFactory.getLogger("proxy");
-    private final AcceptorTask acceptor;
-    private final WriteTask writer;
-    private final ReadTask proxy;
+    private final AcceptSettings acceptorSettings;
+    private final ConnectionSettings connectionSettings;
+    private final SocketSettings inboundSocketSettings;
+    private final OutboundSocketSettings outboundSocketSettings;
+    private final ReadSelectorSettings readSelectorSettings;
+    private final ConnectionManager manager;
+    private volatile SocketChannelSelector currentSelector;
 
     public ProxyServer(
         final AcceptSettings acceptorSettings,
@@ -61,70 +81,91 @@ public final class ProxyServer {
         final OutboundSocketSettings outboundSocketSettings,
         final ReadSelectorSettings readSelectorSettings,
         final ConnectionManager manager) throws IOException {
+        this.acceptorSettings = acceptorSettings;
+        this.connectionSettings = connectionSettings;
+        this.inboundSocketSettings = inboundSocketSettings;
+        this.outboundSocketSettings = outboundSocketSettings;
+        this.readSelectorSettings = readSelectorSettings;
+        this.manager = manager;
+    }
 
-        final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
+    public void start() {
+        final SocketChannelSelector selector;
+        try {
+            final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
+            final GeneralPurposeSelector generalPurposeSelector = new GeneralPurposeSelector(openSelector());
+            final ConnectionHandlerFactory connectionHandlerFactory = new ProxyConnectionHandlerFactory(
+                socketFactory,
+                connectionSettings,
+                manager);
 
-        writer = new WriteTask();
-        final ConnectionHandlerFactory connectionHandlerFactory = new ProxyConnectionHandlerFactory(
-            socketFactory,
-            connectionSettings,
-            manager,
-            writer);
-        acceptor = new AcceptorTask(acceptorSettings, inboundSocketSettings, connectionHandlerFactory);
-        proxy = new ReadTask(CircularBufferImpl.allocateDirect(readSelectorSettings.getReadBufferSize()));
+            final IOServerSocketChannel channel = StaticIOFactory
+                .socketFactory(IOServerSocketChannel.class)
+                .receiveBuffer(inboundSocketSettings.getReceiveBuffer())
+                .reuseAddress(true)
+                .blocking(false)
+                .bind(new InetSocketAddress(acceptorSettings.getListenOn().iterator().next()))
+                .create();
 
+            final SelectorFactory<ConnectingSelector> connectingSelectorFactory = new SharedConnectingSelectorFactory(
+                generalPurposeSelector,
+                channel,
+                connectionHandlerFactory,
+                new SocketConfigurator(inboundSocketSettings));
+
+            selector = connectingSelectorFactory.create();
+        }
+        catch (IOException e) {
+            throw new IllegalStateException("Failed to start proxy server", e);
+        }
+
+        final CircularBuffer circularBuffer = CircularBufferImpl.allocateDirect(readSelectorSettings.getReadBufferSize());
         manager.addListener(new ConnectionManager.Listener() {
             @Override
             public void newConnection(final Connection connection) {
-                proxy.queueNewConnection(connection);
+                final Direction cTs = connection.clientToServer();
+                final DirectionAndConnection dc0 = new DirectionAndConnection(cTs, connection);
+                final IOSocketChannel channel0 = cTs.getFrom();
+                selector.register(channel0, IOSelectionKey.Op.READ, new ReadSelectionRunnable(dc0, circularBuffer));
+
+                final Direction sTc = connection.serverToClient();
+                final DirectionAndConnection dc1 = new DirectionAndConnection(sTc, connection);
+                final IOSocketChannel channel1 = sTc.getFrom();
+                selector.register(channel1, IOSelectionKey.Op.READ, new ReadSelectionRunnable(dc1, circularBuffer));
             }
 
             @Override
             public void closedConnection(final Connection connection) {
             }
         });
+
+        final RestartableThread selectorThread = new RestartableThread(
+            new ThreadFactory() {
+                @Override
+                public Thread newThread(Runnable r) {
+                    final Thread newThread = new Thread(r);
+                    newThread.setName("tcProxy - Acceptor Thread");
+
+                    newThread.setDaemon(false);
+
+                    final ExceptionHandler handler = new ExceptionHandler();
+                    newThread.setUncaughtExceptionHandler(handler);
+                    return newThread;
+                }
+            },
+            selector);
+
+        selectorThread.start();
+        currentSelector = selector;
+        selector.waitForRunning();
     }
 
-    public void start() {
-        final Thread acceptorThread = new Thread(acceptor);
-        final Thread readerThread = new Thread(proxy);
-        final Thread writerThread = new Thread(writer);
-
-        acceptorThread.setName("tcProxy - Acceptor Thread");
-        readerThread.setName("tcProxy - Reader Thread");
-        writerThread.setName("tcProxy - Writer Thread");
-
-        acceptorThread.setDaemon(false);
-        readerThread.setDaemon(false);
-        writerThread.setDaemon(false);
-
-        final ExceptionHandler handler = new ExceptionHandler();
-        acceptorThread.setUncaughtExceptionHandler(handler);
-        readerThread.setUncaughtExceptionHandler(handler);
-        writerThread.setUncaughtExceptionHandler(handler);
-
-        acceptorThread.start();
-        readerThread.start();
-        writerThread.start();
-
-        try {
-            acceptor.waitForReady();
-            proxy.waitForReady();
-            writer.waitForReady();
-        }
-        catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public void stop() {
-        writer.stop();
-        proxy.stop();
-        acceptor.stop();
+        currentSelector.stop();
     }
 
     private final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
-
         @Override
         public void uncaughtException(Thread t, Throwable e) {
             LOG.error("Uncaught exception in thread '{}'", t, e);

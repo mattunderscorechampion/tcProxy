@@ -27,6 +27,9 @@ package com.mattunderscore.tcproxy.proxy.selector;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.ConnectionImpl;
 import com.mattunderscore.tcproxy.proxy.OutboundSocketFactory;
@@ -47,6 +50,7 @@ import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
  * @author Matt Champion on 18/11/2015
  */
 class ProxyConnectionHandler implements ConnectionHandler {
+    private static final Logger LOG = LoggerFactory.getLogger("acceptor");
     private final OutboundSocketFactory factory;
     private final ConnectionSettings settings;
     private final ConnectionManager manager;
@@ -66,9 +70,9 @@ class ProxyConnectionHandler implements ConnectionHandler {
     @Override
     public void onConnect(IOSocketChannel clientSide) {
         try {
-            AcceptorTask.LOG.info("{} : Accepted {}", this, clientSide);
+            LOG.info("{} : Accepted {}", this, clientSide);
             final IOSocketChannel serverSide = factory.createSocket();
-            AcceptorTask.LOG.info("{} : Opened {}", this, serverSide);
+            LOG.info("{} : Opened {}", this, serverSide);
             final ActionQueue actionQueue0 = new ActionQueueImpl(settings.getWriteQueueSize(), settings.getBatchSize());
             final ActionQueue actionQueue1 = new ActionQueueImpl(settings.getWriteQueueSize(), settings.getBatchSize());
             final Direction direction0 = new DirectionImpl(clientSide, serverSide, actionQueue0);
@@ -80,7 +84,7 @@ class ProxyConnectionHandler implements ConnectionHandler {
             direction1.chainProcessor(processorFactory);
         }
         catch (IOException e) {
-            AcceptorTask.LOG.warn("{} : There was an unhandled exception in the main loop - continuing", this, e);
+            LOG.warn("{} : There was an unhandled exception in the main loop - continuing", this, e);
         }
     }
 }
