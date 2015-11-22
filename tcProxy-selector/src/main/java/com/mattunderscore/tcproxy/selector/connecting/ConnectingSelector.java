@@ -33,11 +33,11 @@ import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
-import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 import com.mattunderscore.tcproxy.selector.connecting.task.AcceptingTask;
+import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
+import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 
 /**
  * A selector that accepts and completes the connection of new sockets. A task is registered to accept new connections.
@@ -84,44 +84,5 @@ public final class ConnectingSelector implements SocketChannelSelector {
     @Override
     public void waitForStopped() {
         selector.waitForStopped();
-    }
-
-    /**
-     * Open a new selector that will accept an complete the connection process.
-     * @param ioSelector Selector
-     * @param serverSocketChannel Server channel to listen for new connections on
-     * @param connectionHandlerFactory Factory handler
-     * @param socketConfigurator A configurator for accepted sockets
-     * @return A connecting selector
-     */
-    public static ConnectingSelector open(
-            IOSelector ioSelector,
-            IOServerSocketChannel serverSocketChannel,
-            ConnectionHandlerFactory connectionHandlerFactory,
-            SocketConfigurator socketConfigurator) {
-        return open(ioSelector, Collections.singleton(serverSocketChannel), connectionHandlerFactory, socketConfigurator);
-    }
-
-    /**
-     * Open a new selector that will accept an complete the connection process.
-     * @param ioSelector Selector
-     * @param serverSocketChannels A collection of the server channels to listen for new connections on
-     * @param connectionHandlerFactory Factory handler
-     * @param socketConfigurator A configurator for accepted sockets
-     * @return A connecting selector
-     */
-    public static ConnectingSelector open(
-            IOSelector ioSelector,
-            Collection<IOServerSocketChannel> serverSocketChannels,
-            ConnectionHandlerFactory connectionHandlerFactory,
-            SocketConfigurator socketConfigurator) {
-        final GeneralPurposeSelector generalPurposeSelector = new GeneralPurposeSelector(ioSelector);
-        final ConnectingSelector selector = new ConnectingSelector(generalPurposeSelector);
-        for (final IOServerSocketChannel serverSocketChannel : serverSocketChannels) {
-            generalPurposeSelector.register(
-                serverSocketChannel,
-                new AcceptingTask(selector, connectionHandlerFactory.create(selector), socketConfigurator));
-        }
-        return selector;
     }
 }

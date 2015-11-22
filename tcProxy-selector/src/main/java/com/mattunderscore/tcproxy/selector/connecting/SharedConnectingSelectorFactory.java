@@ -27,10 +27,7 @@ package com.mattunderscore.tcproxy.selector.connecting;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 
-import com.mattunderscore.tcproxy.io.IOFactory;
-import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.connecting.task.AcceptingTask;
@@ -38,29 +35,21 @@ import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 
 /**
- * Factory for {@link ConnectingSelector}.
- * @author Matt Champion on 09/11/2015
+ * @author Matt Champion on 22/11/2015
  */
-public final class ConnectingSelectorFactory implements SelectorFactory<ConnectingSelector> {
-    private final IOFactory ioFactory;
-    private Collection<IOServerSocketChannel> serverSocketChannels;
-    private ConnectionHandlerFactory connectionHandlerFactory;
-    private SocketConfigurator socketConfigurator;
+public final class SharedConnectingSelectorFactory implements SelectorFactory<ConnectingSelector> {
+    private final GeneralPurposeSelector generalPurposeSelector;
+    private final Collection<IOServerSocketChannel> serverSocketChannels;
+    private final ConnectionHandlerFactory connectionHandlerFactory;
+    private final SocketConfigurator socketConfigurator;
 
-    public ConnectingSelectorFactory(
-        IOFactory ioFactory,
-        IOServerSocketChannel channel,
+    public SharedConnectingSelectorFactory(
+        GeneralPurposeSelector generalPurposeSelector,
+        Collection<IOServerSocketChannel> serverSocketChannels,
         ConnectionHandlerFactory connectionHandlerFactory,
         SocketConfigurator socketConfigurator) {
-        this(ioFactory, Collections.singleton(channel), connectionHandlerFactory, socketConfigurator);
-    }
 
-    public ConnectingSelectorFactory(
-            IOFactory ioFactory,
-            Collection<IOServerSocketChannel> serverSocketChannels,
-            ConnectionHandlerFactory connectionHandlerFactory,
-            SocketConfigurator socketConfigurator) {
-        this.ioFactory = ioFactory;
+        this.generalPurposeSelector = generalPurposeSelector;
         this.serverSocketChannels = serverSocketChannels;
         this.connectionHandlerFactory = connectionHandlerFactory;
         this.socketConfigurator = socketConfigurator;
@@ -68,8 +57,6 @@ public final class ConnectingSelectorFactory implements SelectorFactory<Connecti
 
     @Override
     public ConnectingSelector create() throws IOException {
-        final IOSelector ioSelector = ioFactory.openSelector();
-        final GeneralPurposeSelector generalPurposeSelector = new GeneralPurposeSelector(ioSelector);
         final ConnectingSelector selector = new ConnectingSelector(generalPurposeSelector);
         for (final IOServerSocketChannel serverSocketChannel : serverSocketChannels) {
             generalPurposeSelector.register(
