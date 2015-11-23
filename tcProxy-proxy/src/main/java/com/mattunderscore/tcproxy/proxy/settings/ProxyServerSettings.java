@@ -29,14 +29,15 @@ import com.mattunderscore.tcproxy.selector.NoBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
-import lombok.Builder;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Value;
 
 /**
  * @author Matt Champion on 23/11/2015
  */
 @Value
-@Builder
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public final class ProxyServerSettings {
     AcceptSettings acceptSettings;
     ConnectionSettings connectionSettings;
@@ -46,6 +47,56 @@ public final class ProxyServerSettings {
     SelectorBackoff backoff;
 
     public static ProxyServerSettingsBuilder builder() {
-        return new ProxyServerSettingsBuilder().backoff(new NoBackoff());
+        return new ProxyServerSettingsBuilder();
+    }
+
+    public static class ProxyServerSettingsBuilder {
+        private AcceptSettings acceptSettings;
+        private ConnectionSettings connectionSettings;
+        private SocketSettings inboundSocketSettings;
+        private OutboundSocketSettings outboundSocketSettings;
+        private ReadSelectorSettings readSelectorSettings;
+        private SelectorBackoff backoff = new NoBackoff();
+
+        ProxyServerSettingsBuilder() {
+        }
+
+        public ProxyServerSettings.ProxyServerSettingsBuilder acceptSettings(AcceptSettings acceptSettings) {
+            this.acceptSettings = acceptSettings;
+            return this;
+        }
+
+        public ProxyServerSettings.ProxyServerSettingsBuilder connectionSettings(ConnectionSettings connectionSettings) {
+            this.connectionSettings = connectionSettings;
+            return this;
+        }
+
+        public ProxyServerSettings.ProxyServerSettingsBuilder inboundSocketSettings(SocketSettings inboundSocketSettings) {
+            this.inboundSocketSettings = inboundSocketSettings;
+            return this;
+        }
+
+        public ProxyServerSettings.ProxyServerSettingsBuilder outboundSocketSettings(OutboundSocketSettings outboundSocketSettings) {
+            this.outboundSocketSettings = outboundSocketSettings;
+            return this;
+        }
+
+        public ProxyServerSettings.ProxyServerSettingsBuilder readSelectorSettings(ReadSelectorSettings readSelectorSettings) {
+            this.readSelectorSettings = readSelectorSettings;
+            return this;
+        }
+
+        public ProxyServerSettings.ProxyServerSettingsBuilder backoff(SelectorBackoff backoff) {
+            this.backoff = backoff;
+            return this;
+        }
+
+        public ProxyServerSettings build() {
+            return new ProxyServerSettings(this.acceptSettings, this.connectionSettings, this.inboundSocketSettings, this.outboundSocketSettings, this.readSelectorSettings, this.backoff);
+        }
+
+        public String toString() {
+            return "ProxyServerSettings.ProxyServerSettingsBuilder(acceptSettings=" + this.acceptSettings + ", connectionSettings=" + this.connectionSettings + ", inboundSocketSettings=" + this.inboundSocketSettings + ", outboundSocketSettings=" + this.outboundSocketSettings + ", readSelectorSettings=" + this.readSelectorSettings + ", backoff=" + this.backoff + ")";
+        }
     }
 }
