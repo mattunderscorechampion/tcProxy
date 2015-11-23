@@ -23,42 +23,14 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.mattunderscore.tcproxy.selector;
 
 /**
  * @author Matt Champion on 24/09/14.
  */
-public class BinaryBackoff implements SelectorBackoff {
-    private static final Logger LOG = LoggerFactory.getLogger("backoff");
-    private volatile long currentBackoff;
-    private final long backoff;
+public interface SelectorBackoff {
 
-    public BinaryBackoff(long backoff) {
-        this.backoff = backoff;
-    }
+    void selected(int selected);
 
-    @Override
-    public void selected(int selected) {
-        if (selected > 0) {
-            currentBackoff = 0L;
-        }
-        else {
-            currentBackoff = backoff;
-        }
-    }
-
-    @Override
-    public void backoff() {
-        final long time = currentBackoff;
-        if (time > 0L) {
-            try {
-                Thread.sleep(currentBackoff);
-            } catch (InterruptedException e) {
-                LOG.debug("Interrupted while backing");
-            }
-        }
-    }
+    void backoff();
 }
