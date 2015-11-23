@@ -1,4 +1,4 @@
-/* Copyright © 2014 Matthew Champion
+/* Copyright © 2015 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -25,30 +25,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- * Simple implementation of back off.
- * @author Matt Champion on 24/09/14.
+ * No-op backoff.
+ * @author Matt Champion on 23/11/2015
  */
-public final class BinaryBackoff implements SelectorBackoff {
-    private static final Logger LOG = LoggerFactory.getLogger("backoff");
-    private final long backoff;
-
-    public BinaryBackoff(long backoff) {
-        this.backoff = backoff;
-    }
-
+public class NoBackoff implements SelectorBackoff {
     @Override
     public void backoff(int selected) {
-        if (selected == 0) {
-            try {
-                Thread.sleep(backoff);
-            }
-            catch (InterruptedException e) {
-                LOG.debug("Interrupted while backing");
-            }
-        }
     }
 }

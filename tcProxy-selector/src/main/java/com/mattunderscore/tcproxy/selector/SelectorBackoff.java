@@ -30,7 +30,5 @@ package com.mattunderscore.tcproxy.selector;
  */
 public interface SelectorBackoff {
 
-    void selected(int selected);
-
-    void backoff();
+    void backoff(int selected);
 }

@@ -28,6 +28,8 @@ package com.mattunderscore.tcproxy.proxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mattunderscore.tcproxy.selector.SelectorBackoff;
+
 /**
  * @author Matt Champion on 24/09/14.
  */
@@ -40,11 +42,7 @@ public final class FixedBackoff implements SelectorBackoff {
     }
 
     @Override
-    public void selected(int selected) {
-    }
-
-    @Override
-    public void backoff() {
+    public void backoff(int selected) {
         try {
             Thread.sleep(backoff);
         }
