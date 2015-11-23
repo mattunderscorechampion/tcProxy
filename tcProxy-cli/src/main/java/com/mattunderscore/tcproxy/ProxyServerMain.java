@@ -52,6 +52,7 @@ import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
+import com.mattunderscore.tcproxy.proxy.settings.ProxyServerSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
@@ -84,24 +85,28 @@ public final class ProxyServerMain {
         try {
             final ConnectionManager manager = new ConnectionManager();
             final ProxyServer server = new ProxyServer(
-                AcceptSettings
+                ProxyServerSettings
                     .builder()
-                    .listenOn((Integer) settings.get(INBOUND_PORT))
+                    .acceptSettings(AcceptSettings
+                        .builder()
+                        .listenOn((Integer) settings.get(INBOUND_PORT))
+                        .build())
+                    .connectionSettings(new ConnectionSettings((Integer)settings.get(QUEUE_SIZE), (Integer)settings.get(BATCH_SIZE)))
+                    .inboundSocketSettings(SocketSettings
+                        .builder()
+                        .receiveBuffer((Integer) settings.get(RECEIVE_BUFFER))
+                        .sendBuffer((Integer) settings.get(SEND_BUFFER))
+                        .build())
+                    .outboundSocketSettings(
+                        OutboundSocketSettings
+                            .builder()
+                            .port((Integer)settings.get(OUTBOUND_PORT))
+                            .host((String)settings.get(OUTBOUND_HOST))
+                            .receiveBuffer((Integer)settings.get(RECEIVE_BUFFER))
+                            .sendBuffer((Integer)settings.get(SEND_BUFFER))
+                            .build())
+                    .readSelectorSettings(new ReadSelectorSettings((Integer)settings.get(RECEIVE_BUFFER)))
                     .build(),
-                new ConnectionSettings((Integer)settings.get(QUEUE_SIZE), (Integer)settings.get(BATCH_SIZE)),
-                SocketSettings
-                    .builder()
-                    .receiveBuffer((Integer) settings.get(RECEIVE_BUFFER))
-                    .sendBuffer((Integer) settings.get(SEND_BUFFER))
-                    .build(),
-                OutboundSocketSettings
-                    .builder()
-                    .port((Integer)settings.get(OUTBOUND_PORT))
-                    .host((String)settings.get(OUTBOUND_HOST))
-                    .receiveBuffer((Integer)settings.get(RECEIVE_BUFFER))
-                    .sendBuffer((Integer)settings.get(SEND_BUFFER))
-                    .build(),
-                new ReadSelectorSettings((Integer)settings.get(RECEIVE_BUFFER)),
                 manager);
 
             manager.addListener(new ConnectionManager.Listener() {

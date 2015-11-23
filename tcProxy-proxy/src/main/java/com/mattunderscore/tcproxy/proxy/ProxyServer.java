@@ -48,8 +48,10 @@ import com.mattunderscore.tcproxy.proxy.selector.ProxyConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.proxy.selector.ReadSelectionRunnable;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
+import com.mattunderscore.tcproxy.proxy.settings.ProxyServerSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import com.mattunderscore.tcproxy.selector.BinaryBackoff;
+import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelector;
@@ -72,21 +74,19 @@ public final class ProxyServer {
     private final SocketSettings inboundSocketSettings;
     private final OutboundSocketSettings outboundSocketSettings;
     private final ReadSelectorSettings readSelectorSettings;
+    private final SelectorBackoff selectorBackoff;
     private final ConnectionManager manager;
     private volatile SocketChannelSelector currentSelector;
 
     public ProxyServer(
-        final AcceptSettings acceptorSettings,
-        final ConnectionSettings connectionSettings,
-        final SocketSettings inboundSocketSettings,
-        final OutboundSocketSettings outboundSocketSettings,
-        final ReadSelectorSettings readSelectorSettings,
-        final ConnectionManager manager) throws IOException {
-        this.acceptorSettings = acceptorSettings;
-        this.connectionSettings = connectionSettings;
-        this.inboundSocketSettings = inboundSocketSettings;
-        this.outboundSocketSettings = outboundSocketSettings;
-        this.readSelectorSettings = readSelectorSettings;
+        ProxyServerSettings settings,
+        ConnectionManager manager) throws IOException {
+        this.acceptorSettings = settings.getAcceptSettings();
+        this.connectionSettings = settings.getConnectionSettings();
+        this.inboundSocketSettings = settings.getInboundSocketSettings();
+        this.outboundSocketSettings = settings.getOutboundSocketSettings();
+        this.readSelectorSettings = settings.getReadSelectorSettings();
+        this.selectorBackoff = settings.getBackoff();
         this.manager = manager;
     }
 
@@ -95,7 +95,7 @@ public final class ProxyServer {
         try {
             final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
             final GeneralPurposeSelector generalPurposeSelector =
-                new GeneralPurposeSelector(openSelector(), new BinaryBackoff(10L));
+                new GeneralPurposeSelector(openSelector(), selectorBackoff);
             final ConnectionHandlerFactory connectionHandlerFactory = new ProxyConnectionHandlerFactory(
                 socketFactory,
                 connectionSettings,

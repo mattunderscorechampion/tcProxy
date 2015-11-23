@@ -37,7 +37,9 @@ import com.mattunderscore.tcproxy.proxy.ProxyServer;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
+import com.mattunderscore.tcproxy.proxy.settings.ProxyServerSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
+import com.mattunderscore.tcproxy.selector.BinaryBackoff;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
@@ -65,7 +67,17 @@ public final class MainFrame extends JFrame {
                     try {
                         add(new ConnectionsPanel(manager));
                         validate();
-                        final ProxyServer proxy = new ProxyServer(acceptorSettings, connectionSettings, inboundSocketSettings, outboundSocketSettings, readSelectorSettings, manager);
+                        final ProxyServer proxy = new ProxyServer(
+                            ProxyServerSettings
+                                .builder()
+                                .acceptSettings(acceptorSettings)
+                                .connectionSettings(connectionSettings)
+                                .inboundSocketSettings(inboundSocketSettings)
+                                .outboundSocketSettings(outboundSocketSettings)
+                                .readSelectorSettings(readSelectorSettings)
+                                .backoff(new BinaryBackoff(10L))
+                                .build(),
+                            manager);
                         proxy.start();
                     }
                     catch (final IOException e) {
