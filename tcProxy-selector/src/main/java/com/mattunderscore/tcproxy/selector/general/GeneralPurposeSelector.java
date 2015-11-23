@@ -41,7 +41,9 @@ import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.selector.NoBackoff;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
+import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.ServerSocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.threads.LifecycleState;
@@ -57,9 +59,15 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
     private final BlockingQueue<RegistrationRequest> registrations = new ArrayBlockingQueue<>(64);
     private final LifecycleState lifecycleState = new LifecycleState();
     private final IOSelector selector;
+    private final SelectorBackoff backoff;
 
     public GeneralPurposeSelector(IOSelector selector) {
+        this(selector, new NoBackoff());
+    }
+
+    public GeneralPurposeSelector(IOSelector selector, SelectorBackoff backoff) {
         this.selector = selector;
+        this.backoff = backoff;
     }
 
     @Override
@@ -88,13 +96,17 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
             }
 
             // Process the selector set
-            final Iterator<IOSelectionKey> selectedKeys = selector.selectedKeys().iterator();
+            final Set<IOSelectionKey> selectedKeySet = selector.selectedKeys();
+            final int selectedSize = selectedKeySet.size();
+            final Iterator<IOSelectionKey> selectedKeys = selectedKeySet.iterator();
             while (selectedKeys.hasNext()) {
                 final IOSelectionKey key = selectedKeys.next();
                 selectedKeys.remove();
                 final Registration registration = (Registration) key.attachment();
                 registration.run(key);
             }
+
+            backoff.backoff(selectedSize);
         }
 
         lifecycleState.endShutdown();
