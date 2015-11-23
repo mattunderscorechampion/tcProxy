@@ -32,6 +32,8 @@ import java.util.Collections;
 import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.selector.NoBackoff;
+import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.connecting.task.AcceptingTask;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
@@ -43,9 +45,10 @@ import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
  */
 public final class ConnectingSelectorFactory implements SelectorFactory<ConnectingSelector> {
     private final IOFactory ioFactory;
-    private Collection<IOServerSocketChannel> serverSocketChannels;
-    private ConnectionHandlerFactory connectionHandlerFactory;
-    private SocketConfigurator socketConfigurator;
+    private final Collection<IOServerSocketChannel> serverSocketChannels;
+    private final ConnectionHandlerFactory connectionHandlerFactory;
+    private final SocketConfigurator socketConfigurator;
+    private final SelectorBackoff backoff;
 
     public ConnectingSelectorFactory(
         IOFactory ioFactory,
@@ -60,16 +63,26 @@ public final class ConnectingSelectorFactory implements SelectorFactory<Connecti
             Collection<IOServerSocketChannel> serverSocketChannels,
             ConnectionHandlerFactory connectionHandlerFactory,
             SocketConfigurator socketConfigurator) {
+        this(ioFactory, serverSocketChannels, connectionHandlerFactory, socketConfigurator, new NoBackoff());
+    }
+
+    public ConnectingSelectorFactory(
+        IOFactory ioFactory,
+        Collection<IOServerSocketChannel> serverSocketChannels,
+        ConnectionHandlerFactory connectionHandlerFactory,
+        SocketConfigurator socketConfigurator,
+        SelectorBackoff backoff) {
         this.ioFactory = ioFactory;
         this.serverSocketChannels = serverSocketChannels;
         this.connectionHandlerFactory = connectionHandlerFactory;
         this.socketConfigurator = socketConfigurator;
+        this.backoff = backoff;
     }
 
     @Override
     public ConnectingSelector create() throws IOException {
         final IOSelector ioSelector = ioFactory.openSelector();
-        final GeneralPurposeSelector generalPurposeSelector = new GeneralPurposeSelector(ioSelector);
+        final GeneralPurposeSelector generalPurposeSelector = new GeneralPurposeSelector(ioSelector, backoff);
         final ConnectingSelector selector = new ConnectingSelector(generalPurposeSelector);
         for (final IOServerSocketChannel serverSocketChannel : serverSocketChannels) {
             generalPurposeSelector.register(

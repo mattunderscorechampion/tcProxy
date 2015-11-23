@@ -44,6 +44,7 @@ import org.mockito.stubbing.Answer;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.selector.NoBackoff;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 
 /**
@@ -77,7 +78,7 @@ public final class GeneralPurposeSelectorTest {
         selectionKeySet.add(key);
         when(ioSelector.selectedKeys()).thenReturn(selectionKeySet);
 
-        final GeneralPurposeSelector selector = new GeneralPurposeSelector(ioSelector);
+        final GeneralPurposeSelector selector = new GeneralPurposeSelector(ioSelector, new NoBackoff());
         selector.register(channel, READ, new SelectionRunnable<IOSocketChannel>() {
             @Override
             public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {

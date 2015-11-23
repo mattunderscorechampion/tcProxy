@@ -41,7 +41,6 @@ import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.selector.NoBackoff;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.ServerSocketChannelSelector;
@@ -60,10 +59,6 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
     private final LifecycleState lifecycleState = new LifecycleState();
     private final IOSelector selector;
     private final SelectorBackoff backoff;
-
-    public GeneralPurposeSelector(IOSelector selector) {
-        this(selector, new NoBackoff());
-    }
 
     public GeneralPurposeSelector(IOSelector selector, SelectorBackoff backoff) {
         this.selector = selector;

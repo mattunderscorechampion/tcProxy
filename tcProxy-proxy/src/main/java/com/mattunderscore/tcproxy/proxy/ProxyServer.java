@@ -49,6 +49,7 @@ import com.mattunderscore.tcproxy.proxy.selector.ReadSelectionRunnable;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
+import com.mattunderscore.tcproxy.selector.BinaryBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelector;
@@ -93,7 +94,8 @@ public final class ProxyServer {
         final SocketChannelSelector selector;
         try {
             final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
-            final GeneralPurposeSelector generalPurposeSelector = new GeneralPurposeSelector(openSelector());
+            final GeneralPurposeSelector generalPurposeSelector =
+                new GeneralPurposeSelector(openSelector(), new BinaryBackoff(10L));
             final ConnectionHandlerFactory connectionHandlerFactory = new ProxyConnectionHandlerFactory(
                 socketFactory,
                 connectionSettings,
