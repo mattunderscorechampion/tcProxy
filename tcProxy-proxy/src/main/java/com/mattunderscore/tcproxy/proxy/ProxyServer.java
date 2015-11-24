@@ -32,6 +32,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,8 +82,7 @@ public final class ProxyServer implements Server {
     private final SelectorBackoff selectorBackoff;
     private final ConnectionManager manager;
     private final ThreadFactory factory;
-    private volatile CountDownLatch currentReadyLatch = new CountDownLatch(1);
-    private volatile SocketChannelSelector currentSelector;
+    private final AtomicReference<ProxyServerState> serverState = new AtomicReference<ProxyServerState>(new StoppedState());
 
     public ProxyServer(
         ProxyServerSettings settings,
@@ -162,51 +162,35 @@ public final class ProxyServer implements Server {
         });
 
         final RestartableThread selectorThread = new RestartableThread(factory, selector);
-
+        final ProxyServerState oldState = serverState.getAndSet(new RunningState(selector));
         selectorThread.start();
-        currentSelector = selector;
-        selector.waitForRunning();
-        currentReadyLatch.countDown();
+        oldState.notifyStarted();
     }
 
     @Override
     public void stop() {
-        try {
-            currentReadyLatch.await();
-        }
-        catch (InterruptedException e) {
-            throw new UncheckedInterruptedException(e);
-        }
-        currentReadyLatch = new CountDownLatch(1);
-        currentSelector.stop();
+        final ProxyServerState runningState = serverState.getAndSet(new StoppingState());
+        runningState.requestStop();
+        runningState.waitForStopped();
+        final ProxyServerState stoppingState = serverState.getAndSet(new StoppedState());
+        stoppingState.notifyStopped();
     }
 
     @Override
     public void restart() {
         stop();
+        waitForStopped();
         start();
     }
 
     @Override
     public void waitForRunning() {
-        try {
-            currentReadyLatch.await();
-        }
-        catch (InterruptedException e) {
-            throw new UncheckedInterruptedException(e);
-        }
-        currentSelector.waitForRunning();
+        serverState.get().waitForRunning();
     }
 
     @Override
     public void waitForStopped() {
-        try {
-            currentReadyLatch.await();
-        }
-        catch (InterruptedException e) {
-            throw new UncheckedInterruptedException(e);
-        }
-        currentSelector.waitForStopped();
+        serverState.get().waitForStopped();
     }
 
     private final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
@@ -214,6 +198,113 @@ public final class ProxyServer implements Server {
         public void uncaughtException(Thread t, Throwable e) {
             LOG.error("Uncaught exception in thread '{}'", t, e);
             stop();
+        }
+    }
+
+    private interface ProxyServerState {
+        void notifyStarted();
+
+        void notifyStopped();
+
+        void requestStop();
+
+        void waitForRunning();
+
+        void waitForStopped();
+    }
+
+    private static final class RunningState implements ProxyServerState {
+        private final SocketChannelSelector selector;
+
+        private RunningState(SocketChannelSelector selector) {
+            this.selector = selector;
+        }
+
+        @Override
+        public void notifyStarted() {
+        }
+
+        @Override
+        public void notifyStopped() {
+        }
+
+        @Override
+        public void requestStop() {
+            selector.stop();
+        }
+
+        @Override
+        public void waitForRunning() {
+            selector.waitForRunning();
+        }
+
+        @Override
+        public void waitForStopped() {
+            selector.waitForStopped();
+        }
+    }
+
+    private static final class StoppingState implements ProxyServerState {
+        private final CountDownLatch stoppedLatch = new CountDownLatch(1);
+
+        @Override
+        public void notifyStarted() {
+        }
+
+        @Override
+        public void notifyStopped() {
+            stoppedLatch.countDown();
+        }
+
+        @Override
+        public void requestStop() {
+        }
+
+        @Override
+        public void waitForRunning() {
+        }
+
+        @Override
+        public void waitForStopped() {
+            try {
+                stoppedLatch.await();
+            }
+            catch (InterruptedException e) {
+                throw new UncheckedInterruptedException(e);
+            }
+        }
+    }
+
+    private static final class StoppedState implements ProxyServerState {
+        private final CountDownLatch readyLatch = new CountDownLatch(1);
+
+        @Override
+        public void notifyStarted() {
+            readyLatch.countDown();
+        }
+
+        @Override
+        public void notifyStopped() {
+            throw new IllegalStateException("Not currently running");
+        }
+
+        @Override
+        public void requestStop() {
+            throw new IllegalStateException("Not currently running");
+        }
+
+        @Override
+        public void waitForRunning() {
+            try {
+                readyLatch.await();
+            }
+            catch (InterruptedException e) {
+                throw new UncheckedInterruptedException(e);
+            }
+        }
+
+        @Override
+        public void waitForStopped() {
         }
     }
 }
