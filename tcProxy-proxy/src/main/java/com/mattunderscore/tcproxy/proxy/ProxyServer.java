@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +72,7 @@ import com.mattunderscore.tcproxy.selector.threads.UncheckedInterruptedException
  */
 public final class ProxyServer implements Server {
     private static final Logger LOG = LoggerFactory.getLogger("proxy");
+    private static final AtomicInteger THREAD_COUNT = new AtomicInteger(0);
     private final AcceptSettings acceptorSettings;
     private final ConnectionSettings connectionSettings;
     private final SocketSettings inboundSocketSettings;
@@ -78,6 +80,7 @@ public final class ProxyServer implements Server {
     private final ReadSelectorSettings readSelectorSettings;
     private final SelectorBackoff selectorBackoff;
     private final ConnectionManager manager;
+    private final ThreadFactory factory;
     private volatile CountDownLatch currentReadyLatch = new CountDownLatch(1);
     private volatile SocketChannelSelector currentSelector;
 
@@ -91,6 +94,19 @@ public final class ProxyServer implements Server {
         this.readSelectorSettings = settings.getReadSelectorSettings();
         this.selectorBackoff = settings.getBackoff();
         this.manager = manager;
+        this.factory = new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                final Thread newThread = new Thread(r);
+                newThread.setName("tcProxy - Acceptor Thread - " + THREAD_COUNT.getAndIncrement());
+
+                newThread.setDaemon(false);
+
+                final ExceptionHandler handler = new ExceptionHandler();
+                newThread.setUncaughtExceptionHandler(handler);
+                return newThread;
+            }
+        };
     }
 
     @Override
@@ -145,21 +161,7 @@ public final class ProxyServer implements Server {
             }
         });
 
-        final RestartableThread selectorThread = new RestartableThread(
-            new ThreadFactory() {
-                @Override
-                public Thread newThread(Runnable r) {
-                    final Thread newThread = new Thread(r);
-                    newThread.setName("tcProxy - Acceptor Thread");
-
-                    newThread.setDaemon(false);
-
-                    final ExceptionHandler handler = new ExceptionHandler();
-                    newThread.setUncaughtExceptionHandler(handler);
-                    return newThread;
-                }
-            },
-            selector);
+        final RestartableThread selectorThread = new RestartableThread(factory, selector);
 
         selectorThread.start();
         currentSelector = selector;
