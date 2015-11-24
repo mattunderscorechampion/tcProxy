@@ -29,6 +29,7 @@ import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.openSelector;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 
 import org.slf4j.Logger;
@@ -50,7 +51,6 @@ import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ProxyServerSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
-import com.mattunderscore.tcproxy.selector.BinaryBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
@@ -59,15 +59,17 @@ import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.selector.connecting.SharedConnectingSelectorFactory;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
+import com.mattunderscore.tcproxy.selector.server.Server;
 import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 import com.mattunderscore.tcproxy.selector.threads.RestartableThread;
+import com.mattunderscore.tcproxy.selector.threads.UncheckedInterruptedException;
 
 /**
  * The proxy.
  * @author Matt Champion on 18/02/14.
  */
-public final class ProxyServer {
+public final class ProxyServer implements Server {
     private static final Logger LOG = LoggerFactory.getLogger("proxy");
     private final AcceptSettings acceptorSettings;
     private final ConnectionSettings connectionSettings;
@@ -76,6 +78,7 @@ public final class ProxyServer {
     private final ReadSelectorSettings readSelectorSettings;
     private final SelectorBackoff selectorBackoff;
     private final ConnectionManager manager;
+    private volatile CountDownLatch currentReadyLatch = new CountDownLatch(1);
     private volatile SocketChannelSelector currentSelector;
 
     public ProxyServer(
@@ -90,6 +93,7 @@ public final class ProxyServer {
         this.manager = manager;
     }
 
+    @Override
     public void start() {
         final SocketChannelSelector selector;
         try {
@@ -160,11 +164,47 @@ public final class ProxyServer {
         selectorThread.start();
         currentSelector = selector;
         selector.waitForRunning();
+        currentReadyLatch.countDown();
     }
 
-
+    @Override
     public void stop() {
+        try {
+            currentReadyLatch.await();
+        }
+        catch (InterruptedException e) {
+            throw new UncheckedInterruptedException(e);
+        }
+        currentReadyLatch = new CountDownLatch(1);
         currentSelector.stop();
+    }
+
+    @Override
+    public void restart() {
+        stop();
+        start();
+    }
+
+    @Override
+    public void waitForRunning() {
+        try {
+            currentReadyLatch.await();
+        }
+        catch (InterruptedException e) {
+            throw new UncheckedInterruptedException(e);
+        }
+        currentSelector.waitForRunning();
+    }
+
+    @Override
+    public void waitForStopped() {
+        try {
+            currentReadyLatch.await();
+        }
+        catch (InterruptedException e) {
+            throw new UncheckedInterruptedException(e);
+        }
+        currentSelector.waitForStopped();
     }
 
     private final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
