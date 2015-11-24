@@ -98,7 +98,7 @@ public final class ProxyServer implements Server {
             @Override
             public Thread newThread(Runnable r) {
                 final Thread newThread = new Thread(r);
-                newThread.setName("tcProxy - Acceptor Thread - " + THREAD_COUNT.getAndIncrement());
+                newThread.setName("tcProxy - Proxy Thread - " + THREAD_COUNT.getAndIncrement());
 
                 newThread.setDaemon(false);
 
