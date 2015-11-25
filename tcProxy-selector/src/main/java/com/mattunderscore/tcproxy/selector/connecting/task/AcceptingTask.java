@@ -72,8 +72,9 @@ public final class AcceptingTask implements SelectionRunnable<IOServerSocketChan
 
             try {
                 if (channel != null) {
-                    socketConfigurator.apply(channel);
-                    channel.set(BLOCKING, false);
+                    socketConfigurator
+                        .apply(channel)
+                        .set(BLOCKING, false);
                     if (channel.finishConnect()) {
                         connectionHandler.onConnect(channel);
                     }
