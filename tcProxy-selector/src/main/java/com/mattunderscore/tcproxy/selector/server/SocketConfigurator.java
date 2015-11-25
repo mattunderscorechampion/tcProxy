@@ -50,7 +50,7 @@ public final class SocketConfigurator {
      * @param socket The socket to apply the settings to
      * @throws IOException If there was a problem applying the settings
      */
-    public IOSocket apply(IOSocket socket) throws IOException {
+    public <T extends IOSocket> T apply(T socket) throws IOException {
         socket.set(IOSocketOption.RECEIVE_BUFFER, settings.getReceiveBuffer());
         socket.set(IOSocketOption.SEND_BUFFER, settings.getSendBuffer());
         return socket;
