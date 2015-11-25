@@ -36,6 +36,6 @@ import lombok.Value;
 @Value
 public final class ServerConfig {
     AcceptSettings acceptSettings;
-    SocketSettings socketSettings;
+    SocketSettings inboundSocketSettings;
     int selectorThreads;
 }

@@ -71,7 +71,7 @@ public final class EchoServer {
             ServerConfig
                 .builder()
                 .selectorThreads(2)
-                .socketSettings(
+                .inboundSocketSettings(
                     SocketSettings
                         .builder()
                         .receiveBuffer(1024)
@@ -163,7 +163,7 @@ public final class EchoServer {
                         };
                     }
                 },
-                new SocketConfigurator(serverConfig.getSocketSettings()));
+                new SocketConfigurator(serverConfig.getInboundSocketSettings()));
         }
     }
 }
