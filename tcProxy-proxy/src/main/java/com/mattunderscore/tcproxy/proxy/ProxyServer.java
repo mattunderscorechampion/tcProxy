@@ -124,6 +124,7 @@ public final class ProxyServer implements Server {
             final IOServerSocketChannel channel = StaticIOFactory
                 .socketFactory(IOServerSocketChannel.class)
                 .receiveBuffer(inboundSocketSettings.getReceiveBuffer())
+                .sendBuffer(inboundSocketSettings.getSendBuffer())
                 .reuseAddress(true)
                 .blocking(false)
                 .bind(new InetSocketAddress(acceptorSettings.getListenOn().iterator().next()))
