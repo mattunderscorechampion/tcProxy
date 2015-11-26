@@ -45,6 +45,7 @@ public final class ProxyServerSettings {
     OutboundSocketSettings outboundSocketSettings;
     ReadSelectorSettings readSelectorSettings;
     SelectorBackoff backoff;
+    int selectorThreads;
 
     public static ProxyServerSettingsBuilder builder() {
         return new ProxyServerSettingsBuilder();
@@ -57,6 +58,7 @@ public final class ProxyServerSettings {
         private OutboundSocketSettings outboundSocketSettings;
         private ReadSelectorSettings readSelectorSettings;
         private SelectorBackoff backoff = new NoBackoff();
+        int selectorThreads = 1;
 
         ProxyServerSettingsBuilder() {
         }
@@ -91,12 +93,17 @@ public final class ProxyServerSettings {
             return this;
         }
 
+        public ProxyServerSettings.ProxyServerSettingsBuilder selectorThreads(int selectorThreads) {
+            this.selectorThreads = selectorThreads;
+            return this;
+        }
+
         public ProxyServerSettings build() {
-            return new ProxyServerSettings(this.acceptSettings, this.connectionSettings, this.inboundSocketSettings, this.outboundSocketSettings, this.readSelectorSettings, this.backoff);
+            return new ProxyServerSettings(this.acceptSettings, this.connectionSettings, this.inboundSocketSettings, this.outboundSocketSettings, this.readSelectorSettings, this.backoff, this.selectorThreads);
         }
 
         public String toString() {
-            return "ProxyServerSettings.ProxyServerSettingsBuilder(acceptSettings=" + this.acceptSettings + ", connectionSettings=" + this.connectionSettings + ", inboundSocketSettings=" + this.inboundSocketSettings + ", outboundSocketSettings=" + this.outboundSocketSettings + ", readSelectorSettings=" + this.readSelectorSettings + ", backoff=" + this.backoff + ")";
+            return "ProxyServerSettings.ProxyServerSettingsBuilder(acceptSettings=" + this.acceptSettings + ", connectionSettings=" + this.connectionSettings + ", inboundSocketSettings=" + this.inboundSocketSettings + ", outboundSocketSettings=" + this.outboundSocketSettings + ", readSelectorSettings=" + this.readSelectorSettings + ", backoff=" + this.backoff + ", selectorThreads=" + selectorThreads + ")";
         }
     }
 }

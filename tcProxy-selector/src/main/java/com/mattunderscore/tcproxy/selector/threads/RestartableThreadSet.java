@@ -23,31 +23,67 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.selector.server;
+package com.mattunderscore.tcproxy.selector.threads;
 
-import com.mattunderscore.tcproxy.io.IOFactory;
+import static java.util.Collections.addAll;
+import static java.util.Collections.singleton;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * An abstract server factory. Creates a server and provides it a suitable {@link ServerStarter}.
- * @author Matt Champion on 09/11/2015
+ * A set of restartable threads that are managed together.
+ * @author Matt Champion on 25/11/2015
  */
-public abstract class AbstractServerFactory implements ServerFactory {
-    protected final IOFactory ioFactory;
+public final class RestartableThreadSet implements RestartableTask {
+    private final Collection<RestartableThread> threads;
 
-    public AbstractServerFactory(IOFactory ioFactory) {
-        this.ioFactory = ioFactory;
+    public RestartableThreadSet(RestartableThread thread) {
+        this(singleton(thread));
+    }
+
+    public RestartableThreadSet(RestartableThread... threads) {
+        this.threads = new HashSet<>();
+        addAll(this.threads, threads);
+    }
+
+    public RestartableThreadSet(Set<RestartableThread> threads) {
+        this.threads = threads;
     }
 
     @Override
-    public final Server build(ServerConfig serverConfig) {
-        final ServerStarter serverStarter = getServerStarter(serverConfig);
-
-        return new ServerImpl(serverStarter);
+    public void start() {
+        for (RestartableTask thread : threads) {
+            thread.start();
+        }
     }
 
-    /**
-     * @param serverConfig The server config
-     * @return A {@link ServerStarter} that can be used to start the server
-     */
-    protected abstract ServerStarter getServerStarter(ServerConfig serverConfig);
+    @Override
+    public void stop() {
+        for (RestartableTask thread : threads) {
+            thread.stop();
+        }
+    }
+
+    @Override
+    public void restart() {
+        stop();
+        waitForStopped();
+        start();
+    }
+
+    @Override
+    public void waitForRunning() {
+        for (RestartableTask thread : threads) {
+            thread.waitForRunning();
+        }
+    }
+
+    @Override
+    public void waitForStopped() {
+        for (RestartableTask thread : threads) {
+            thread.waitForStopped();
+        }
+    }
 }

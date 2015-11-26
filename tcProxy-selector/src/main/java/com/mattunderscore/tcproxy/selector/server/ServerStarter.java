@@ -25,29 +25,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.server;
 
-import com.mattunderscore.tcproxy.io.IOFactory;
+import java.io.IOException;
+import java.util.Collection;
+
+import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.selector.threads.RestartableThreadSet;
 
 /**
- * An abstract server factory. Creates a server and provides it a suitable {@link ServerStarter}.
- * @author Matt Champion on 09/11/2015
+ * Provides the initial state needed to start the server. Binds the listening sockets and creates the server threads.
+ * @author Matt Champion on 25/11/2015
  */
-public abstract class AbstractServerFactory implements ServerFactory {
-    protected final IOFactory ioFactory;
-
-    public AbstractServerFactory(IOFactory ioFactory) {
-        this.ioFactory = ioFactory;
-    }
-
-    @Override
-    public final Server build(ServerConfig serverConfig) {
-        final ServerStarter serverStarter = getServerStarter(serverConfig);
-
-        return new ServerImpl(serverStarter);
-    }
+public interface ServerStarter {
+    /**
+     * @return The server sockets, configured and bound
+     * @throws IOException If one or more sockets could not be created, configured or bound
+     */
+    Collection<IOServerSocketChannel> bindServerSockets() throws IOException;
 
     /**
-     * @param serverConfig The server config
-     * @return A {@link ServerStarter} that can be used to start the server
+     * @param listenChannels The server sockets being listened on
+     * @return The set of server threads
+     * @throws IOException If there was a problem setting up the selectors
      */
-    protected abstract ServerStarter getServerStarter(ServerConfig serverConfig);
+    RestartableThreadSet createServerThreads(Collection<IOServerSocketChannel> listenChannels) throws IOException;
 }

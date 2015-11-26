@@ -38,23 +38,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.CircularBuffer;
+import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.impl.IOFactoryImpl;
-import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelectorFactory;
-import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
-import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
+import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
+import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelectorFactory;
+import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
+import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
+import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.server.AbstractServerFactory;
+import com.mattunderscore.tcproxy.selector.server.AbstractServerStarter;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.Server;
 import com.mattunderscore.tcproxy.selector.server.ServerConfig;
+import com.mattunderscore.tcproxy.selector.server.ServerStarter;
 import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
-import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
-import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
 
 /**
@@ -139,16 +142,16 @@ public final class EchoServer {
         }
     }
 
-    private final static class EchoServerFactory extends AbstractServerFactory {
-        public EchoServerFactory() {
-            super(new IOFactoryImpl());
+    private final static class EchoServerStarter extends AbstractServerStarter {
+        private final SocketSettings inboundSocketSettings;
+
+        protected EchoServerStarter(IOFactory ioFactory, Iterable<Integer> portsToListenOn, int selectorThreads, SocketSettings inboundSocketSettings) {
+            super(ioFactory, portsToListenOn, selectorThreads);
+            this.inboundSocketSettings = inboundSocketSettings;
         }
 
         @Override
-        protected SelectorFactory<? extends RestartableTask> getSelectorFactory(
-                Collection<IOServerSocketChannel> listenChannels,
-                ServerConfig serverConfig) {
-
+        protected SelectorFactory<? extends RestartableTask> getSelectorFactory(Collection<IOServerSocketChannel> listenChannels) {
             return new ConnectingSelectorFactory(
                 ioFactory,
                 listenChannels,
@@ -163,7 +166,22 @@ public final class EchoServer {
                         };
                     }
                 },
-                new SocketConfigurator(serverConfig.getInboundSocketSettings()));
+                new SocketConfigurator(inboundSocketSettings));
+        }
+    }
+
+    private final static class EchoServerFactory extends AbstractServerFactory {
+        public EchoServerFactory() {
+            super(new IOFactoryImpl());
+        }
+
+        @Override
+        protected ServerStarter getServerStarter(ServerConfig serverConfig) {
+            return new EchoServerStarter(
+                ioFactory,
+                serverConfig.getAcceptSettings().getListenOn(),
+                serverConfig.getSelectorThreads(),
+                serverConfig.getInboundSocketSettings());
         }
     }
 }
