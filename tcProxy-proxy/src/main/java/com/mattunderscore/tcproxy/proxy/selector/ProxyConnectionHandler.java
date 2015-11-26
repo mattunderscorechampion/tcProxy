@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.ConnectionImpl;
 import com.mattunderscore.tcproxy.proxy.OutboundSocketFactory;
-import com.mattunderscore.tcproxy.proxy.ProxyServer;
 import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
 import com.mattunderscore.tcproxy.proxy.action.processor.DefaultActionProcessorFactory;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
@@ -44,9 +43,10 @@ import com.mattunderscore.tcproxy.proxy.direction.Direction;
 import com.mattunderscore.tcproxy.proxy.direction.DirectionImpl;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
+import com.mattunderscore.tcproxy.selector.server.Server;
 
 /**
- * Implementation of {@link ConnectionHandler} for the {@link ProxyServer}.
+ * Implementation of {@link ConnectionHandler} for the proxy {@link Server}.
  * @author Matt Champion on 18/11/2015
  */
 class ProxyConnectionHandler implements ConnectionHandler {

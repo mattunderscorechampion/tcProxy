@@ -44,8 +44,9 @@ public interface ServerStarter {
 
     /**
      * @param listenChannels The server sockets being listened on
+     * @param server The server
      * @return The set of server threads
      * @throws IOException If there was a problem setting up the selectors
      */
-    RestartableThreadSet createServerThreads(Collection<IOServerSocketChannel> listenChannels) throws IOException;
+    RestartableThreadSet createServerThreads(Collection<IOServerSocketChannel> listenChannels, Server server) throws IOException;
 }

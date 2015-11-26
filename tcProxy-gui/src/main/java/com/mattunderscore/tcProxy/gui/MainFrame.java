@@ -25,15 +25,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcProxy.gui;
 
-import java.io.IOException;
-
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mattunderscore.tcproxy.proxy.ProxyServer;
+import com.mattunderscore.tcproxy.proxy.ProxyServerFactory;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
@@ -41,6 +39,7 @@ import com.mattunderscore.tcproxy.proxy.settings.ProxyServerSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import com.mattunderscore.tcproxy.selector.BinaryBackoff;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
+import com.mattunderscore.tcproxy.selector.server.Server;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
@@ -64,23 +63,24 @@ public final class MainFrame extends JFrame {
                     final OutboundSocketSettings outboundSocketSettings = settingsPanel.getOutboundSocketSettings();
                     final ReadSelectorSettings readSelectorSettings = settingsPanel.getReadSelectorSettings();
                     final ConnectionManager manager = new ConnectionManager();
+                    add(new ConnectionsPanel(manager));
+                    validate();
                     try {
-                        add(new ConnectionsPanel(manager));
-                        validate();
-                        final ProxyServer proxy = new ProxyServer(
-                            ProxyServerSettings
-                                .builder()
-                                .acceptSettings(acceptorSettings)
-                                .connectionSettings(connectionSettings)
-                                .inboundSocketSettings(inboundSocketSettings)
-                                .outboundSocketSettings(outboundSocketSettings)
-                                .readSelectorSettings(readSelectorSettings)
-                                .backoff(new BinaryBackoff(10L))
-                                .build(),
-                            manager);
+                        final Server proxy = new ProxyServerFactory()
+                            .create(
+                                ProxyServerSettings
+                                    .builder()
+                                    .acceptSettings(acceptorSettings)
+                                    .connectionSettings(connectionSettings)
+                                    .inboundSocketSettings(inboundSocketSettings)
+                                    .outboundSocketSettings(outboundSocketSettings)
+                                    .readSelectorSettings(readSelectorSettings)
+                                    .backoff(new BinaryBackoff(10L))
+                                    .build(),
+                                manager);
                         proxy.start();
                     }
-                    catch (final IOException e) {
+                    catch (final IllegalStateException e) {
                         LOG.warn("Error starting proxy", e);
                     }
                 }

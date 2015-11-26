@@ -46,7 +46,7 @@ import com.mattunderscore.tcproxy.cli.arguments.Option;
 import com.mattunderscore.tcproxy.cli.arguments.OptionsParser;
 import com.mattunderscore.tcproxy.cli.arguments.Setting;
 import com.mattunderscore.tcproxy.cli.arguments.StringParser;
-import com.mattunderscore.tcproxy.proxy.ProxyServer;
+import com.mattunderscore.tcproxy.proxy.ProxyServerFactory;
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
@@ -55,6 +55,7 @@ import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ProxyServerSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
+import com.mattunderscore.tcproxy.selector.server.Server;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
@@ -84,7 +85,7 @@ public final class ProxyServerMain {
         final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         try {
             final ConnectionManager manager = new ConnectionManager();
-            final ProxyServer server = new ProxyServer(
+            final Server server = new ProxyServerFactory().create(
                 ProxyServerSettings
                     .builder()
                     .acceptSettings(AcceptSettings

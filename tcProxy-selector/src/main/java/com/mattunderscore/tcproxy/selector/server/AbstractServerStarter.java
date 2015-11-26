@@ -98,11 +98,11 @@ public abstract class AbstractServerStarter implements ServerStarter {
     }
 
     @Override
-    public final RestartableThreadSet createServerThreads(Collection<IOServerSocketChannel> listenChannels) throws IOException {
+    public final RestartableThreadSet createServerThreads(Collection<IOServerSocketChannel> listenChannels, Server server) throws IOException {
         final SelectorFactory<? extends RestartableTask> selectorFactory =
             getSelectorFactory(listenChannels);
 
-        final ThreadFactory threadFactory = getThreadFactory();
+        final ThreadFactory threadFactory = getThreadFactory(server);
         final Set<RestartableThread> threads = new HashSet<>();
         for (int i = 0; i < selectorThreads; i++) {
             threads.add(new RestartableThread(threadFactory, selectorFactory.create()));
@@ -114,8 +114,9 @@ public abstract class AbstractServerStarter implements ServerStarter {
     /**
      * Return a thread factory. A basic factory is returned by default but this method can be overridden.
      * @return A thread factory
+     * @param server The server
      */
-    protected ThreadFactory getThreadFactory() {
+    protected ThreadFactory getThreadFactory(Server server) {
         return new ThreadFactory() {
             private final AtomicInteger threadCount = new AtomicInteger(0);
 

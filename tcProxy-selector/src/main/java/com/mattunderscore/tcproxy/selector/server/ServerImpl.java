@@ -67,7 +67,7 @@ public final class ServerImpl implements Server {
 
         try {
             serverSockets = serverStarter.bindServerSockets();
-            serverThreads = serverStarter.createServerThreads(serverSockets);
+            serverThreads = serverStarter.createServerThreads(serverSockets, this);
         }
         catch (IOException e) {
             shutdownSockets();

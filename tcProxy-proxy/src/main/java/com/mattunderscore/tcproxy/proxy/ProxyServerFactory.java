@@ -23,42 +23,46 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy.selector;
+package com.mattunderscore.tcproxy.proxy;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.proxy.OutboundSocketFactory;
+import com.mattunderscore.tcproxy.io.IOFactory;
+import com.mattunderscore.tcproxy.io.impl.IOFactoryImpl;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
-import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
-import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
-import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
-import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
-import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
+import com.mattunderscore.tcproxy.proxy.settings.ProxyServerSettings;
+import com.mattunderscore.tcproxy.selector.server.Server;
+import com.mattunderscore.tcproxy.selector.server.ServerFactory;
+import com.mattunderscore.tcproxy.selector.server.ServerImpl;
 
 /**
- * Implementation of {@link ConnectionHandlerFactory} for the proxy {@link Server}.
- * @author Matt Champion on 18/11/2015
+ * Implementation of {@link ServerFactory} for a proxy {@link Server}.
+ * @author Matt Champion on 26/11/2015
  */
-public final class ProxyConnectionHandlerFactory implements ConnectionHandlerFactory {
-    private final OutboundSocketFactory factory;
-    private final ConnectionSettings settings;
-    private final ConnectionManager manager;
+public final class ProxyServerFactory {
+    private final IOFactory ioFactory;
 
-    public ProxyConnectionHandlerFactory(
-            OutboundSocketFactory factory,
-            ConnectionSettings settings,
-            ConnectionManager manager) {
-        this.factory = factory;
-        this.settings = settings;
-        this.manager = manager;
+    public ProxyServerFactory() {
+        this(new IOFactoryImpl());
     }
 
-    @Override
-    public ConnectionHandler create(final SocketChannelSelector selector) {
-        return new ProxyConnectionHandler(factory, settings, manager, new Writer() {
-            @Override
-            public void registerNewWork(DirectionAndConnection dc) {
-                selector.register(dc.getDirection().getTo(), IOSelectionKey.Op.WRITE, new WriteSelectionRunnable(dc));
-            }
-        });
+    public ProxyServerFactory(IOFactory ioFactory) {
+        this.ioFactory = ioFactory;
+    }
+
+    public Server create(ProxyServerSettings settings, ConnectionManager manager) {
+        final ProxyServerStarter serverStarter = new ProxyServerStarter(
+            ioFactory,
+            settings.getAcceptSettings().getListenOn(),
+            settings.getSelectorThreads(),
+            settings.getOutboundSocketSettings(),
+            settings.getBackoff(),
+            settings.getConnectionSettings(),
+            manager,
+            settings.getInboundSocketSettings(),
+            settings.getReadSelectorSettings());
+        return new ServerImpl(serverStarter);
+    }
+
+    public Server create(ProxyServerSettings settings) {
+        return create(settings, new ConnectionManager());
     }
 }
