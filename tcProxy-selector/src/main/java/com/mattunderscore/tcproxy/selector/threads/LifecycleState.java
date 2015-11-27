@@ -36,7 +36,7 @@ import net.jcip.annotations.ThreadSafe;
  */
 @ThreadSafe
 public final class LifecycleState {
-    private final AtomicReference<State> state = new AtomicReference<>(State.STOPPED);
+    /*package*/ final AtomicReference<State> state = new AtomicReference<>(State.STOPPED);
     private volatile CountDownLatch readyLatch = new CountDownLatch(1);
     private volatile CountDownLatch stoppedLatch;
 
@@ -109,7 +109,10 @@ public final class LifecycleState {
         }
     }
 
-    private enum State {
+    /**
+     * Possible states in the lifecycle.
+     */
+    /*package*/ enum State {
         STOPPED,
         RUNNING,
         STOPPING
