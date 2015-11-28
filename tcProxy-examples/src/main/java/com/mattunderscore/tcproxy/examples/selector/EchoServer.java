@@ -184,4 +184,9 @@ public final class EchoServer {
                 serverConfig.getInboundSocketSettings());
         }
     }
+
+    public static Server create(ServerConfig serverConfig) {
+        final EchoServerFactory serverFactory = new EchoServerFactory();
+        return serverFactory.build(serverConfig);
+    }
 }
