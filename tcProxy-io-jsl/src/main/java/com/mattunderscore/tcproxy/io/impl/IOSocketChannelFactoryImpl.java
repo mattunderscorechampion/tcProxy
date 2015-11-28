@@ -38,17 +38,17 @@ import com.mattunderscore.tcproxy.io.IOSocketOption;
  * A {@link IOSocketFactory} implementation for {@link IOSocketChannel}s.
  * @author Matt Champion on 17/10/2015
  */
-final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChannel> implements IOSocketChannelFactory {
+final class IOSocketChannelFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChannel> implements IOSocketChannelFactory {
     protected final Boolean keepAlive;
     protected final Boolean noDelay;
 
-    IOSocketFactoryImpl(IOFactory ioFactory) {
+    IOSocketChannelFactoryImpl(IOFactory ioFactory) {
         super(ioFactory);
         keepAlive = false;
         noDelay = false;
     }
 
-    IOSocketFactoryImpl(
+    IOSocketChannelFactoryImpl(
         IOFactory ioFactory,
         Integer receiveBuffer,
         Integer sendBuffer,
@@ -73,7 +73,7 @@ final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChanne
         boolean reuseAddress,
         SocketAddress boundSocket) {
 
-        return new IOSocketFactoryImpl(
+        return new IOSocketChannelFactoryImpl(
             ioFactory,
             receiveBuffer,
             sendBuffer,
@@ -99,7 +99,7 @@ final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChanne
 
     @Override
     public IOSocketFactory<IOSocketChannel> noDelay(boolean noDelay) {
-        return new IOSocketFactoryImpl(
+        return new IOSocketChannelFactoryImpl(
             ioFactory,
             receiveBuffer,
             sendBuffer,
@@ -113,7 +113,7 @@ final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChanne
 
     @Override
     public IOSocketFactory<IOSocketChannel> keepAlive(boolean keepAlive) {
-        return new IOSocketFactoryImpl(
+        return new IOSocketChannelFactoryImpl(
             ioFactory,
             receiveBuffer,
             sendBuffer,

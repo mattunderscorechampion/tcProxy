@@ -64,7 +64,7 @@ public final class IOFactoryImpl implements IOFactory {
             return (T) new IOServerSocketChannelFactoryImpl(this);
         }
         else if (IOSocketFactory.class.equals(type)) {
-            return (T) new IOSocketFactoryImpl(this);
+            return (T) new IOSocketChannelFactoryImpl(this);
         }
         else {
             throw new IllegalArgumentException("No factory available for " + type.getCanonicalName());
