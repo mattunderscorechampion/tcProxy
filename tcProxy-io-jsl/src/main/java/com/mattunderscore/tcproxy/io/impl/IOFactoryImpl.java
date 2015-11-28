@@ -35,6 +35,7 @@ import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
 
 /**
@@ -63,7 +64,7 @@ public final class IOFactoryImpl implements IOFactory {
         if (IOServerSocketChannelFactory.class.equals(type)) {
             return (T) new IOServerSocketChannelFactoryImpl(this);
         }
-        else if (IOSocketFactory.class.equals(type)) {
+        else if (IOSocketChannelFactory.class.equals(type)) {
             return (T) new IOSocketChannelFactoryImpl(this);
         }
         else {
