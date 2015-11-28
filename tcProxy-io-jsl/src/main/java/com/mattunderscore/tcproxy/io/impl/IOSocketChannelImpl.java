@@ -123,4 +123,23 @@ final class IOSocketChannelImpl implements IOSocketChannel {
     public SocketAddress getLocalAddress() throws IOException {
         return channel.getLocalAddress();
     }
+
+    @Override
+    public String toString() {
+        String localAddress;
+        try {
+            localAddress = getLocalAddress().toString();
+        }
+        catch (IOException e) {
+            localAddress = "unknown local address";
+        }
+        String remoteAddress;
+        try {
+            remoteAddress = getRemoteAddress().toString();
+        }
+        catch (IOException e) {
+            remoteAddress = "unknown removeAddress";
+        }
+        return String.format("IOSocketChannel %s|%s", localAddress, remoteAddress);
+    }
 }
