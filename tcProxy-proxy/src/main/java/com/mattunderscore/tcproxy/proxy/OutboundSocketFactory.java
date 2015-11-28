@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
 import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
@@ -48,7 +49,7 @@ public final class OutboundSocketFactory {
 
     public OutboundSocketFactory(final OutboundSocketSettings settings) {
         factory = StaticIOFactory
-            .socketFactory(IOSocketChannel.class)
+            .socketFactory(IOSocketChannelFactory.class)
             .sendBuffer(settings.getSendBuffer())
             .receiveBuffer(settings.getReceiveBuffer())
             .blocking(false);

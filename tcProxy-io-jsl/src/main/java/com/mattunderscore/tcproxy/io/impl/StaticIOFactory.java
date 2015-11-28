@@ -68,12 +68,12 @@ public final class StaticIOFactory {
     }
 
     /**
-     * @param type The class of the type of socket
-     * @param <T> The type of socket
+     * @param type The class of the type of socket factory
+     * @param <T> The type of factory
      * @return A socket factory
      * @throws IllegalArgumentException If no builder is available for the socket type
      */
-    public static <T extends IOSocket> IOSocketFactory<T> socketFactory(Class<T> type) {
+    public static <T extends IOSocketFactory<?>> T socketFactory(Class<T> type) {
         return FACTORY.socketFactory(type);
     }
 }

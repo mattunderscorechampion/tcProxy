@@ -40,6 +40,7 @@ import org.mockito.Mock;
 
 import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
 import com.mattunderscore.tcproxy.io.IOSocketOption;
 
@@ -143,7 +144,7 @@ public final class IOSocketFactoryImplTest {
 
     @Test
     public void createWithKeepAlive() throws IOException {
-        final IOSocketFactory<IOSocketChannel> factory = new IOSocketFactoryImpl(ioFactory);
+        final IOSocketChannelFactory factory = new IOSocketFactoryImpl(ioFactory);
 
         final IOSocketChannel channel = factory.keepAlive(true).create();
 
@@ -192,7 +193,7 @@ public final class IOSocketFactoryImplTest {
 
     @Test
     public void createWithNoDelay() throws IOException {
-        final IOSocketFactory<IOSocketChannel> factory = new IOSocketFactoryImpl(ioFactory);
+        final IOSocketChannelFactory factory = new IOSocketFactoryImpl(ioFactory);
 
         final IOSocketChannel channel = factory.noDelay(true).create();
 

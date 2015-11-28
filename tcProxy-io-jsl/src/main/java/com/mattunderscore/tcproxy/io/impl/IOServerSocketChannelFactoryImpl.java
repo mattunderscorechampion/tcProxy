@@ -30,16 +30,17 @@ import java.net.SocketAddress;
 
 import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.IOServerSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
 
 /**
  * A {@link IOSocketFactory} implementation for {@link IOServerSocketChannel}s.
  * @author Matt Champion on 17/10/2015
  */
-final class IOServerSocketChannelFactoryImpl extends AbstractSocketFactoryImpl<IOServerSocketChannel> {
+final class IOServerSocketChannelFactoryImpl extends AbstractSocketFactoryImpl<IOServerSocketChannel> implements IOServerSocketChannelFactory {
 
     IOServerSocketChannelFactoryImpl(IOFactory ioFactory) {
-        super(ioFactory, null, null, true, null, null, false, null, null);
+        super(ioFactory, null, null, true, null, false, null);
     }
 
     IOServerSocketChannelFactoryImpl(
@@ -51,7 +52,7 @@ final class IOServerSocketChannelFactoryImpl extends AbstractSocketFactoryImpl<I
         boolean reuseAddress,
         SocketAddress boundSocket) {
 
-        super(ioFactory, receiveBuffer, sendBuffer, blocking, null, linger, reuseAddress, null, boundSocket);
+        super(ioFactory, receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
     }
 
     @Override
@@ -59,10 +60,8 @@ final class IOServerSocketChannelFactoryImpl extends AbstractSocketFactoryImpl<I
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
-        Boolean keepAlive,
         Integer linger,
         boolean reuseAddress,
-        Boolean noDelay,
         SocketAddress boundSocket) {
 
         return new IOServerSocketChannelFactoryImpl(
@@ -78,15 +77,5 @@ final class IOServerSocketChannelFactoryImpl extends AbstractSocketFactoryImpl<I
     @Override
     protected IOServerSocketChannel newSocket() throws IOException {
         return ioFactory.openServerSocket();
-    }
-
-    @Override
-    public IOSocketFactory<IOServerSocketChannel> keepAlive(boolean enabled) {
-        throw new UnsupportedOperationException("IOServerSocketChannel does not support keep alive");
-    }
-
-    @Override
-    public IOSocketFactory<IOServerSocketChannel> noDelay(boolean enabled) {
-        throw new UnsupportedOperationException("IOServerSocketChannel does not support no delay");
     }
 }

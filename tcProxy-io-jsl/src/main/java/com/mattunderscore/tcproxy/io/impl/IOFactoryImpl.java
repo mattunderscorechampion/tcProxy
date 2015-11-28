@@ -33,7 +33,7 @@ import java.nio.channels.SocketChannel;
 import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocket;
+import com.mattunderscore.tcproxy.io.IOServerSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
 
@@ -58,12 +58,13 @@ public final class IOFactoryImpl implements IOFactory {
     }
 
     @Override
-    public <T extends IOSocket> IOSocketFactory<T> socketFactory(Class<T> type) {
-        if (IOServerSocketChannel.class.equals(type)) {
-            return (IOSocketFactory<T>) new IOServerSocketChannelFactoryImpl(this);
+    @SuppressWarnings("unchecked")
+    public <T extends IOSocketFactory<?>> T socketFactory(Class<T> type) {
+        if (IOServerSocketChannelFactory.class.equals(type)) {
+            return (T) new IOServerSocketChannelFactoryImpl(this);
         }
-        else if (IOSocketChannel.class.equals(type)) {
-            return (IOSocketFactory<T>) new IOSocketFactoryImpl(this);
+        else if (IOSocketFactory.class.equals(type)) {
+            return (T) new IOSocketFactoryImpl(this);
         }
         else {
             throw new IllegalArgumentException("No factory available for " + type.getCanonicalName());

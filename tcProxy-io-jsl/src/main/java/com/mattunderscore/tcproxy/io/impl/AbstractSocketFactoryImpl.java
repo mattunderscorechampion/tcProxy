@@ -42,10 +42,8 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
     protected final Integer receiveBuffer;
     protected final Integer sendBuffer;
     protected final boolean blocking;
-    protected final Boolean keepAlive;
     protected final Integer linger;
     protected final boolean reuseAddress;
-    protected final Boolean noDelay;
     protected final SocketAddress boundSocket;
 
     AbstractSocketFactoryImpl(IOFactory ioFactory) {
@@ -54,10 +52,8 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
         receiveBuffer = null;
         sendBuffer = null;
         blocking = true;
-        keepAlive = false;
         linger = null;
         reuseAddress = false;
-        noDelay = false;
     }
 
     AbstractSocketFactoryImpl(
@@ -65,71 +61,55 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
-        Boolean keepAlive,
         Integer linger,
         boolean reuseAddress,
-        Boolean noDelay,
         SocketAddress boundSocket) {
 
         this.ioFactory = ioFactory;
         this.receiveBuffer = receiveBuffer;
         this.sendBuffer = sendBuffer;
         this.blocking = blocking;
-        this.keepAlive = keepAlive;
         this.linger = linger;
         this.reuseAddress = reuseAddress;
-        this.noDelay = noDelay;
         this.boundSocket = boundSocket;
     }
 
     @Override
     public IOSocketFactory<T> receiveBuffer(Integer size) {
-        return newBuilder(size, sendBuffer, blocking, keepAlive, linger, reuseAddress, noDelay, boundSocket);
+        return newBuilder(size, sendBuffer, blocking, linger, reuseAddress, boundSocket);
     }
 
     @Override
     public IOSocketFactory<T> sendBuffer(Integer size) {
-        return newBuilder(receiveBuffer, size, blocking, keepAlive, linger, reuseAddress, noDelay, boundSocket);
+        return newBuilder(receiveBuffer, size, blocking, linger, reuseAddress, boundSocket);
     }
 
     @Override
     public IOSocketFactory<T> blocking(boolean enabled) {
-        return newBuilder(receiveBuffer, sendBuffer, enabled, keepAlive, linger, reuseAddress, noDelay, boundSocket);
-    }
-
-    @Override
-    public IOSocketFactory<T> keepAlive(boolean enabled) {
-        return newBuilder(receiveBuffer, sendBuffer, blocking, enabled, linger, reuseAddress, noDelay, boundSocket);
+        return newBuilder(receiveBuffer, sendBuffer, enabled, linger, reuseAddress, boundSocket);
     }
 
     @Override
     public IOSocketFactory<T> linger(Integer time) {
-        return newBuilder(receiveBuffer, sendBuffer, blocking, keepAlive, time, reuseAddress, noDelay, boundSocket);
+        return newBuilder(receiveBuffer, sendBuffer, blocking, time, reuseAddress, boundSocket);
     }
 
     @Override
     public IOSocketFactory<T> reuseAddress(boolean enabled) {
-        return newBuilder(receiveBuffer, sendBuffer, blocking, keepAlive, linger, enabled, noDelay, boundSocket);
-    }
-
-    @Override
-    public IOSocketFactory<T> noDelay(boolean enabled) {
-        return newBuilder(receiveBuffer, sendBuffer, blocking, keepAlive, linger, reuseAddress, enabled, boundSocket);
+        return newBuilder(receiveBuffer, sendBuffer, blocking, linger, enabled, boundSocket);
     }
 
     @Override
     public IOSocketFactory<T> bind(SocketAddress newSocket) {
-        return newBuilder(receiveBuffer, sendBuffer, blocking, keepAlive, linger, reuseAddress, noDelay, newSocket);
+        return newBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, newSocket);
     }
 
     /**
      * @param receiveBuffer The receive buffer size
      * @param sendBuffer The send buffer size
      * @param blocking Enable blocking
-     * @param keepAlive Enable keep alive
      * @param linger Set linger
      * @param reuseAddress Enable reuse address
-     * @param noDelay Enable no delay
      * @param boundSocket Local address
      * @return A concrete builder
      */
@@ -137,10 +117,8 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
-        Boolean keepAlive,
         Integer linger,
         boolean reuseAddress,
-        Boolean noDelay,
         SocketAddress boundSocket);
 
     @Override
@@ -154,16 +132,10 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
             socket.set(IOSocketOption.SEND_BUFFER, sendBuffer);
         }
         socket.set(IOSocketOption.BLOCKING, blocking);
-        if (keepAlive != null) {
-            socket.set(IOSocketOption.KEEP_ALIVE, keepAlive);
-        }
         if (linger != null) {
             socket.set(IOSocketOption.LINGER, linger);
         }
         socket.set(IOSocketOption.REUSE_ADDRESS, reuseAddress);
-        if (noDelay != null) {
-            socket.set(IOSocketOption.TCP_NO_DELAY, noDelay);
-        }
         socket.bind(boundSocket);
 
         return socket;

@@ -30,16 +30,22 @@ import java.net.SocketAddress;
 
 import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
+import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 /**
  * A {@link IOSocketFactory} implementation for {@link IOSocketChannel}s.
  * @author Matt Champion on 17/10/2015
  */
-final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChannel> {
+final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChannel> implements IOSocketChannelFactory {
+    protected final Boolean keepAlive;
+    protected final Boolean noDelay;
 
     IOSocketFactoryImpl(IOFactory ioFactory) {
         super(ioFactory);
+        keepAlive = false;
+        noDelay = false;
     }
 
     IOSocketFactoryImpl(
@@ -53,7 +59,9 @@ final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChanne
         boolean noDelay,
         SocketAddress boundSocket) {
 
-        super(ioFactory, receiveBuffer, sendBuffer, blocking, keepAlive, linger, reuseAddress, noDelay, boundSocket);
+        super(ioFactory, receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
+        this.keepAlive = keepAlive;
+        this.noDelay = noDelay;
     }
 
     @Override
@@ -61,10 +69,8 @@ final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChanne
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
-        Boolean keepAlive,
         Integer linger,
         boolean reuseAddress,
-        Boolean noDelay,
         SocketAddress boundSocket) {
 
         return new IOSocketFactoryImpl(
@@ -81,6 +87,41 @@ final class IOSocketFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChanne
 
     @Override
     protected IOSocketChannel newSocket() throws IOException {
-        return ioFactory.openSocket();
+        final IOSocketChannel socket = ioFactory.openSocket();
+        if (keepAlive != null) {
+            socket.set(IOSocketOption.KEEP_ALIVE, keepAlive);
+        }
+        if (noDelay != null) {
+            socket.set(IOSocketOption.TCP_NO_DELAY, noDelay);
+        }
+        return socket;
+    }
+
+    @Override
+    public IOSocketFactory<IOSocketChannel> noDelay(boolean noDelay) {
+        return new IOSocketFactoryImpl(
+            ioFactory,
+            receiveBuffer,
+            sendBuffer,
+            blocking,
+            keepAlive,
+            linger,
+            reuseAddress,
+            noDelay,
+            boundSocket);
+    }
+
+    @Override
+    public IOSocketFactory<IOSocketChannel> keepAlive(boolean keepAlive) {
+        return new IOSocketFactoryImpl(
+            ioFactory,
+            receiveBuffer,
+            sendBuffer,
+            blocking,
+            keepAlive,
+            linger,
+            reuseAddress,
+            noDelay,
+            boundSocket);
     }
 }

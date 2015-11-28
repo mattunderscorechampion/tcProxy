@@ -131,13 +131,6 @@ public final class IOServerSocketChannelFactoryImplTest {
         verifyNoMoreInteractions(socketChannel, ioFactory);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void createWithKeepAlive() throws IOException {
-        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
-
-        factory.keepAlive(true);
-    }
-
     @Test
     public void createWithLinger() throws IOException {
         final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
@@ -165,13 +158,6 @@ public final class IOServerSocketChannelFactoryImplTest {
         verify(socketChannel).set(IOSocketOption.REUSE_ADDRESS, true);
         verify(socketChannel).bind(null);
         verifyNoMoreInteractions(socketChannel, ioFactory);
-    }
-
-    @Test(expected = UnsupportedOperationException.class)
-    public void createWithNoDelay() throws IOException {
-        final IOSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
-
-        factory.noDelay(true);
     }
 
     @Test

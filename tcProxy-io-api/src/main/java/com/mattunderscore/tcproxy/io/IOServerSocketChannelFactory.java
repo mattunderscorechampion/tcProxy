@@ -1,4 +1,4 @@
-/* Copyright © 2014 Matthew Champion
+/* Copyright © 2015 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -25,36 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io;
 
-import java.io.IOException;
-
 /**
- * @author matt on 30/06/14.
+ * @author Matt Champion on 27/11/2015
  */
-public interface IOFactory {
-
-    /**
-     * @return A new selector.
-     * @throws IOException
-     */
-    IOSelector openSelector() throws IOException;
-
-    /**
-     * @return A new unbound socket.
-     * @throws IOException
-     */
-    IOSocketChannel openSocket() throws IOException;
-
-    /**
-     * @return A new server socket.
-     * @throws IOException
-     */
-    IOServerSocketChannel openServerSocket() throws IOException;
-
-    /**
-     * @param type The class of the type of socket factory
-     * @param <T> The type of factory
-     * @return A socket factory
-     * @throws IllegalArgumentException If no builder is available for the socket type
-     */
-    <T extends IOSocketFactory<?>> T socketFactory(Class<T> type);
+public interface IOServerSocketChannelFactory extends IOSocketFactory<IOServerSocketChannel> {
 }
