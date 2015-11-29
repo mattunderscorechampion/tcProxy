@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Set;
 
@@ -105,7 +106,13 @@ final class IOSocketChannelImpl implements IOSocketChannel {
     @Override
     public IOSelectionKey keyFor(IOSelector selector) {
         final IOSelectorImpl selectorImpl = (IOSelectorImpl)selector;
-        return new IOSelectionKeyImpl(channel.keyFor(selectorImpl.selectorDelegate));
+        final SelectionKey keyDelegate = channel.keyFor(selectorImpl.selectorDelegate);
+        if (keyDelegate == null) {
+            return null;
+        }
+        else {
+            return new IOSelectionKeyImpl(keyDelegate);
+        }
     }
 
     @Override
