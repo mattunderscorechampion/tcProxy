@@ -116,7 +116,7 @@ public final class BiDirectionalExample {
             final Producer producer = new Producer(
                 clientChannel,
                 new ThrottledDataProducer(
-                    100L,
+                    1000L,
                     new RandomDataProducer(8, 32)));
             producer.start();
             final Consumer consumer = new Consumer(clientChannel);
