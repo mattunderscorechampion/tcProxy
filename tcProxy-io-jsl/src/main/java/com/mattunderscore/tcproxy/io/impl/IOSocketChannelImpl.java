@@ -103,6 +103,12 @@ final class IOSocketChannelImpl implements IOSocketChannel {
     }
 
     @Override
+    public IOSelectionKey keyFor(IOSelector selector) {
+        final IOSelectorImpl selectorImpl = (IOSelectorImpl)selector;
+        return new IOSelectionKeyImpl(channel.keyFor(selectorImpl.selectorDelegate));
+    }
+
+    @Override
     public int read(CircularBuffer dst) throws IOException {
         final CircularBufferImpl dstImpl = (CircularBufferImpl)dst;
         return dstImpl.doSocketRead(channel);

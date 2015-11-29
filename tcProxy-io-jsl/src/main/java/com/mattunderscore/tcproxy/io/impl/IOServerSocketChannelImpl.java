@@ -90,4 +90,10 @@ final class IOServerSocketChannelImpl implements IOServerSocketChannel {
         final IOSelectorImpl selectorImpl = (IOSelectorImpl)selector;
         return new IOSelectionKeyImpl(socketDelegate.register(selectorImpl.selectorDelegate, SelectionKey.OP_ACCEPT, att));
     }
+
+    @Override
+    public IOSelectionKey keyFor(IOSelector selector) {
+        final IOSelectorImpl selectorImpl = (IOSelectorImpl)selector;
+        return new IOSelectionKeyImpl(socketDelegate.keyFor(selectorImpl.selectorDelegate));
+    }
 }

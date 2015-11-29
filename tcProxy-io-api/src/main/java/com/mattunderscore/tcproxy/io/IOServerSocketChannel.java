@@ -47,4 +47,11 @@ public interface IOServerSocketChannel extends IOSocket {
      * @throws ClosedChannelException
      */
     IOSelectionKey register(IOSelector selector, Object att) throws ClosedChannelException;
+
+    /**
+     * Lookup the key for a channel/selector pair.
+     * @param selector The selector
+     * @return The key
+     */
+    IOSelectionKey keyFor(IOSelector selector);
 }

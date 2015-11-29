@@ -79,6 +79,13 @@ public interface IOSocketChannel extends ByteChannel, IOSocket {
     IOSelectionKey register(IOSelector selector, Set<IOSelectionKey.Op> ops, Object att) throws ClosedChannelException;
 
     /**
+     * Lookup the key for a channel/selector pair.
+     * @param selector The selector
+     * @return The key
+     */
+    IOSelectionKey keyFor(IOSelector selector);
+
+    /**
      * Reads data from the socket into a circular buffer
      * @param dst The buffer
      * @return The number of bytes read
