@@ -26,7 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy;
 
 import com.mattunderscore.tcproxy.io.IOFactory;
-import com.mattunderscore.tcproxy.io.impl.IOFactoryImpl;
+import com.mattunderscore.tcproxy.io.impl.JSLIOFactory;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.settings.ProxyServerSettings;
 import com.mattunderscore.tcproxy.selector.server.Server;
@@ -41,7 +41,7 @@ public final class ProxyServerFactory {
     private final IOFactory ioFactory;
 
     public ProxyServerFactory() {
-        this(new IOFactoryImpl());
+        this(new JSLIOFactory());
     }
 
     public ProxyServerFactory(IOFactory ioFactory) {

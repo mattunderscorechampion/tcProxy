@@ -39,10 +39,10 @@ import com.mattunderscore.tcproxy.io.IOSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
 
 /**
- * Factory implementation for sockets and selectors.
+ * Factory implementation for sockets and selectors that uses the Java Standard Libary.
  * @author matt on 30/06/14.
  */
-public final class IOFactoryImpl implements IOFactory {
+public final class JSLIOFactory implements IOFactory {
     @Override
     public IOSelector openSelector() throws IOException {
         return new IOSelectorImpl(Selector.open());

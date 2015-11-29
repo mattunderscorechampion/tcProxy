@@ -29,7 +29,6 @@ import java.io.IOException;
 
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocket;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketFactory;
 
@@ -38,7 +37,7 @@ import com.mattunderscore.tcproxy.io.IOSocketFactory;
  * @author Matt Champion on 13/03/14.
  */
 public final class StaticIOFactory {
-    private static final IOFactoryImpl FACTORY = new IOFactoryImpl();
+    private static final JSLIOFactory FACTORY = new JSLIOFactory();
 
     private StaticIOFactory() {
     }

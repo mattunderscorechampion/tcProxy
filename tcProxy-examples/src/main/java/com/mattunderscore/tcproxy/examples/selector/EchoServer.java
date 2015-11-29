@@ -42,7 +42,7 @@ import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.io.impl.IOFactoryImpl;
+import com.mattunderscore.tcproxy.io.impl.JSLIOFactory;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
@@ -172,7 +172,7 @@ public final class EchoServer {
 
     private final static class EchoServerFactory extends AbstractServerFactory {
         public EchoServerFactory() {
-            super(new IOFactoryImpl());
+            super(new JSLIOFactory());
         }
 
         @Override
