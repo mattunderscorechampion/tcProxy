@@ -39,6 +39,7 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
+import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
 import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 
 /**
@@ -58,9 +59,9 @@ public final class AcceptingTask implements SelectionRunnable<IOServerSocketChan
     }
 
     @Override
-    public void run(IOServerSocketChannel socket, IOSelectionKey selectionKey) {
-        LOG.debug("Calling accepting task {} {}", socket, selectionKey.readyOperations());
-        if (selectionKey.isAcceptable()) {
+    public void run(IOServerSocketChannel socket, RegistrationHandle handle) {
+        LOG.debug("Calling accepting task {} {}", socket, handle.readyOperations());
+        if (handle.isAcceptable()) {
             final IOSocketChannel channel;
             try {
                 channel = socket.accept();

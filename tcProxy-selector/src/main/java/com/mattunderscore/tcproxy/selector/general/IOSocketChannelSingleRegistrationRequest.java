@@ -26,8 +26,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.selector.general;
 
 import java.nio.channels.ClosedChannelException;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.IOSelectionKey.Op;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
@@ -38,12 +41,12 @@ import com.mattunderscore.tcproxy.selector.SelectionRunnable;
  */
 final class IOSocketChannelSingleRegistrationRequest implements RegistrationRequest {
     private final IOSocketChannel channel;
-    private final IOSelectionKey.Op op;
+    private final Op op;
     private final Registration registration;
 
     IOSocketChannelSingleRegistrationRequest(
             IOSocketChannel channel,
-            IOSelectionKey.Op op,
+            Op op,
             SelectionRunnable<IOSocketChannel> runnable) {
         this.channel = channel;
         this.op = op;
@@ -52,6 +55,16 @@ final class IOSocketChannelSingleRegistrationRequest implements RegistrationRequ
 
     @Override
     public void register(IOSelector selector) throws ClosedChannelException {
-        channel.register(selector, op, registration);
+        final IOSelectionKey key = channel.keyFor(selector);
+        if (key != null) {
+            final RegistrationSet registrationSet = (RegistrationSet) key.attachment();
+            registrationSet.addRegistration(op, registration);
+            key.setInterestedOperation(op);
+        }
+        else {
+            final RegistrationSet registrationSet = new RegistrationSet();
+            registrationSet.addRegistration(op, registration);
+            channel.register(selector, op, registrationSet);
+        }
     }
 }

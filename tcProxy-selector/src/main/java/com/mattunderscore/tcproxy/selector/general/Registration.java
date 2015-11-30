@@ -25,15 +25,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.general;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-
 /**
  * The representation of the registration of a selector runnable against a socket for an interest set.
  */
 interface Registration {
     /**
      * Run the selector runnable.
-     * @param selectionKey The selection key
+     * @param handle The registration handle
      */
-    void run(IOSelectionKey selectionKey);
+    void run(RegistrationHandle handle);
 }

@@ -29,6 +29,7 @@ import java.nio.channels.ClosedChannelException;
 import java.util.Set;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.IOSelectionKey.Op;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
@@ -39,12 +40,12 @@ import com.mattunderscore.tcproxy.selector.SelectionRunnable;
  */
 final class IOSocketChannelSetRegistrationRequest implements RegistrationRequest {
     private final IOSocketChannel channel;
-    private final Set<IOSelectionKey.Op> ops;
+    private final Set<Op> ops;
     private final Registration registration;
 
     IOSocketChannelSetRegistrationRequest(
             IOSocketChannel channel,
-            Set<IOSelectionKey.Op> ops,
+            Set<Op> ops,
             SelectionRunnable<IOSocketChannel> runnable) {
         this.channel = channel;
         this.ops = ops;
@@ -53,6 +54,20 @@ final class IOSocketChannelSetRegistrationRequest implements RegistrationRequest
 
     @Override
     public void register(IOSelector selector) throws ClosedChannelException {
-        channel.register(selector, ops, registration);
+        final IOSelectionKey key = channel.keyFor(selector);
+        if (key != null) {
+            final RegistrationSet registrationSet = (RegistrationSet) key.attachment();
+            for (Op op : ops) {
+                registrationSet.addRegistration(op, registration);
+                key.setInterestedOperation(op);
+            }
+        }
+        else {
+            final RegistrationSet registrationSet = new RegistrationSet();
+            for (Op op : ops) {
+                registrationSet.addRegistration(op, registration);
+            }
+            channel.register(selector, ops, registrationSet);
+        }
     }
 }

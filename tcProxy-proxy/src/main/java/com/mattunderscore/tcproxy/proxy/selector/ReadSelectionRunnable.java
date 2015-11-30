@@ -43,6 +43,7 @@ import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
 import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
+import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
 
 /**
  * Proxy read task.
@@ -59,8 +60,8 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
     }
 
     @Override
-    public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {
-        if (!selectionKey.isValid()) {
+    public void run(IOSocketChannel socket, RegistrationHandle handle) {
+        if (!handle.isValid()) {
             LOG.debug("{} : Selected key no longer valid, closing connection", this);
             try {
                 dc.getConnection().close();
@@ -69,7 +70,7 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
                 LOG.warn("{} : Error closing connection", this, e);
             }
         }
-        else if (selectionKey.isReadable()) {
+        else if (handle.isReadable()) {
             final Direction direction = dc.getDirection();
             final ActionQueue queue = direction.getQueue();
             if (!queue.queueFull()) {
@@ -88,7 +89,7 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
                     }
                     else if (bytes == -1) {
                         // Close the connection
-                        selectionKey.cancel();
+                        handle.cancel();
                         direction.getProcessor().process(new Close(direction));
                         final ConnectionImpl conn = (ConnectionImpl) dc.getConnection();
                         final Direction otherDirection = conn.otherDirection(direction);
@@ -98,15 +99,15 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
                 }
                 catch (final ClosedChannelException e) {
                     LOG.debug("{} : Channel {} already closed", this, channel);
-                    selectionKey.cancel();
+                    handle.cancel();
                 }
                 catch (final IOException e) {
-                    LOG.debug("{} : Error on channel {}, {}", this, channel, selectionKey, e);
+                    LOG.debug("{} : Error on channel {}, {}", this, channel, handle, e);
                 }
             }
         }
         else {
-            LOG.debug("{} : Unexpected key state {}", this, selectionKey);
+            LOG.debug("{} : Unexpected key state {}", this, handle);
         }
     }
 }

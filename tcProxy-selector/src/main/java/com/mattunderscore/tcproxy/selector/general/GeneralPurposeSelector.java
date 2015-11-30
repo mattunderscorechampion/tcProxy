@@ -97,8 +97,8 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
             while (selectedKeys.hasNext()) {
                 final IOSelectionKey key = selectedKeys.next();
                 selectedKeys.remove();
-                final Registration registration = (Registration) key.attachment();
-                registration.run(key);
+                final RegistrationSet registrationSet = (RegistrationSet) key.attachment();
+                registrationSet.run(key);
             }
 
             backoff.backoff(selectedSize);

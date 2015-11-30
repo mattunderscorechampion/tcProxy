@@ -27,9 +27,10 @@ package com.mattunderscore.tcproxy.selector;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSocket;
+import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
 
 /**
- * Selector runnable. A task run with a socket and a selection key.
+ * Selector runnable. A task run with a socket and a registration handle.
  * @author Matt Champion on 26/10/2015
  * @param <T> The type of socket it expects
  */
@@ -37,7 +38,7 @@ public interface SelectionRunnable<T extends IOSocket> {
     /**
      * The body of the task.
      * @param socket The socket
-     * @param selectionKey The selection key
+     * @param handle The handle for the registration
      */
-    void run(T socket, IOSelectionKey selectionKey);
+    void run(T socket, RegistrationHandle handle);
 }

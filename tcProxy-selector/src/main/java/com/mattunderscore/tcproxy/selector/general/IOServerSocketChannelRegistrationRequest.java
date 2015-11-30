@@ -25,7 +25,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.general;
 
+import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.ACCEPT;
+
 import java.nio.channels.ClosedChannelException;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
@@ -47,11 +51,21 @@ final class IOServerSocketChannelRegistrationRequest implements RegistrationRequ
 
     @Override
     public void register(IOSelector selector) throws ClosedChannelException {
-        channel.register(selector, this);
+        final IOSelectionKey key = channel.keyFor(selector);
+        if (key != null) {
+            final RegistrationSet registrationSet = (RegistrationSet) key.attachment();
+            registrationSet.addRegistration(ACCEPT, this);
+            key.setInterestedOperation(ACCEPT);
+        }
+        else {
+            final RegistrationSet registrationSet = new RegistrationSet();
+            registrationSet.addRegistration(ACCEPT, this);
+            channel.register(selector, registrationSet);
+        }
     }
 
     @Override
-    public void run(IOSelectionKey selectionKey) {
-        runnable.run(channel, selectionKey);
+    public void run(RegistrationHandle handle) {
+        runnable.run(channel, handle);
     }
 }

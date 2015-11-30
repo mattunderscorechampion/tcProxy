@@ -43,7 +43,7 @@ public final class IOSocketChannelRegistration implements Registration {
     }
 
     @Override
-    public void run(IOSelectionKey selectionKey) {
-        runnable.run(channel, selectionKey);
+    public void run(RegistrationHandle handle) {
+        runnable.run(channel, handle);
     }
 }

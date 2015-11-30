@@ -50,6 +50,7 @@ import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelectorFactory;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
+import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
 import com.mattunderscore.tcproxy.selector.server.AbstractServerFactory;
 import com.mattunderscore.tcproxy.selector.server.AbstractServerStarter;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
@@ -100,15 +101,15 @@ public final class EchoServer {
         }
 
         @Override
-        public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {
-            final Set<IOSelectionKey.Op> readyOperations = selectionKey.readyOperations();
+        public void run(IOSocketChannel socket, RegistrationHandle handle) {
+            final Set<IOSelectionKey.Op> readyOperations = handle.readyOperations();
             LOG.debug("Calling echo task {} {}", socket, readyOperations);
             if (readyOperations.contains(READ)) {
 
                 try {
                     final int read = socket.read(buffer);
                     if (read < 0) {
-                        selectionKey.cancel();
+                        handle.cancel();
                         socket.close();
                         return;
                     }
@@ -129,7 +130,7 @@ public final class EchoServer {
                 }
             }
 
-            selectionKey.cancel();
+            handle.cancel();
             if (buffer.usedCapacity() > 0 && buffer.freeCapacity() > 0) {
                 selector.register(socket, of(READ, WRITE), this);
             }

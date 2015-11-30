@@ -37,6 +37,7 @@ import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
 import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
+import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
 
 /**
  * Proxy write task.
@@ -51,8 +52,8 @@ public final class WriteSelectionRunnable implements SelectionRunnable<IOSocketC
     }
 
     @Override
-    public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {
-        if (!selectionKey.isValid()) {
+    public void run(IOSocketChannel socket, RegistrationHandle handle) {
+        if (!handle.isValid()) {
             LOG.debug("{} : Selected key no longer valid, closing connection", this);
             try {
                 dc.getConnection().close();
@@ -61,7 +62,7 @@ public final class WriteSelectionRunnable implements SelectionRunnable<IOSocketC
                 LOG.warn("{} : Error closing connection", this, e);
             }
         }
-        else if (selectionKey.isWritable()) {
+        else if (handle.isWritable()) {
             final Direction direction = dc.getDirection();
             final ActionQueue write = direction.getQueue();
 
@@ -69,7 +70,7 @@ public final class WriteSelectionRunnable implements SelectionRunnable<IOSocketC
                 try {
                     if (write.hasData()) {
                         final Action data = write.current();
-                        if (selectionKey.isValid()) {
+                        if (handle.isValid()) {
                             data.writeToSocket();
                         }
                         else {
@@ -84,12 +85,12 @@ public final class WriteSelectionRunnable implements SelectionRunnable<IOSocketC
                     }
                     else {
                         LOG.debug("{} : Finished queued actions, cancel key", this);
-                        selectionKey.cancel();
+                        handle.cancel();
                     }
                 }
                 catch (final IOException e) {
                     LOG.warn("{} : Error writing", this, e);
-                    selectionKey.cancel();
+                    handle.cancel();
                     try {
                         dc.getConnection().close();
                     }
@@ -100,7 +101,7 @@ public final class WriteSelectionRunnable implements SelectionRunnable<IOSocketC
             }
         }
         else {
-            LOG.debug("{} : Unexpected key state {}", this, selectionKey);
+            LOG.debug("{} : Unexpected key state {}", this, handle);
         }
     }
 }

@@ -32,6 +32,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.nio.channels.ClosedChannelException;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -62,6 +63,9 @@ public final class GeneralPurposeSelectorTest {
     @Before
     public void setUp() {
         initMocks(this);
+        when(key.isValid()).thenReturn(true);
+        when(key.isReadable()).thenReturn(true);
+        when(key.interestedOperations()).thenReturn(EnumSet.allOf(IOSelectionKey.Op.class));
     }
 
     @Test
@@ -81,7 +85,7 @@ public final class GeneralPurposeSelectorTest {
         final GeneralPurposeSelector selector = new GeneralPurposeSelector(ioSelector, new NoBackoff());
         selector.register(channel, READ, new SelectionRunnable<IOSocketChannel>() {
             @Override
-            public void run(IOSocketChannel socket, IOSelectionKey selectionKey) {
+            public void run(IOSocketChannel socket, RegistrationHandle handle) {
                 selector.waitForRunning();
                 selector.stop();
             }
