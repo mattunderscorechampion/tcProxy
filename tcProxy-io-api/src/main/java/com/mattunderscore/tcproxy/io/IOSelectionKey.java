@@ -81,6 +81,24 @@ public interface IOSelectionKey {
     Set<Op> readyOperations();
 
     /**
+     * Set the operations the key is interested in.
+     * @param ops The set of interested operations.
+     */
+    void interestedOperations(Set<Op> ops);
+
+    /**
+     * Set the operation as an interested one. Appends to the operations already there.
+     * @param op The interested operation.
+     */
+    void setInterestedOperation(Op op);
+
+    /**
+     * Set the operation as an uninterested one. Removes from the operations already there.
+     * @param op The uninterested operation.
+     */
+    void clearInterestedOperation(Op op);
+
+    /**
      * The available operations that a selection key may be interested in.
      */
     enum Op {

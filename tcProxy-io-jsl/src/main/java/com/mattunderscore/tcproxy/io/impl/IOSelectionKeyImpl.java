@@ -25,10 +25,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.impl;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import static com.mattunderscore.tcproxy.io.impl.IOUtils.mapToIntFromOp;
+import static com.mattunderscore.tcproxy.io.impl.IOUtils.mapToIntFromOps;
+import static com.mattunderscore.tcproxy.io.impl.IOUtils.mapToOpsFromInt;
 
 import java.nio.channels.SelectionKey;
 import java.util.Set;
+
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
 
 /**
  * Implementation of {@link com.mattunderscore.tcproxy.io.IOSelectionKey}. Delegates to {@link SelectionKey}.
@@ -78,12 +82,27 @@ final class IOSelectionKeyImpl implements IOSelectionKey {
 
     @Override
     public Set<Op> interestedOperations() {
-        return IOUtils.mapToOpsFromInt(keyDelegate.interestOps());
+        return mapToOpsFromInt(keyDelegate.interestOps());
     }
 
     @Override
     public Set<Op> readyOperations() {
-        return IOUtils.mapToOpsFromInt(keyDelegate.interestOps());
+        return mapToOpsFromInt(keyDelegate.interestOps());
+    }
+
+    @Override
+    public void interestedOperations(Set<Op> ops) {
+        keyDelegate.interestOps(mapToIntFromOps(ops));
+    }
+
+    @Override
+    public void setInterestedOperation(Op op) {
+        keyDelegate.interestOps(keyDelegate.interestOps() | mapToIntFromOp(op));
+    }
+
+    @Override
+    public void clearInterestedOperation(Op op) {
+        keyDelegate.interestOps(keyDelegate.interestOps() & ~mapToIntFromOp(op));
     }
 
     @Override
