@@ -94,6 +94,12 @@ final class IOServerSocketChannelImpl implements IOServerSocketChannel {
     @Override
     public IOSelectionKey keyFor(IOSelector selector) {
         final IOSelectorImpl selectorImpl = (IOSelectorImpl)selector;
-        return new IOSelectionKeyImpl(socketDelegate.keyFor(selectorImpl.selectorDelegate));
+        final SelectionKey keyDelegate = socketDelegate.keyFor(selectorImpl.selectorDelegate);
+        if (keyDelegate == null) {
+            return null;
+        }
+        else {
+            return new IOSelectionKeyImpl(keyDelegate);
+        }
     }
 }
