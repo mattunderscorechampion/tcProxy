@@ -35,7 +35,7 @@ import java.util.Set;
  * Provides a selectable {@link java.nio.channels.ByteChannel} for network operations.
  * @author matt on 12/03/14.
  */
-public interface IOSocketChannel extends ByteChannel, IOSocket {
+public interface IOSocketChannel extends IOByteChannel, IOSocket {
 
     /**
      * Connect the socket to a remote address.
@@ -84,20 +84,4 @@ public interface IOSocketChannel extends ByteChannel, IOSocket {
      * @return The key
      */
     IOSelectionKey keyFor(IOSelector selector);
-
-    /**
-     * Reads data from the socket into a circular buffer
-     * @param dst The buffer
-     * @return The number of bytes read
-     * @throws IOException
-     */
-    int read(CircularBuffer dst) throws IOException;
-
-    /**
-     * Writes data from the circular buffer to the socket.
-     * @param src The buffer
-     * @return The number of bytes written
-     * @throws IOException
-     */
-    int write(CircularBuffer src) throws IOException;
 }
