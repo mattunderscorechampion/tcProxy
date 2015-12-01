@@ -32,26 +32,10 @@ import java.nio.channels.ClosedChannelException;
  * A server socket channel.
  * @author Matt Champion on 13/03/14.
  */
-public interface IOServerSocketChannel extends IOSocket {
+public interface IOServerSocketChannel extends IOSingleOpSelectableChannel, IOSocket {
     /**
      * @return An inbound IOSocketChannel attempting to connect to the server.
      * @throws IOException
      */
     IOSocketChannel accept() throws IOException;
-
-    /**
-     * Register a server socket channel with a selector for accepting connections.
-     * @param selector The selector
-     * @param att A attachment
-     * @return The selection key
-     * @throws ClosedChannelException
-     */
-    IOSelectionKey register(IOSelector selector, Object att) throws ClosedChannelException;
-
-    /**
-     * Lookup the key for a channel/selector pair.
-     * @param selector The selector
-     * @return The key
-     */
-    IOSelectionKey keyFor(IOSelector selector);
 }
