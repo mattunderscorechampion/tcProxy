@@ -27,28 +27,34 @@ package com.mattunderscore.tcproxy.io.configuration;
 
 import java.net.SocketAddress;
 
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 
 /**
- * A configuration for a {@link IOSocketChannel}s.
- * @author Matt Champion on 02/12/2015
+ * @author Matt Champion on 03/12/2015
  */
-public final class IOSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOSocketChannel> {
+public final class IOServerSocketChannelConfigurationBuilder extends AbstractIOSocketConfigurationBuilder<IOServerSocketChannel, IOServerSocketChannelConfiguration> {
+    IOServerSocketChannelConfigurationBuilder() {
+        super();
+    }
 
-    protected IOSocketChannelConfiguration(
+    IOServerSocketChannelConfigurationBuilder(
+        Integer receiveBuffer,
+        Integer sendBuffer,
+        boolean blocking,
+        Integer linger,
+        boolean reuseAddress,
+        SocketAddress boundSocket) {
+        super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
+    }
+
+    @Override
+    protected IOServerSocketChannelConfigurationBuilder newBuilder(
             Integer receiveBuffer,
             Integer sendBuffer,
             boolean blocking,
             Integer linger,
             boolean reuseAddress,
             SocketAddress boundSocket) {
-        super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
-    }
-
-    /**
-     * @return Instance of {@link IOSocketChannelConfigurationBuilder}
-     */
-    public static IOSocketChannelConfigurationBuilder builder() {
-        return new IOSocketChannelConfigurationBuilder();
+        return new IOServerSocketChannelConfigurationBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
     }
 }

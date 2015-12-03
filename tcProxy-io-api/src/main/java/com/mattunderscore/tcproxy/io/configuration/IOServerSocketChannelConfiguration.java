@@ -38,31 +38,10 @@ public final class IOServerSocketChannelConfiguration extends AbstractIOSocketCo
         super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
     }
 
-    public static final class Builder extends AbstractIOSocketConfiguration.AbstractIOSocketConfigurationBuilder<IOServerSocketChannel, IOServerSocketChannelConfiguration> {
-        Builder() {
-            super();
-        }
-
-        Builder(
-            Integer receiveBuffer,
-            Integer sendBuffer,
-            boolean blocking,
-            Integer linger,
-            boolean reuseAddress,
-            SocketAddress boundSocket) {
-            super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
-        }
-
-        @Override
-        protected Builder newBuilder(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress, SocketAddress boundSocket) {
-            return new Builder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
-        }
-    }
-
     /**
-     * @return Instance of {@link IOServerSocketChannelConfiguration.Builder}
+     * @return Instance of {@link IOServerSocketChannelConfigurationBuilder}
      */
-    public static IOServerSocketChannelConfiguration.Builder builder() {
-        return new Builder();
+    public static IOServerSocketChannelConfigurationBuilder builder() {
+        return new IOServerSocketChannelConfigurationBuilder();
     }
 }
