@@ -25,13 +25,44 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.configuration;
 
+import java.net.SocketAddress;
+
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 
 /**
- * A {@link IOSocketConfiguration} for {@link IOServerSocketChannel}s.
+ * The configuration for a {@link IOServerSocketChannel}s.
  * @author Matt Champion on 02/12/2015
  */
-public interface IOServerSocketChannelConfiguration extends IOSocketConfiguration<IOServerSocketChannel> {
-    interface Builder extends IOSocketConfiguration.Builder<IOServerSocketChannel, IOServerSocketChannelConfiguration> {
+public final class IOServerSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOServerSocketChannel> {
+    protected IOServerSocketChannelConfiguration(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress, SocketAddress boundSocket) {
+        super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
+    }
+
+    public static final class Builder extends AbstractIOSocketConfiguration.AbstractIOSocketConfigurationBuilder<IOServerSocketChannel, IOServerSocketChannelConfiguration> {
+        Builder() {
+            super();
+        }
+
+        Builder(
+            Integer receiveBuffer,
+            Integer sendBuffer,
+            boolean blocking,
+            Integer linger,
+            boolean reuseAddress,
+            SocketAddress boundSocket) {
+            super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
+        }
+
+        @Override
+        protected Builder newBuilder(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress, SocketAddress boundSocket) {
+            return new Builder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
+        }
+    }
+
+    /**
+     * @return Instance of {@link IOServerSocketChannelConfiguration.Builder}
+     */
+    public static IOServerSocketChannelConfiguration.Builder builder() {
+        return new Builder();
     }
 }

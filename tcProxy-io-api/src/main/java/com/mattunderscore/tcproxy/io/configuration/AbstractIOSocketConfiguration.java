@@ -30,9 +30,10 @@ import java.net.SocketAddress;
 import com.mattunderscore.tcproxy.io.IOSocket;
 
 /**
+ * Abstract implementation of socket configuration that contains the common properties of all sockets.
  * @author Matt Champion on 02/12/2015
  */
-abstract class AbstractIOSocketConfiguration<T extends IOSocket> implements IOSocketConfiguration<T> {
+public abstract class AbstractIOSocketConfiguration<T extends IOSocket> {
     protected final Integer receiveBuffer;
     protected final Integer sendBuffer;
     protected final boolean blocking;
@@ -49,7 +50,7 @@ abstract class AbstractIOSocketConfiguration<T extends IOSocket> implements IOSo
         this.boundSocket = boundSocket;
     }
 
-    static abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S extends IOSocketConfiguration<T>> implements Builder<T, S> {
+    static abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S extends AbstractIOSocketConfiguration<T>> {
         protected final Integer receiveBuffer;
         protected final Integer sendBuffer;
         protected final boolean blocking;
@@ -82,34 +83,58 @@ abstract class AbstractIOSocketConfiguration<T extends IOSocket> implements IOSo
             this.boundSocket = boundSocket;
         }
 
-        @Override
-        public Builder<T, S> receiveBuffer(Integer size) {
+        /**
+         * Set the socket option for SO_RCVBUF. Defaults to null.
+         * @param size The size of the buffer or null to use the system default
+         * @return A new factory with the option set
+         */
+        public AbstractIOSocketConfigurationBuilder<T, S> receiveBuffer(Integer size) {
             return newBuilder(size, sendBuffer, blocking, linger, reuseAddress, boundSocket);
         }
 
-        @Override
-        public Builder<T, S> sendBuffer(Integer size) {
+        /**
+         * Set the socket option for SO_SNDBUF. Defaults to null.
+         * @param size The size of the buffer or null to use the system default
+         * @return A new factory with the option set
+         */
+        public AbstractIOSocketConfigurationBuilder<T, S> sendBuffer(Integer size) {
             return newBuilder(receiveBuffer, size, blocking, linger, reuseAddress, boundSocket);
         }
 
-        @Override
-        public Builder<T, S> blocking(boolean enabled) {
+        /**
+         * Set the socket to blocking mode. Defaults to false.
+         * @param enabled Enable the option
+         * @return A new factory with the option set
+         */
+        public AbstractIOSocketConfigurationBuilder<T, S> blocking(boolean enabled) {
             return newBuilder(receiveBuffer, sendBuffer, enabled, linger, reuseAddress, boundSocket);
         }
 
-        @Override
-        public Builder<T, S> linger(Integer time) {
+        /**
+         * Set the socket option for SO_LINGER. Defaults to null.
+         * @param time The linger time or null to use the system default
+         * @return A new factory with the option set
+         */
+        public AbstractIOSocketConfigurationBuilder<T, S> linger(Integer time) {
             return newBuilder(receiveBuffer, sendBuffer, blocking, time, reuseAddress, boundSocket);
         }
 
-        @Override
-        public Builder<T, S> reuseAddress(boolean enabled) {
+        /**
+         * Set the socket option for SO_REUSEADDR. Defaults to false.
+         * @param enabled Enable the option
+         * @return A new factory with the option set
+         */
+        public AbstractIOSocketConfigurationBuilder<T, S> reuseAddress(boolean enabled) {
             return newBuilder(receiveBuffer, sendBuffer, blocking, linger, enabled, boundSocket);
         }
 
-        @Override
-        public Builder<T, S> bind(SocketAddress newSocket) {
-            return newBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, newSocket);
+        /**
+         * Binds the socket to a local address.
+         * @param localAddress The local address
+         * @return A new factory with the option set
+         */
+        public AbstractIOSocketConfigurationBuilder<T, S> bind(SocketAddress localAddress) {
+            return newBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, localAddress);
         }
 
         /**
@@ -121,7 +146,7 @@ abstract class AbstractIOSocketConfiguration<T extends IOSocket> implements IOSo
          * @param boundSocket Local address
          * @return A concrete builder
          */
-        protected abstract Builder<T, S> newBuilder(
+        protected abstract AbstractIOSocketConfigurationBuilder<T, S> newBuilder(
             Integer receiveBuffer,
             Integer sendBuffer,
             boolean blocking,
