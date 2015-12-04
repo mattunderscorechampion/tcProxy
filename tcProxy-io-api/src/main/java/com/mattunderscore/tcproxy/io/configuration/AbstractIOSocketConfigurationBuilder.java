@@ -30,6 +30,7 @@ import java.net.SocketAddress;
 import com.mattunderscore.tcproxy.io.IOSocket;
 
 /**
+ * An abstract socket configuration builder. Provides the common settings.
  * @author Matt Champion on 03/12/2015
  */
 public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S extends AbstractIOSocketConfiguration<T>> {

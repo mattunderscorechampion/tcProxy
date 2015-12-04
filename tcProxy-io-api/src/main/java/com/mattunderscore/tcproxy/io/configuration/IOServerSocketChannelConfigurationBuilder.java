@@ -30,6 +30,7 @@ import java.net.SocketAddress;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 
 /**
+ * A socket configuration builder for {@link IOServerSocketChannelConfiguration}.
  * @author Matt Champion on 03/12/2015
  */
 public final class IOServerSocketChannelConfigurationBuilder extends AbstractIOSocketConfigurationBuilder<IOServerSocketChannel, IOServerSocketChannelConfiguration> {
