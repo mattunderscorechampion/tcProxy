@@ -33,44 +33,44 @@ import java.net.SocketAddress;
  * @author Matt Champion on 17/10/2015
  * @param <T> The type of socket created
  */
-public interface IOSocketFactory<T extends IOSocket> {
+public interface IOOutboundSocketFactory<T extends IOOutboundSocket> {
     /**
      * Set the socket option for SO_RCVBUF. Defaults to null.
      * @param size The size of the buffer or null to use the system default
      * @return A new factory with the option set
      */
-    IOSocketFactory<T> receiveBuffer(Integer size);
+    IOOutboundSocketFactory<T> receiveBuffer(Integer size);
     /**
      * Set the socket option for SO_SNDBUF. Defaults to null.
      * @param size The size of the buffer or null to use the system default
      * @return A new factory with the option set
      */
-    IOSocketFactory<T> sendBuffer(Integer size);
+    IOOutboundSocketFactory<T> sendBuffer(Integer size);
     /**
      * Set the socket to blocking mode. Defaults to false.
      * @param enabled Enable the option
      * @return A new factory with the option set
      */
-    IOSocketFactory<T> blocking(boolean enabled);
+    IOOutboundSocketFactory<T> blocking(boolean enabled);
     /**
      * Set the socket option for SO_LINGER. Defaults to null.
      * @param time The linger time or null to use the system default
      * @return A new factory with the option set
      */
-    IOSocketFactory<T> linger(Integer time);
+    IOOutboundSocketFactory<T> linger(Integer time);
     /**
      * Set the socket option for SO_REUSEADDR. Defaults to false.
      * @param enabled Enable the option
      * @return A new factory with the option set
      */
-    IOSocketFactory<T> reuseAddress(boolean enabled);
+    IOOutboundSocketFactory<T> reuseAddress(boolean enabled);
 
     /**
      * Binds the socket to a local addresss.
      * @param localAddress The local address
      * @return A new factory with the option set
      */
-    IOSocketFactory<T> bind(SocketAddress localAddress);
+    IOOutboundSocketFactory<T> bind(SocketAddress localAddress);
 
     /**
      * @return A new socket created by the factory

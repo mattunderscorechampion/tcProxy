@@ -26,13 +26,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.io;
 
 import java.io.IOException;
-import java.nio.channels.ClosedChannelException;
 
 /**
  * A server socket channel.
  * @author Matt Champion on 13/03/14.
  */
-public interface IOServerSocketChannel extends IOSingleOpSelectableChannel, IOSocket {
+public interface IOServerSocketChannel extends IOSingleOpSelectableChannel, IOOutboundSocket {
     /**
      * @return An inbound IOSocketChannel attempting to connect to the server.
      * @throws IOException

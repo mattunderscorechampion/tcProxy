@@ -28,5 +28,5 @@ package com.mattunderscore.tcproxy.io;
 /**
  * @author Matt Champion on 27/11/2015
  */
-public interface IOServerSocketChannelFactory extends IOSocketFactory<IOServerSocketChannel> {
+public interface IOServerSocketChannelFactory extends IOOutboundSocketFactory<IOServerSocketChannel> {
 }

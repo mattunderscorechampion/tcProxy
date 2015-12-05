@@ -26,20 +26,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.io;
 
 /**
- * @author Matt Champion on 27/11/2015
+ * An outbound {@link IOSocketChannel}.
+ * @author Matt Champion on 05/12/2015
  */
-public interface IOSocketChannelFactory extends IOSocketFactory<IOSocketChannel> {
-    /**
-     * Set the socket option for TCP_NODELAY. Defaults to false.
-     * @param enabled Enable the option
-     * @return A new factory with the option set
-     */
-    IOSocketFactory<IOSocketChannel> noDelay(boolean enabled);
-
-    /**
-     * Set the socket option for SO_KEEP_ALIVE. Defaults to false.
-     * @param enabled Enable the option
-     * @return A new factory with the option set
-     */
-    IOSocketFactory<IOSocketChannel> keepAlive(boolean enabled);
+public interface IOOutboundSocketChannel extends IOSocketChannel, IOOutboundSocket {
 }

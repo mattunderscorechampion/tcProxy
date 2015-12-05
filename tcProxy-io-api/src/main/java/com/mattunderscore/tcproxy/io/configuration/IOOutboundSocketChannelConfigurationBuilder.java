@@ -25,28 +25,31 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.configuration;
 
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import java.net.SocketAddress;
+
+import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
 
 /**
- * A socket configuration builder for {@link IOSocketChannelConfiguration}. Adds the {@link #noDelay} and
- * {@link #keepAlive} settings to the common settings.
- * @author Matt Champion on 03/12/2015
+ * @author Matt Champion on 05/12/2015
  */
-public final class IOSocketChannelConfigurationBuilder extends AbstractIOSocketConfigurationBuilder<IOSocketChannel, IOSocketChannelConfiguration> {
+class IOOutboundSocketChannelConfigurationBuilder extends AbstractIOSocketConfigurationBuilder<IOOutboundSocketChannel, IOOutboundSocketChannelConfiguration> {
     protected final Boolean keepAlive;
     protected final Boolean noDelay;
+    protected final SocketAddress boundSocket;
 
-    /*package*/ IOSocketChannelConfigurationBuilder() {
+    /*package*/ IOOutboundSocketChannelConfigurationBuilder() {
         keepAlive = false;
         noDelay = false;
+        boundSocket = null;
     }
 
-    /*package*/ IOSocketChannelConfigurationBuilder(
+    /*package*/ IOOutboundSocketChannelConfigurationBuilder(
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
         Integer linger,
         boolean reuseAddress,
+        SocketAddress boundSocket,
         Boolean keepAlive,
         Boolean noDelay) {
 
@@ -54,6 +57,7 @@ public final class IOSocketChannelConfigurationBuilder extends AbstractIOSocketC
 
         this.keepAlive = keepAlive;
         this.noDelay = noDelay;
+        this.boundSocket = boundSocket;
     }
 
     /**
@@ -62,8 +66,8 @@ public final class IOSocketChannelConfigurationBuilder extends AbstractIOSocketC
      * @param enabled Enable the option
      * @return A new factory with the option set
      */
-    public IOSocketChannelConfigurationBuilder noDelay(boolean enabled) {
-        return new IOSocketChannelConfigurationBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, keepAlive, enabled);
+    public IOOutboundSocketChannelConfigurationBuilder noDelay(boolean enabled) {
+        return new IOOutboundSocketChannelConfigurationBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket, keepAlive, enabled);
     }
 
     /**
@@ -72,29 +76,27 @@ public final class IOSocketChannelConfigurationBuilder extends AbstractIOSocketC
      * @param enabled Enable the option
      * @return A new factory with the option set
      */
-    public IOSocketChannelConfigurationBuilder keepAlive(boolean enabled) {
-        return new IOSocketChannelConfigurationBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, enabled, noDelay);
+    public IOOutboundSocketChannelConfigurationBuilder keepAlive(boolean enabled) {
+        return new IOOutboundSocketChannelConfigurationBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket, enabled, noDelay);
+    }
+
+    /**
+     * Binds the socket to a local address.
+     *
+     * @param localAddress The local address
+     * @return A new factory with the option set
+     */
+    public final IOOutboundSocketChannelConfigurationBuilder bind(SocketAddress localAddress) {
+        return new IOOutboundSocketChannelConfigurationBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, localAddress, keepAlive, noDelay);
     }
 
     @Override
-    protected IOSocketChannelConfiguration newConfiguration() {
-        return new IOSocketChannelConfiguration(
-            receiveBuffer,
-            sendBuffer,
-            blocking,
-            linger,
-            reuseAddress,
-            keepAlive,
-            noDelay);
+    protected IOOutboundSocketChannelConfiguration newConfiguration() {
+        return new IOOutboundSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket, keepAlive, noDelay);
     }
 
     @Override
-    protected IOSocketChannelConfigurationBuilder newBuilder(
-        Integer receiveBuffer,
-        Integer sendBuffer,
-        boolean blocking,
-        Integer linger,
-        boolean reuseAddress) {
-        return new IOSocketChannelConfigurationBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, keepAlive, noDelay);
+    protected IOOutboundSocketChannelConfigurationBuilder newBuilder(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress) {
+        return new IOOutboundSocketChannelConfigurationBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket, keepAlive, noDelay);
     }
 }

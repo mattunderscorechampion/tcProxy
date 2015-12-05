@@ -23,39 +23,20 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io.configuration;
+package com.mattunderscore.tcproxy.io;
 
+import java.io.IOException;
 import java.net.SocketAddress;
 
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-
 /**
- * The configuration for a {@link IOServerSocketChannel}s.
- * @author Matt Champion on 02/12/2015
+ * An outbound socket. Can be explicitly bound to a local address.
+ * @author Matt Champion on 05/12/2015
  */
-public final class IOServerSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOServerSocketChannel> {
-    protected final SocketAddress boundSocket;
-
-    /*package*/ IOServerSocketChannelConfiguration(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress, SocketAddress boundSocket) {
-        super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress);
-
-        this.boundSocket = boundSocket;
-    }
-
+public interface IOOutboundSocket extends IOSocket {
     /**
-     * Binds the socket to a local address.
-     *
+     * Bind the socket to a local address.
      * @param localAddress The local address
-     * @return A new factory with the option set
+     * @throws IOException
      */
-    public final IOServerSocketChannelConfiguration bind(SocketAddress localAddress) {
-        return new IOServerSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, localAddress);
-    }
-
-    /**
-     * @return Instance of {@link IOServerSocketChannelConfigurationBuilder}
-     */
-    public static IOServerSocketChannelConfigurationBuilder builder() {
-        return new IOServerSocketChannelConfigurationBuilder();
-    }
+    void bind(SocketAddress localAddress) throws IOException;
 }

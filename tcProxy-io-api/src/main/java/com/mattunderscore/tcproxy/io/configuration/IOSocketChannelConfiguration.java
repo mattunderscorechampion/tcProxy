@@ -47,10 +47,9 @@ public final class IOSocketChannelConfiguration extends AbstractIOSocketConfigur
             boolean blocking,
             Integer linger,
             boolean reuseAddress,
-            SocketAddress boundSocket,
             Boolean keepAlive,
             Boolean noDelay) {
-        super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
+        super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress);
         this.keepAlive = keepAlive;
         this.noDelay = noDelay;
     }

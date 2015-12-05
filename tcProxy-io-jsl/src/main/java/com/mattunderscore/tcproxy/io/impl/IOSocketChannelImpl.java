@@ -34,16 +34,16 @@ import java.nio.channels.SocketChannel;
 import java.util.Set;
 
 import com.mattunderscore.tcproxy.io.CircularBuffer;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 /**
  * Delegates to {@link SocketChannel}.
  * @author Matt Champion on 12/03/14.
  */
-final class IOSocketChannelImpl implements IOSocketChannel {
+final class IOSocketChannelImpl implements IOOutboundSocketChannel {
     private final SocketChannel channel;
 
     IOSocketChannelImpl(final SocketChannel channel) {

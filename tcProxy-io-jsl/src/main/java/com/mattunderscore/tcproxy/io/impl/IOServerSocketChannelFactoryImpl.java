@@ -31,13 +31,13 @@ import java.net.SocketAddress;
 import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannelFactory;
-import com.mattunderscore.tcproxy.io.IOSocketFactory;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
 
 /**
- * A {@link IOSocketFactory} implementation for {@link IOServerSocketChannel}s.
+ * A {@link IOOutboundSocketFactory} implementation for {@link IOServerSocketChannel}s.
  * @author Matt Champion on 17/10/2015
  */
-final class IOServerSocketChannelFactoryImpl extends AbstractSocketFactoryImpl<IOServerSocketChannel> implements IOServerSocketChannelFactory {
+final class IOServerSocketChannelFactoryImpl extends AbstractOutboundSocketFactoryImpl<IOServerSocketChannel> implements IOServerSocketChannelFactory {
 
     IOServerSocketChannelFactoryImpl(IOFactory ioFactory) {
         super(ioFactory, null, null, true, null, false, null);
@@ -56,7 +56,7 @@ final class IOServerSocketChannelFactoryImpl extends AbstractSocketFactoryImpl<I
     }
 
     @Override
-    protected IOSocketFactory<IOServerSocketChannel> newBuilder(
+    protected IOOutboundSocketFactory<IOServerSocketChannel> newBuilder(
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,

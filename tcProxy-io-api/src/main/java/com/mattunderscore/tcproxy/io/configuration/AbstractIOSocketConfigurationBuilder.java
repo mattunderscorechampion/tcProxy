@@ -39,10 +39,8 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
     protected final boolean blocking;
     protected final Integer linger;
     protected final boolean reuseAddress;
-    protected final SocketAddress boundSocket;
 
     /*package*/ AbstractIOSocketConfigurationBuilder() {
-        boundSocket = null;
         receiveBuffer = null;
         sendBuffer = null;
         blocking = true;
@@ -55,15 +53,13 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
         Integer sendBuffer,
         boolean blocking,
         Integer linger,
-        boolean reuseAddress,
-        SocketAddress boundSocket) {
+        boolean reuseAddress) {
 
         this.receiveBuffer = receiveBuffer;
         this.sendBuffer = sendBuffer;
         this.blocking = blocking;
         this.linger = linger;
         this.reuseAddress = reuseAddress;
-        this.boundSocket = boundSocket;
     }
 
     /**
@@ -73,7 +69,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @return A new factory with the option set
      */
     public final AbstractIOSocketConfigurationBuilder<T, S> receiveBuffer(Integer size) {
-        return newBuilder(size, sendBuffer, blocking, linger, reuseAddress, boundSocket);
+        return newBuilder(size, sendBuffer, blocking, linger, reuseAddress);
     }
 
     /**
@@ -83,7 +79,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @return A new factory with the option set
      */
     public final AbstractIOSocketConfigurationBuilder<T, S> sendBuffer(Integer size) {
-        return newBuilder(receiveBuffer, size, blocking, linger, reuseAddress, boundSocket);
+        return newBuilder(receiveBuffer, size, blocking, linger, reuseAddress);
     }
 
     /**
@@ -93,7 +89,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @return A new factory with the option set
      */
     public final AbstractIOSocketConfigurationBuilder<T, S> blocking(boolean enabled) {
-        return newBuilder(receiveBuffer, sendBuffer, enabled, linger, reuseAddress, boundSocket);
+        return newBuilder(receiveBuffer, sendBuffer, enabled, linger, reuseAddress);
     }
 
     /**
@@ -103,7 +99,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @return A new factory with the option set
      */
     public final AbstractIOSocketConfigurationBuilder<T, S> linger(Integer time) {
-        return newBuilder(receiveBuffer, sendBuffer, blocking, time, reuseAddress, boundSocket);
+        return newBuilder(receiveBuffer, sendBuffer, blocking, time, reuseAddress);
     }
 
     /**
@@ -113,17 +109,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @return A new factory with the option set
      */
     public final AbstractIOSocketConfigurationBuilder<T, S> reuseAddress(boolean enabled) {
-        return newBuilder(receiveBuffer, sendBuffer, blocking, linger, enabled, boundSocket);
-    }
-
-    /**
-     * Binds the socket to a local address.
-     *
-     * @param localAddress The local address
-     * @return A new factory with the option set
-     */
-    public final AbstractIOSocketConfigurationBuilder<T, S> bind(SocketAddress localAddress) {
-        return newBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, localAddress);
+        return newBuilder(receiveBuffer, sendBuffer, blocking, linger, enabled);
     }
 
     /**
@@ -144,7 +130,6 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @param blocking      Enable blocking
      * @param linger        Set linger
      * @param reuseAddress  Enable reuse address
-     * @param boundSocket   Local address
      * @return A concrete builder
      */
     protected abstract AbstractIOSocketConfigurationBuilder<T, S> newBuilder(
@@ -152,6 +137,5 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
         Integer sendBuffer,
         boolean blocking,
         Integer linger,
-        boolean reuseAddress,
-        SocketAddress boundSocket);
+        boolean reuseAddress);
 }

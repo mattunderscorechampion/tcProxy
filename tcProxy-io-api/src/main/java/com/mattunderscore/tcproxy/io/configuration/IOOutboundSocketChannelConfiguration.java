@@ -25,37 +25,48 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.configuration;
 
+import static com.mattunderscore.tcproxy.io.IOSocketOption.KEEP_ALIVE;
+import static com.mattunderscore.tcproxy.io.IOSocketOption.TCP_NO_DELAY;
+
+import java.io.IOException;
 import java.net.SocketAddress;
 
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
 
 /**
- * The configuration for a {@link IOServerSocketChannel}s.
- * @author Matt Champion on 02/12/2015
+ * @author Matt Champion on 05/12/2015
  */
-public final class IOServerSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOServerSocketChannel> {
+public class IOOutboundSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOOutboundSocketChannel> {
+    protected final Boolean keepAlive;
+    protected final Boolean noDelay;
     protected final SocketAddress boundSocket;
 
-    /*package*/ IOServerSocketChannelConfiguration(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress, SocketAddress boundSocket) {
+    IOOutboundSocketChannelConfiguration(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress, SocketAddress boundSocket, Boolean keepAlive, Boolean noDelay) {
         super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress);
 
+        this.keepAlive = keepAlive;
+        this.noDelay = noDelay;
         this.boundSocket = boundSocket;
     }
 
     /**
-     * Binds the socket to a local address.
-     *
-     * @param localAddress The local address
-     * @return A new factory with the option set
+     * @return Instance of {@link IOOutboundSocketChannelConfigurationBuilder}
      */
-    public final IOServerSocketChannelConfiguration bind(SocketAddress localAddress) {
-        return new IOServerSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, localAddress);
+    public static IOOutboundSocketChannelConfigurationBuilder builder() {
+        return new IOOutboundSocketChannelConfigurationBuilder();
     }
 
-    /**
-     * @return Instance of {@link IOServerSocketChannelConfigurationBuilder}
-     */
-    public static IOServerSocketChannelConfigurationBuilder builder() {
-        return new IOServerSocketChannelConfigurationBuilder();
+    public void apply(IOOutboundSocketChannel ioSocketChannel) throws IOException {
+        super.apply(ioSocketChannel);
+
+        if (keepAlive != null) {
+            ioSocketChannel.set(KEEP_ALIVE, keepAlive);
+        }
+        if (noDelay != null) {
+            ioSocketChannel.set(TCP_NO_DELAY, noDelay);
+        }
+        if (boundSocket != null) {
+            ioSocketChannel.bind(boundSocket);
+        }
     }
 }

@@ -27,10 +27,10 @@ package com.mattunderscore.tcproxy.io.impl;
 
 import java.io.IOException;
 
+import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketFactory;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
 
 /**
  * Static implementation of IO factory for convenience.
@@ -54,7 +54,7 @@ public final class StaticIOFactory {
      * @return A new unbound socket.
      * @throws IOException
      */
-    public static IOSocketChannel openSocket() throws IOException {
+    public static IOOutboundSocketChannel openSocket() throws IOException {
         return FACTORY.openSocket();
     }
 
@@ -72,7 +72,7 @@ public final class StaticIOFactory {
      * @return A socket factory
      * @throws IllegalArgumentException If no builder is available for the socket type
      */
-    public static <T extends IOSocketFactory<?>> T socketFactory(Class<T> type) {
+    public static <T extends IOOutboundSocketFactory<?>> T socketFactory(Class<T> type) {
         return FACTORY.socketFactory(type);
     }
 }

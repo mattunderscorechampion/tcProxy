@@ -39,10 +39,10 @@ public interface IOFactory {
     IOSelector openSelector() throws IOException;
 
     /**
-     * @return A new unbound socket.
+     * @return A new unbound, outbound socket.
      * @throws IOException
      */
-    IOSocketChannel openSocket() throws IOException;
+    IOOutboundSocketChannel openSocket() throws IOException;
 
     /**
      * @return A new server socket.
@@ -56,5 +56,5 @@ public interface IOFactory {
      * @return A socket factory
      * @throws IllegalArgumentException If no builder is available for the socket type
      */
-    <T extends IOSocketFactory<?>> T socketFactory(Class<T> type);
+    <T extends IOOutboundSocketFactory<?>> T socketFactory(Class<T> type);
 }

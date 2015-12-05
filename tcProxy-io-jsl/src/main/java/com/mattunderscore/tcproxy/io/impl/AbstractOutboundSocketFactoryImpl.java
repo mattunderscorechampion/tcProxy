@@ -29,15 +29,15 @@ import java.io.IOException;
 import java.net.SocketAddress;
 
 import com.mattunderscore.tcproxy.io.IOFactory;
-import com.mattunderscore.tcproxy.io.IOSocket;
-import com.mattunderscore.tcproxy.io.IOSocketFactory;
+import com.mattunderscore.tcproxy.io.IOOutboundSocket;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
 import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 /**
- * Abstract implementation of {@link IOSocketFactory}.
+ * Abstract implementation of {@link IOOutboundSocketFactory}.
  * @author Matt Champion on 17/10/2015
  */
-abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocketFactory<T> {
+abstract class AbstractOutboundSocketFactoryImpl<T extends IOOutboundSocket> implements IOOutboundSocketFactory<T> {
     protected final IOFactory ioFactory;
     protected final Integer receiveBuffer;
     protected final Integer sendBuffer;
@@ -46,7 +46,7 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
     protected final boolean reuseAddress;
     protected final SocketAddress boundSocket;
 
-    AbstractSocketFactoryImpl(IOFactory ioFactory) {
+    AbstractOutboundSocketFactoryImpl(IOFactory ioFactory) {
         this.ioFactory = ioFactory;
         boundSocket = null;
         receiveBuffer = null;
@@ -56,7 +56,7 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
         reuseAddress = false;
     }
 
-    AbstractSocketFactoryImpl(
+    AbstractOutboundSocketFactoryImpl(
         IOFactory ioFactory,
         Integer receiveBuffer,
         Integer sendBuffer,
@@ -75,32 +75,32 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
     }
 
     @Override
-    public IOSocketFactory<T> receiveBuffer(Integer size) {
+    public IOOutboundSocketFactory<T> receiveBuffer(Integer size) {
         return newBuilder(size, sendBuffer, blocking, linger, reuseAddress, boundSocket);
     }
 
     @Override
-    public IOSocketFactory<T> sendBuffer(Integer size) {
+    public IOOutboundSocketFactory<T> sendBuffer(Integer size) {
         return newBuilder(receiveBuffer, size, blocking, linger, reuseAddress, boundSocket);
     }
 
     @Override
-    public IOSocketFactory<T> blocking(boolean enabled) {
+    public IOOutboundSocketFactory<T> blocking(boolean enabled) {
         return newBuilder(receiveBuffer, sendBuffer, enabled, linger, reuseAddress, boundSocket);
     }
 
     @Override
-    public IOSocketFactory<T> linger(Integer time) {
+    public IOOutboundSocketFactory<T> linger(Integer time) {
         return newBuilder(receiveBuffer, sendBuffer, blocking, time, reuseAddress, boundSocket);
     }
 
     @Override
-    public IOSocketFactory<T> reuseAddress(boolean enabled) {
+    public IOOutboundSocketFactory<T> reuseAddress(boolean enabled) {
         return newBuilder(receiveBuffer, sendBuffer, blocking, linger, enabled, boundSocket);
     }
 
     @Override
-    public IOSocketFactory<T> bind(SocketAddress newSocket) {
+    public IOOutboundSocketFactory<T> bind(SocketAddress newSocket) {
         return newBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, newSocket);
     }
 
@@ -113,7 +113,7 @@ abstract class AbstractSocketFactoryImpl<T extends IOSocket> implements IOSocket
      * @param boundSocket Local address
      * @return A concrete builder
      */
-    protected abstract IOSocketFactory<T> newBuilder(
+    protected abstract IOOutboundSocketFactory<T> newBuilder(
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,

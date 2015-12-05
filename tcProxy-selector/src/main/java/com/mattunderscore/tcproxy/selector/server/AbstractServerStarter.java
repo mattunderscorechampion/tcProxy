@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannelFactory;
-import com.mattunderscore.tcproxy.io.IOSocketFactory;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
 import com.mattunderscore.tcproxy.selector.threads.RestartableThread;
@@ -66,7 +66,7 @@ public abstract class AbstractServerStarter implements ServerStarter {
 
     @Override
     public final Collection<IOServerSocketChannel> bindServerSockets() throws IOException {
-        final IOSocketFactory<IOServerSocketChannel> factory = ioFactory
+        final IOOutboundSocketFactory<IOServerSocketChannel> factory = ioFactory
             .socketFactory(IOServerSocketChannelFactory.class)
             .blocking(false)
             .reuseAddress(true);

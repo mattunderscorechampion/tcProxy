@@ -29,26 +29,27 @@ import java.io.IOException;
 import java.net.SocketAddress;
 
 import com.mattunderscore.tcproxy.io.IOFactory;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketChannelFactory;
-import com.mattunderscore.tcproxy.io.IOSocketFactory;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketChannelFactory;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
 import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 /**
- * A {@link IOSocketFactory} implementation for {@link IOSocketChannel}s.
+ * A {@link IOOutboundSocketFactory} implementation for {@link IOSocketChannel}s.
  * @author Matt Champion on 17/10/2015
  */
-final class IOSocketChannelFactoryImpl extends AbstractSocketFactoryImpl<IOSocketChannel> implements IOSocketChannelFactory {
+final class IOOutboundSocketChannelFactoryImpl extends AbstractOutboundSocketFactoryImpl<IOOutboundSocketChannel> implements IOOutboundSocketChannelFactory {
     protected final Boolean keepAlive;
     protected final Boolean noDelay;
 
-    IOSocketChannelFactoryImpl(IOFactory ioFactory) {
+    IOOutboundSocketChannelFactoryImpl(IOFactory ioFactory) {
         super(ioFactory);
         keepAlive = false;
         noDelay = false;
     }
 
-    IOSocketChannelFactoryImpl(
+    IOOutboundSocketChannelFactoryImpl(
         IOFactory ioFactory,
         Integer receiveBuffer,
         Integer sendBuffer,
@@ -65,7 +66,7 @@ final class IOSocketChannelFactoryImpl extends AbstractSocketFactoryImpl<IOSocke
     }
 
     @Override
-    protected IOSocketFactory<IOSocketChannel> newBuilder(
+    protected IOOutboundSocketFactory<IOOutboundSocketChannel> newBuilder(
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
@@ -73,7 +74,7 @@ final class IOSocketChannelFactoryImpl extends AbstractSocketFactoryImpl<IOSocke
         boolean reuseAddress,
         SocketAddress boundSocket) {
 
-        return new IOSocketChannelFactoryImpl(
+        return new IOOutboundSocketChannelFactoryImpl(
             ioFactory,
             receiveBuffer,
             sendBuffer,
@@ -86,8 +87,8 @@ final class IOSocketChannelFactoryImpl extends AbstractSocketFactoryImpl<IOSocke
     }
 
     @Override
-    protected IOSocketChannel newSocket() throws IOException {
-        final IOSocketChannel socket = ioFactory.openSocket();
+    protected IOOutboundSocketChannel newSocket() throws IOException {
+        final IOOutboundSocketChannel socket = ioFactory.openSocket();
         if (keepAlive != null) {
             socket.set(IOSocketOption.KEEP_ALIVE, keepAlive);
         }
@@ -98,8 +99,8 @@ final class IOSocketChannelFactoryImpl extends AbstractSocketFactoryImpl<IOSocke
     }
 
     @Override
-    public IOSocketFactory<IOSocketChannel> noDelay(boolean noDelay) {
-        return new IOSocketChannelFactoryImpl(
+    public IOOutboundSocketFactory<IOOutboundSocketChannel> noDelay(boolean noDelay) {
+        return new IOOutboundSocketChannelFactoryImpl(
             ioFactory,
             receiveBuffer,
             sendBuffer,
@@ -112,8 +113,8 @@ final class IOSocketChannelFactoryImpl extends AbstractSocketFactoryImpl<IOSocke
     }
 
     @Override
-    public IOSocketFactory<IOSocketChannel> keepAlive(boolean keepAlive) {
-        return new IOSocketChannelFactoryImpl(
+    public IOOutboundSocketFactory<IOOutboundSocketChannel> keepAlive(boolean keepAlive) {
+        return new IOOutboundSocketChannelFactoryImpl(
             ioFactory,
             receiveBuffer,
             sendBuffer,

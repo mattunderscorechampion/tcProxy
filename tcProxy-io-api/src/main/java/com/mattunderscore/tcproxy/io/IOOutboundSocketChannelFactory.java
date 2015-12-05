@@ -23,39 +23,23 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io.configuration;
-
-import java.net.SocketAddress;
-
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+package com.mattunderscore.tcproxy.io;
 
 /**
- * The configuration for a {@link IOServerSocketChannel}s.
- * @author Matt Champion on 02/12/2015
+ * @author Matt Champion on 27/11/2015
  */
-public final class IOServerSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOServerSocketChannel> {
-    protected final SocketAddress boundSocket;
-
-    /*package*/ IOServerSocketChannelConfiguration(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress, SocketAddress boundSocket) {
-        super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress);
-
-        this.boundSocket = boundSocket;
-    }
-
+public interface IOOutboundSocketChannelFactory extends IOOutboundSocketFactory<IOOutboundSocketChannel> {
     /**
-     * Binds the socket to a local address.
-     *
-     * @param localAddress The local address
+     * Set the socket option for TCP_NODELAY. Defaults to false.
+     * @param enabled Enable the option
      * @return A new factory with the option set
      */
-    public final IOServerSocketChannelConfiguration bind(SocketAddress localAddress) {
-        return new IOServerSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, localAddress);
-    }
+    IOOutboundSocketFactory<IOOutboundSocketChannel> noDelay(boolean enabled);
 
     /**
-     * @return Instance of {@link IOServerSocketChannelConfigurationBuilder}
+     * Set the socket option for SO_KEEP_ALIVE. Defaults to false.
+     * @param enabled Enable the option
+     * @return A new factory with the option set
      */
-    public static IOServerSocketChannelConfigurationBuilder builder() {
-        return new IOServerSocketChannelConfigurationBuilder();
-    }
+    IOOutboundSocketFactory<IOOutboundSocketChannel> keepAlive(boolean enabled);
 }

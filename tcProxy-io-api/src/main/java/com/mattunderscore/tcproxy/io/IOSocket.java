@@ -35,13 +35,6 @@ import java.net.SocketAddress;
 public interface IOSocket extends AutoCloseable {
 
     /**
-     * Bind the socket to a local address.
-     * @param localAddress The local address
-     * @throws IOException
-     */
-    void bind(SocketAddress localAddress) throws IOException;
-
-    /**
      * @return The address of the lcoal socket.
      * @throws IOException
      */

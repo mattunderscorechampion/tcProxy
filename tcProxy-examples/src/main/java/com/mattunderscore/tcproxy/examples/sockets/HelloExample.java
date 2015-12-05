@@ -30,11 +30,12 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
 import com.mattunderscore.tcproxy.io.CircularBuffer;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannelAcceptor;
-import com.mattunderscore.tcproxy.io.IOSocketChannelFactory;
-import com.mattunderscore.tcproxy.io.IOSocketFactory;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketChannelFactory;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
 import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
 import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
@@ -55,7 +56,7 @@ public final class HelloExample {
                         .create(),
                     IOSocketChannelConfiguration.builder().build())));
         final Thread connectingThread = new Thread(
-            new ConnectingTask(StaticIOFactory.socketFactory(IOSocketChannelFactory.class)));
+            new ConnectingTask(StaticIOFactory.socketFactory(IOOutboundSocketChannelFactory.class)));
         acceptingThread.start();
         connectingThread.start();
     }
@@ -87,11 +88,11 @@ public final class HelloExample {
     }
 
     private static final class ConnectingTask implements Runnable {
-        private final IOSocketFactory<IOSocketChannel> factory;
+        private final IOOutboundSocketFactory<IOOutboundSocketChannel> factory;
         private final CircularBuffer buffer = CircularBufferImpl.allocateDirect(32);
         private volatile boolean running = false;
 
-        private ConnectingTask(IOSocketFactory<IOSocketChannel> factory) {
+        private ConnectingTask(IOOutboundSocketFactory<IOOutboundSocketChannel> factory) {
             this.factory = factory;
         }
 
@@ -99,7 +100,7 @@ public final class HelloExample {
         public void run() {
             running = true;
             while (running) try {
-                final IOSocketChannel channel = factory.create();
+                final IOOutboundSocketChannel channel = factory.create();
                 channel.connect(new InetSocketAddress("localhost", 8080));
                 channel.read(buffer);
                 if (buffer.usedCapacity() != 5) {

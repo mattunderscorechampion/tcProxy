@@ -34,8 +34,12 @@ import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
  * @author Matt Champion on 03/12/2015
  */
 public final class IOServerSocketChannelConfigurationBuilder extends AbstractIOSocketConfigurationBuilder<IOServerSocketChannel, IOServerSocketChannelConfiguration> {
+    private final SocketAddress boundSocket;
+
     /*package*/ IOServerSocketChannelConfigurationBuilder() {
         super();
+
+        boundSocket = null;
     }
 
     /*package*/ IOServerSocketChannelConfigurationBuilder(
@@ -45,7 +49,9 @@ public final class IOServerSocketChannelConfigurationBuilder extends AbstractIOS
         Integer linger,
         boolean reuseAddress,
         SocketAddress boundSocket) {
-        super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
+        super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress);
+
+        this.boundSocket = boundSocket;
     }
 
     @Override
@@ -59,14 +65,23 @@ public final class IOServerSocketChannelConfigurationBuilder extends AbstractIOS
             boundSocket);
     }
 
+    /**
+     * Binds the socket to a local address.
+     *
+     * @param localAddress The local address
+     * @return A new factory with the option set
+     */
+    public final IOServerSocketChannelConfigurationBuilder bind(SocketAddress localAddress) {
+        return new IOServerSocketChannelConfigurationBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, localAddress);
+    }
+
     @Override
     protected final IOServerSocketChannelConfigurationBuilder newBuilder(
             Integer receiveBuffer,
             Integer sendBuffer,
             boolean blocking,
             Integer linger,
-            boolean reuseAddress,
-            SocketAddress boundSocket) {
+            boolean reuseAddress) {
         return new IOServerSocketChannelConfigurationBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
     }
 }
