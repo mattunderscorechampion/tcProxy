@@ -81,8 +81,12 @@ final class IOServerSocketChannelImpl implements IOServerSocketChannel {
 
     @Override
     public <T> void set(final IOSocketOption<T> option, final T value) throws IOException {
-        final InternalIOSocketOption<T> optionImpl = IOUtils.convertSocketOption(option);
-        optionImpl.apply(socketDelegate, value);
+        IOUtils.convertSocketOption(option).apply(socketDelegate, value);
+    }
+
+    @Override
+    public <T> T get(IOSocketOption<T> option) throws IOException {
+        return IOUtils.convertSocketOption(option).lookup(socketDelegate);
     }
 
     @Override

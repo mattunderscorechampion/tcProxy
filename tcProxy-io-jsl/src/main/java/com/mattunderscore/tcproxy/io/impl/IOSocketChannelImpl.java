@@ -72,8 +72,12 @@ final class IOSocketChannelImpl implements IOSocketChannel {
 
     @Override
     public <T> void set(final IOSocketOption<T> option, final T value) throws IOException {
-        final InternalIOSocketOption<T> optionImpl = IOUtils.convertSocketOption(option);
-        optionImpl.apply(channel, value);
+        IOUtils.convertSocketOption(option).apply(channel, value);
+    }
+
+    @Override
+    public <T> T get(IOSocketOption<T> option) throws IOException {
+        return IOUtils.convertSocketOption(option).lookup(channel);
     }
 
     @Override

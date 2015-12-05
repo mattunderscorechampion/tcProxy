@@ -66,4 +66,13 @@ public interface IOSocket extends AutoCloseable {
      * @throws IOException
      */
     <T> void set(IOSocketOption<T> option, T value) throws IOException;
+
+    /**
+     * Get the value of an option for the socket.
+     * @param option The option.
+     * @param <T> The type of the value.
+     * @return The value of the option.
+     * @throws IOException
+     */
+    <T> T get(IOSocketOption<T> option) throws IOException;
 }

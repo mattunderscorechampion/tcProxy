@@ -62,6 +62,11 @@ interface InternalIOSocketOption<T> {
         }
 
         @Override
+        public Boolean lookup(Object channel) throws IOException {
+            return ((SelectableChannel)channel).isBlocking();
+        }
+
+        @Override
         public String toString() {
             return "BLOCKING";
         }
@@ -89,6 +94,11 @@ interface InternalIOSocketOption<T> {
     void apply(Object channel, T value) throws IOException;
 
     /**
+     * Lookup the current socket option of a channel.
+     */
+    T lookup(Object channel) throws IOException;
+
+    /**
      * Apply an {@link InternalIOSocketOption} as a {@link SocketOption}.
      * @param <T> The type of value the option takes
      */
@@ -102,6 +112,11 @@ interface InternalIOSocketOption<T> {
         @Override
         public void apply(Object channel, T value) throws IOException {
             ((NetworkChannel)channel).setOption(option, value);
+        }
+
+        @Override
+        public T lookup(Object channel) throws IOException {
+            return ((NetworkChannel)channel).getOption(option);
         }
 
         @Override
