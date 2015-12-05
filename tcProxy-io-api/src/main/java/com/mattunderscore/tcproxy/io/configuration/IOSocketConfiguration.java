@@ -39,4 +39,8 @@ public interface IOSocketConfiguration<T extends IOSocket> {
      * @throws IOException If the configuration could not be applied
      */
     void apply(T ioSocket) throws IOException;
+
+    interface Builder<T extends IOSocket> {
+        IOSocketConfiguration<T> build();
+    }
 }
