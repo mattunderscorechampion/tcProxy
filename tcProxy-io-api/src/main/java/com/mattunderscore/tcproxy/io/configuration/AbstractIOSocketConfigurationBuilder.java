@@ -41,7 +41,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
     protected final boolean reuseAddress;
     protected final SocketAddress boundSocket;
 
-    AbstractIOSocketConfigurationBuilder() {
+    /*package*/ AbstractIOSocketConfigurationBuilder() {
         boundSocket = null;
         receiveBuffer = null;
         sendBuffer = null;
@@ -50,7 +50,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
         reuseAddress = false;
     }
 
-    AbstractIOSocketConfigurationBuilder(
+    /*package*/ AbstractIOSocketConfigurationBuilder(
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
@@ -72,7 +72,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @param size The size of the buffer or null to use the system default
      * @return A new factory with the option set
      */
-    public AbstractIOSocketConfigurationBuilder<T, S> receiveBuffer(Integer size) {
+    public final AbstractIOSocketConfigurationBuilder<T, S> receiveBuffer(Integer size) {
         return newBuilder(size, sendBuffer, blocking, linger, reuseAddress, boundSocket);
     }
 
@@ -82,7 +82,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @param size The size of the buffer or null to use the system default
      * @return A new factory with the option set
      */
-    public AbstractIOSocketConfigurationBuilder<T, S> sendBuffer(Integer size) {
+    public final AbstractIOSocketConfigurationBuilder<T, S> sendBuffer(Integer size) {
         return newBuilder(receiveBuffer, size, blocking, linger, reuseAddress, boundSocket);
     }
 
@@ -92,7 +92,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @param enabled Enable the option
      * @return A new factory with the option set
      */
-    public AbstractIOSocketConfigurationBuilder<T, S> blocking(boolean enabled) {
+    public final AbstractIOSocketConfigurationBuilder<T, S> blocking(boolean enabled) {
         return newBuilder(receiveBuffer, sendBuffer, enabled, linger, reuseAddress, boundSocket);
     }
 
@@ -102,7 +102,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @param time The linger time or null to use the system default
      * @return A new factory with the option set
      */
-    public AbstractIOSocketConfigurationBuilder<T, S> linger(Integer time) {
+    public final AbstractIOSocketConfigurationBuilder<T, S> linger(Integer time) {
         return newBuilder(receiveBuffer, sendBuffer, blocking, time, reuseAddress, boundSocket);
     }
 
@@ -112,7 +112,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @param enabled Enable the option
      * @return A new factory with the option set
      */
-    public AbstractIOSocketConfigurationBuilder<T, S> reuseAddress(boolean enabled) {
+    public final AbstractIOSocketConfigurationBuilder<T, S> reuseAddress(boolean enabled) {
         return newBuilder(receiveBuffer, sendBuffer, blocking, linger, enabled, boundSocket);
     }
 
@@ -122,9 +122,21 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @param localAddress The local address
      * @return A new factory with the option set
      */
-    public AbstractIOSocketConfigurationBuilder<T, S> bind(SocketAddress localAddress) {
+    public final AbstractIOSocketConfigurationBuilder<T, S> bind(SocketAddress localAddress) {
         return newBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, localAddress);
     }
+
+    /**
+     * @return A new configuration of type S.
+     */
+    public final S build() {
+        return newConfiguration();
+    }
+
+    /**
+     * @return The new configuration required by the concrete class.
+     */
+    protected abstract S newConfiguration();
 
     /**
      * @param receiveBuffer The receive buffer size

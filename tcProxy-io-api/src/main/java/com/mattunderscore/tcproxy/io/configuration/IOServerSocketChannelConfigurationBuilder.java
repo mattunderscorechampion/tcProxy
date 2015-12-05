@@ -34,11 +34,11 @@ import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
  * @author Matt Champion on 03/12/2015
  */
 public final class IOServerSocketChannelConfigurationBuilder extends AbstractIOSocketConfigurationBuilder<IOServerSocketChannel, IOServerSocketChannelConfiguration> {
-    IOServerSocketChannelConfigurationBuilder() {
+    /*package*/ IOServerSocketChannelConfigurationBuilder() {
         super();
     }
 
-    IOServerSocketChannelConfigurationBuilder(
+    /*package*/ IOServerSocketChannelConfigurationBuilder(
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
@@ -49,7 +49,18 @@ public final class IOServerSocketChannelConfigurationBuilder extends AbstractIOS
     }
 
     @Override
-    protected IOServerSocketChannelConfigurationBuilder newBuilder(
+    protected final IOServerSocketChannelConfiguration newConfiguration() {
+        return new IOServerSocketChannelConfiguration(
+            receiveBuffer,
+            sendBuffer,
+            blocking,
+            linger,
+            reuseAddress,
+            boundSocket);
+    }
+
+    @Override
+    protected final IOServerSocketChannelConfigurationBuilder newBuilder(
             Integer receiveBuffer,
             Integer sendBuffer,
             boolean blocking,

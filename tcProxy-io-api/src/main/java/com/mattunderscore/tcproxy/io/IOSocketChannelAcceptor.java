@@ -23,25 +23,40 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io.configuration;
+package com.mattunderscore.tcproxy.io;
 
-import java.net.SocketAddress;
+import java.io.IOException;
 
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
 
 /**
- * The configuration for a {@link IOServerSocketChannel}s.
- * @author Matt Champion on 02/12/2015
+ * @author Matt Champion on 05/12/2015
  */
-public final class IOServerSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOServerSocketChannel> {
-    /*package*/ IOServerSocketChannelConfiguration(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress, SocketAddress boundSocket) {
-        super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
+public final class IOSocketChannelAcceptor {
+    private final IOServerSocketChannel serverSocketChannel;
+    private final IOSocketChannelConfiguration socketChannelConfiguration;
+
+    /**
+     * Constructor.
+     * @param serverSocketChannel The {@link IOServerSocketChannel} to accept from
+     * @param socketChannelConfiguration The configuration for the accepted socket
+     */
+    public IOSocketChannelAcceptor(IOServerSocketChannel serverSocketChannel, IOSocketChannelConfiguration socketChannelConfiguration) {
+        this.serverSocketChannel = serverSocketChannel;
+        this.socketChannelConfiguration = socketChannelConfiguration;
     }
 
     /**
-     * @return Instance of {@link IOServerSocketChannelConfigurationBuilder}
+     * Accept a new {@link IOSocketChannel} from the {@link IOServerSocketChannel}.
+     * @return An {@link IOSocketChannel} if the {@link IOServerSocketChannel} is in non-blocking mode it may return
+     * null or a socket that has not finished connecting.
+     * @throws IOException If the accept or configuration operations failed
      */
-    public static IOServerSocketChannelConfigurationBuilder builder() {
-        return new IOServerSocketChannelConfigurationBuilder();
+    public IOSocketChannel accept() throws IOException {
+        final IOSocketChannel ioSocketChannel = serverSocketChannel.accept();
+        if (ioSocketChannel != null) {
+            socketChannelConfiguration.apply(ioSocketChannel);
+        }
+        return ioSocketChannel;
     }
 }

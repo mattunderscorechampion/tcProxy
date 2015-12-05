@@ -25,6 +25,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.configuration;
 
+import static com.mattunderscore.tcproxy.io.IOSocketOption.KEEP_ALIVE;
+import static com.mattunderscore.tcproxy.io.IOSocketOption.TCP_NO_DELAY;
+
+import java.io.IOException;
 import java.net.SocketAddress;
 
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
@@ -34,15 +38,21 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
  * @author Matt Champion on 02/12/2015
  */
 public final class IOSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOSocketChannel> {
+    protected final Boolean keepAlive;
+    protected final Boolean noDelay;
 
-    protected IOSocketChannelConfiguration(
+    /*package*/ IOSocketChannelConfiguration(
             Integer receiveBuffer,
             Integer sendBuffer,
             boolean blocking,
             Integer linger,
             boolean reuseAddress,
-            SocketAddress boundSocket) {
+            SocketAddress boundSocket,
+            Boolean keepAlive,
+            Boolean noDelay) {
         super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
+        this.keepAlive = keepAlive;
+        this.noDelay = noDelay;
     }
 
     /**
@@ -50,5 +60,16 @@ public final class IOSocketChannelConfiguration extends AbstractIOSocketConfigur
      */
     public static IOSocketChannelConfigurationBuilder builder() {
         return new IOSocketChannelConfigurationBuilder();
+    }
+
+    public void apply(IOSocketChannel ioSocketChannel) throws IOException {
+        super.apply(ioSocketChannel);
+
+        if (keepAlive != null) {
+            ioSocketChannel.set(KEEP_ALIVE, keepAlive);
+        }
+        if (noDelay != null) {
+            ioSocketChannel.set(TCP_NO_DELAY, noDelay);
+        }
     }
 }

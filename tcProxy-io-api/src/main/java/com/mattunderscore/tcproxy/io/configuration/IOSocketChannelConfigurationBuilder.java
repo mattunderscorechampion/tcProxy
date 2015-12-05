@@ -38,12 +38,12 @@ public final class IOSocketChannelConfigurationBuilder extends AbstractIOSocketC
     protected final Boolean keepAlive;
     protected final Boolean noDelay;
 
-    IOSocketChannelConfigurationBuilder() {
+    /*package*/ IOSocketChannelConfigurationBuilder() {
         keepAlive = false;
         noDelay = false;
     }
 
-    IOSocketChannelConfigurationBuilder(
+    /*package*/ IOSocketChannelConfigurationBuilder(
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,
@@ -55,17 +55,6 @@ public final class IOSocketChannelConfigurationBuilder extends AbstractIOSocketC
 
         this.keepAlive = keepAlive;
         this.noDelay = noDelay;
-    }
-
-    @Override
-    protected IOSocketChannelConfigurationBuilder newBuilder(
-        Integer receiveBuffer,
-        Integer sendBuffer,
-        boolean blocking,
-        Integer linger,
-        boolean reuseAddress,
-        SocketAddress boundSocket) {
-        return new IOSocketChannelConfigurationBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket, keepAlive, noDelay);
     }
 
     /**
@@ -86,5 +75,29 @@ public final class IOSocketChannelConfigurationBuilder extends AbstractIOSocketC
      */
     public IOSocketChannelConfigurationBuilder keepAlive(boolean enabled) {
         return new IOSocketChannelConfigurationBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket, enabled, noDelay);
+    }
+
+    @Override
+    protected IOSocketChannelConfiguration newConfiguration() {
+        return new IOSocketChannelConfiguration(
+            receiveBuffer,
+            sendBuffer,
+            blocking,
+            linger,
+            reuseAddress,
+            boundSocket,
+            keepAlive,
+            noDelay);
+    }
+
+    @Override
+    protected IOSocketChannelConfigurationBuilder newBuilder(
+        Integer receiveBuffer,
+        Integer sendBuffer,
+        boolean blocking,
+        Integer linger,
+        boolean reuseAddress,
+        SocketAddress boundSocket) {
+        return new IOSocketChannelConfigurationBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket, keepAlive, noDelay);
     }
 }
