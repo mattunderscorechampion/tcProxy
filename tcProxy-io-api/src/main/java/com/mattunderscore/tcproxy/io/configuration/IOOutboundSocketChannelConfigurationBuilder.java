@@ -32,7 +32,7 @@ import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
 /**
  * @author Matt Champion on 05/12/2015
  */
-class IOOutboundSocketChannelConfigurationBuilder extends AbstractIOSocketConfigurationBuilder<IOOutboundSocketChannel, IOOutboundSocketChannelConfiguration> {
+public class IOOutboundSocketChannelConfigurationBuilder extends AbstractIOSocketConfigurationBuilder<IOOutboundSocketChannel, IOOutboundSocketChannelConfiguration> {
     protected final Boolean keepAlive;
     protected final Boolean noDelay;
     protected final SocketAddress boundSocket;

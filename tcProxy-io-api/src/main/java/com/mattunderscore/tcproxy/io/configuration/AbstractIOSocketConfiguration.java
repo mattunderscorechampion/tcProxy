@@ -39,7 +39,7 @@ import com.mattunderscore.tcproxy.io.IOSocket;
  * Abstract implementation of socket configuration that contains the common properties of all sockets.
  * @author Matt Champion on 02/12/2015
  */
-public abstract class AbstractIOSocketConfiguration<T extends IOSocket> {
+public abstract class AbstractIOSocketConfiguration<T extends IOSocket> implements IOSocketConfiguration<T> {
     protected final Integer receiveBuffer;
     protected final Integer sendBuffer;
     protected final boolean blocking;
@@ -62,11 +62,7 @@ public abstract class AbstractIOSocketConfiguration<T extends IOSocket> {
         this.reuseAddress = reuseAddress;
     }
 
-    /**
-     * Apply the configuration to a socket.
-     * @param ioSocket The socket to apply the configuration to
-     * @throws IOException If the configuration could not be applied
-     */
+    @Override
     public void apply(T ioSocket) throws IOException {
         ioSocket.set(BLOCKING, blocking);
         ioSocket.set(REUSE_ADDRESS, reuseAddress);

@@ -33,6 +33,7 @@ import java.net.SocketAddress;
 
 import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
  * The configuration for {@link IOServerSocketChannel}s.
@@ -67,9 +68,7 @@ public final class IOOutboundSocketChannelConfiguration extends AbstractIOSocket
         if (noDelay != null) {
             ioSocketChannel.set(TCP_NO_DELAY, noDelay);
         }
-        if (boundSocket != null) {
-            ioSocketChannel.bind(boundSocket);
-        }
+        ioSocketChannel.bind(boundSocket);
     }
 
     @Override

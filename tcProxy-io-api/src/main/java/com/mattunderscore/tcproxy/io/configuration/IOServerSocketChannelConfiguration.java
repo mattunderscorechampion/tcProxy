@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.configuration;
 
+import java.io.IOException;
 import java.net.SocketAddress;
 
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
@@ -50,6 +51,12 @@ public final class IOServerSocketChannelConfiguration extends AbstractIOSocketCo
      */
     public final IOServerSocketChannelConfiguration bind(SocketAddress localAddress) {
         return new IOServerSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, localAddress);
+    }
+
+    @Override
+    public void apply(IOServerSocketChannel ioSocket) throws IOException {
+        super.apply(ioSocket);
+        ioSocket.bind(boundSocket);
     }
 
     /**

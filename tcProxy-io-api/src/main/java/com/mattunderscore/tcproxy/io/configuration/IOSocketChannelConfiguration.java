@@ -60,6 +60,7 @@ public final class IOSocketChannelConfiguration extends AbstractIOSocketConfigur
         return new IOSocketChannelConfigurationBuilder();
     }
 
+    @Override
     public void apply(IOSocketChannel ioSocketChannel) throws IOException {
         super.apply(ioSocketChannel);
 
