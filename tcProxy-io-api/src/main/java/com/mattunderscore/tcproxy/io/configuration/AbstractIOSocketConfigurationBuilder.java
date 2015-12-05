@@ -31,7 +31,7 @@ import com.mattunderscore.tcproxy.io.IOSocket;
  * An abstract socket configuration builder. Provides the common settings.
  * @author Matt Champion on 03/12/2015
  */
-public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S extends AbstractIOSocketConfiguration<T>> implements IOSocketConfiguration.Builder<T> {
+public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S extends AbstractIOSocketConfiguration<T>, R extends AbstractIOSocketConfigurationBuilder<T, S, R>> implements IOSocketConfiguration.Builder<T> {
     protected final Integer receiveBuffer;
     protected final Integer sendBuffer;
     protected final boolean blocking;
@@ -66,7 +66,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @param size The size of the buffer or null to use the system default
      * @return A new factory with the option set
      */
-    public final AbstractIOSocketConfigurationBuilder<T, S> receiveBuffer(Integer size) {
+    public final R receiveBuffer(Integer size) {
         return newBuilder(size, sendBuffer, blocking, linger, reuseAddress);
     }
 
@@ -76,7 +76,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @param size The size of the buffer or null to use the system default
      * @return A new factory with the option set
      */
-    public final AbstractIOSocketConfigurationBuilder<T, S> sendBuffer(Integer size) {
+    public final R sendBuffer(Integer size) {
         return newBuilder(receiveBuffer, size, blocking, linger, reuseAddress);
     }
 
@@ -86,7 +86,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @param enabled Enable the option
      * @return A new factory with the option set
      */
-    public final AbstractIOSocketConfigurationBuilder<T, S> blocking(boolean enabled) {
+    public final R blocking(boolean enabled) {
         return newBuilder(receiveBuffer, sendBuffer, enabled, linger, reuseAddress);
     }
 
@@ -96,7 +96,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @param time The linger time or null to use the system default
      * @return A new factory with the option set
      */
-    public final AbstractIOSocketConfigurationBuilder<T, S> linger(Integer time) {
+    public final R linger(Integer time) {
         return newBuilder(receiveBuffer, sendBuffer, blocking, time, reuseAddress);
     }
 
@@ -106,7 +106,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @param enabled Enable the option
      * @return A new factory with the option set
      */
-    public final AbstractIOSocketConfigurationBuilder<T, S> reuseAddress(boolean enabled) {
+    public final R reuseAddress(boolean enabled) {
         return newBuilder(receiveBuffer, sendBuffer, blocking, linger, enabled);
     }
 
@@ -130,7 +130,7 @@ public abstract class AbstractIOSocketConfigurationBuilder<T extends IOSocket, S
      * @param reuseAddress  Enable reuse address
      * @return A concrete builder
      */
-    protected abstract AbstractIOSocketConfigurationBuilder<T, S> newBuilder(
+    protected abstract R newBuilder(
         Integer receiveBuffer,
         Integer sendBuffer,
         boolean blocking,

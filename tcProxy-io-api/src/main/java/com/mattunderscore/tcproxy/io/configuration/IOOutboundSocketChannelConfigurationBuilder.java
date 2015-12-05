@@ -30,9 +30,10 @@ import java.net.SocketAddress;
 import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
 
 /**
+ * A socket configuration builder for {@link IOOutboundSocketChannelConfiguration}.
  * @author Matt Champion on 05/12/2015
  */
-public class IOOutboundSocketChannelConfigurationBuilder extends AbstractIOSocketConfigurationBuilder<IOOutboundSocketChannel, IOOutboundSocketChannelConfiguration> {
+public final class IOOutboundSocketChannelConfigurationBuilder extends AbstractIOSocketConfigurationBuilder<IOOutboundSocketChannel, IOOutboundSocketChannelConfiguration, IOOutboundSocketChannelConfigurationBuilder> {
     protected final Boolean keepAlive;
     protected final Boolean noDelay;
     protected final SocketAddress boundSocket;

@@ -32,7 +32,7 @@ import com.mattunderscore.tcproxy.io.IOSocketChannel;
  * {@link #keepAlive} settings to the common settings.
  * @author Matt Champion on 03/12/2015
  */
-public final class IOSocketChannelConfigurationBuilder extends AbstractIOSocketConfigurationBuilder<IOSocketChannel, IOSocketChannelConfiguration> {
+public final class IOSocketChannelConfigurationBuilder extends AbstractIOSocketConfigurationBuilder<IOSocketChannel, IOSocketChannelConfiguration, IOSocketChannelConfigurationBuilder> {
     protected final Boolean keepAlive;
     protected final Boolean noDelay;
 
