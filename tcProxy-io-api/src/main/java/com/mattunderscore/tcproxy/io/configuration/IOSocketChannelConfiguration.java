@@ -29,12 +29,11 @@ import static com.mattunderscore.tcproxy.io.IOSocketOption.KEEP_ALIVE;
 import static com.mattunderscore.tcproxy.io.IOSocketOption.TCP_NO_DELAY;
 
 import java.io.IOException;
-import java.net.SocketAddress;
 
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
- * A configuration for a {@link IOSocketChannel}s.
+ * A configuration for {@link IOSocketChannel}s.
  * @author Matt Champion on 02/12/2015
  */
 public final class IOSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOSocketChannel> {
@@ -70,5 +69,32 @@ public final class IOSocketChannelConfiguration extends AbstractIOSocketConfigur
         if (noDelay != null) {
             ioSocketChannel.set(TCP_NO_DELAY, noDelay);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        final IOSocketChannelConfiguration that = (IOSocketChannelConfiguration) o;
+
+        return !(keepAlive != null ? !keepAlive.equals(that.keepAlive) : that.keepAlive != null) &&
+            !(noDelay != null ? !noDelay.equals(that.noDelay) : that.noDelay != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (keepAlive != null ? keepAlive.hashCode() : 0);
+        result = 31 * result + (noDelay != null ? noDelay.hashCode() : 0);
+        return result;
     }
 }

@@ -30,7 +30,7 @@ import java.net.SocketAddress;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 
 /**
- * The configuration for a {@link IOServerSocketChannel}s.
+ * The configuration for {@link IOServerSocketChannel}s.
  * @author Matt Champion on 02/12/2015
  */
 public final class IOServerSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOServerSocketChannel> {
@@ -57,5 +57,30 @@ public final class IOServerSocketChannelConfiguration extends AbstractIOSocketCo
      */
     public static IOServerSocketChannelConfigurationBuilder builder() {
         return new IOServerSocketChannelConfigurationBuilder();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        final IOServerSocketChannelConfiguration that = (IOServerSocketChannelConfiguration) o;
+
+        return !(boundSocket != null ? !boundSocket.equals(that.boundSocket) : that.boundSocket != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (boundSocket != null ? boundSocket.hashCode() : 0);
+        return result;
     }
 }

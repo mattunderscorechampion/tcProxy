@@ -32,11 +32,13 @@ import java.io.IOException;
 import java.net.SocketAddress;
 
 import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
+import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 
 /**
+ * The configuration for {@link IOServerSocketChannel}s.
  * @author Matt Champion on 05/12/2015
  */
-public class IOOutboundSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOOutboundSocketChannel> {
+public final class IOOutboundSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOOutboundSocketChannel> {
     protected final Boolean keepAlive;
     protected final Boolean noDelay;
     protected final SocketAddress boundSocket;
@@ -68,5 +70,34 @@ public class IOOutboundSocketChannelConfiguration extends AbstractIOSocketConfig
         if (boundSocket != null) {
             ioSocketChannel.bind(boundSocket);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        final IOOutboundSocketChannelConfiguration that = (IOOutboundSocketChannelConfiguration) o;
+
+        return !(keepAlive != null ? !keepAlive.equals(that.keepAlive) : that.keepAlive != null) &&
+            !(noDelay != null ? !noDelay.equals(that.noDelay) : that.noDelay != null) &&
+            !(boundSocket != null ? !boundSocket.equals(that.boundSocket) : that.boundSocket != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (keepAlive != null ? keepAlive.hashCode() : 0);
+        result = 31 * result + (noDelay != null ? noDelay.hashCode() : 0);
+        result = 31 * result + (boundSocket != null ? boundSocket.hashCode() : 0);
+        return result;
     }
 }

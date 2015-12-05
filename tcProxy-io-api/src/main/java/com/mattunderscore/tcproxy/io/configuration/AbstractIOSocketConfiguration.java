@@ -80,4 +80,31 @@ public abstract class AbstractIOSocketConfiguration<T extends IOSocket> {
             ioSocket.set(LINGER, linger);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final AbstractIOSocketConfiguration<?> that = (AbstractIOSocketConfiguration<?>) o;
+        return blocking == that.blocking &&
+            reuseAddress == that.reuseAddress &&
+            !(receiveBuffer != null ? !receiveBuffer.equals(that.receiveBuffer) : that.receiveBuffer != null) &&
+            !(sendBuffer != null ? !sendBuffer.equals(that.sendBuffer) : that.sendBuffer != null) &&
+            !(linger != null ? !linger.equals(that.linger) : that.linger != null);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = receiveBuffer != null ? receiveBuffer.hashCode() : 0;
+        result = 31 * result + (sendBuffer != null ? sendBuffer.hashCode() : 0);
+        result = 31 * result + (blocking ? 1 : 0);
+        result = 31 * result + (linger != null ? linger.hashCode() : 0);
+        result = 31 * result + (reuseAddress ? 1 : 0);
+        return result;
+    }
 }
