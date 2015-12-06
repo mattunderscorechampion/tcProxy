@@ -30,15 +30,24 @@ import static com.mattunderscore.tcproxy.io.IOSocketOption.TCP_NO_DELAY;
 
 import java.io.IOException;
 
+import net.jcip.annotations.Immutable;
+
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
  * A configuration for {@link IOSocketChannel}s.
  * @author Matt Champion on 02/12/2015
  */
-public final class IOSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOSocketChannel> {
+@Immutable
+public final class IOSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOSocketChannel, IOSocketChannelConfiguration> {
     protected final Boolean keepAlive;
     protected final Boolean noDelay;
+
+    IOSocketChannelConfiguration() {
+        super();
+        keepAlive = null;
+        noDelay = null;
+    }
 
     /*package*/ IOSocketChannelConfiguration(
             Integer receiveBuffer,
@@ -53,13 +62,6 @@ public final class IOSocketChannelConfiguration extends AbstractIOSocketConfigur
         this.noDelay = noDelay;
     }
 
-    /**
-     * @return Instance of {@link IOSocketChannelConfigurationBuilder}
-     */
-    public static IOSocketChannelConfigurationBuilder builder() {
-        return new IOSocketChannelConfigurationBuilder();
-    }
-
     @Override
     public void apply(IOSocketChannel ioSocketChannel) throws IOException {
         super.apply(ioSocketChannel);
@@ -70,6 +72,31 @@ public final class IOSocketChannelConfiguration extends AbstractIOSocketConfigur
         if (noDelay != null) {
             ioSocketChannel.set(TCP_NO_DELAY, noDelay);
         }
+    }
+
+    /**
+     * Set the socket option for TCP_NODELAY. Defaults to false.
+     *
+     * @param enabled Enable the option
+     * @return A new factory with the option set
+     */
+    public IOSocketChannelConfiguration noDelay(boolean enabled) {
+        return new IOSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, keepAlive, enabled);
+    }
+
+    /**
+     * Set the socket option for SO_KEEP_ALIVE. Defaults to false.
+     *
+     * @param enabled Enable the option
+     * @return A new factory with the option set
+     */
+    public IOSocketChannelConfiguration keepAlive(boolean enabled) {
+        return new IOSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, enabled, noDelay);
+    }
+
+    @Override
+    protected IOSocketChannelConfiguration newConfiguration(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress) {
+        return new IOSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, keepAlive, noDelay);
     }
 
     @Override
@@ -97,5 +124,12 @@ public final class IOSocketChannelConfiguration extends AbstractIOSocketConfigur
         result = 31 * result + (keepAlive != null ? keepAlive.hashCode() : 0);
         result = 31 * result + (noDelay != null ? noDelay.hashCode() : 0);
         return result;
+    }
+
+    /**
+     * @return The default configuration
+     */
+    public static IOSocketChannelConfiguration defaultConfig() {
+        return new IOSocketChannelConfiguration();
     }
 }

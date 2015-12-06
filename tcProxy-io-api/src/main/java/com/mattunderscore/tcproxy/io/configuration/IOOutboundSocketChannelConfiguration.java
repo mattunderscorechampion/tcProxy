@@ -31,18 +31,27 @@ import static com.mattunderscore.tcproxy.io.IOSocketOption.TCP_NO_DELAY;
 import java.io.IOException;
 import java.net.SocketAddress;
 
+import net.jcip.annotations.Immutable;
+
 import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
 
 /**
  * The configuration for {@link IOServerSocketChannel}s.
  * @author Matt Champion on 05/12/2015
  */
-public final class IOOutboundSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOOutboundSocketChannel> {
+@Immutable
+public final class IOOutboundSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOOutboundSocketChannel, IOOutboundSocketChannelConfiguration> {
     protected final Boolean keepAlive;
     protected final Boolean noDelay;
     protected final SocketAddress boundSocket;
+
+    IOOutboundSocketChannelConfiguration() {
+        super();
+        keepAlive = null;
+        noDelay = null;
+        boundSocket = null;
+    }
 
     IOOutboundSocketChannelConfiguration(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress, SocketAddress boundSocket, Boolean keepAlive, Boolean noDelay) {
         super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress);
@@ -52,13 +61,7 @@ public final class IOOutboundSocketChannelConfiguration extends AbstractIOSocket
         this.boundSocket = boundSocket;
     }
 
-    /**
-     * @return Instance of {@link IOOutboundSocketChannelConfigurationBuilder}
-     */
-    public static IOOutboundSocketChannelConfigurationBuilder builder() {
-        return new IOOutboundSocketChannelConfigurationBuilder();
-    }
-
+    @Override
     public void apply(IOOutboundSocketChannel ioSocketChannel) throws IOException {
         super.apply(ioSocketChannel);
 
@@ -69,6 +72,41 @@ public final class IOOutboundSocketChannelConfiguration extends AbstractIOSocket
             ioSocketChannel.set(TCP_NO_DELAY, noDelay);
         }
         ioSocketChannel.bind(boundSocket);
+    }
+
+    @Override
+    protected IOOutboundSocketChannelConfiguration newConfiguration(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress) {
+        return new IOOutboundSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket, keepAlive, noDelay);
+    }
+
+    /**
+     * Set the socket option for TCP_NODELAY. Defaults to false.
+     *
+     * @param enabled Enable the option
+     * @return A new factory with the option set
+     */
+    public IOOutboundSocketChannelConfiguration noDelay(boolean enabled) {
+        return new IOOutboundSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket, keepAlive, enabled);
+    }
+
+    /**
+     * Set the socket option for SO_KEEP_ALIVE. Defaults to false.
+     *
+     * @param enabled Enable the option
+     * @return A new factory with the option set
+     */
+    public IOOutboundSocketChannelConfiguration keepAlive(boolean enabled) {
+        return new IOOutboundSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket, enabled, noDelay);
+    }
+
+    /**
+     * Binds the socket to a local address.
+     *
+     * @param localAddress The local address
+     * @return A new factory with the option set
+     */
+    public IOOutboundSocketChannelConfiguration bind(SocketAddress localAddress) {
+        return new IOOutboundSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, localAddress, keepAlive, noDelay);
     }
 
     @Override
@@ -98,5 +136,12 @@ public final class IOOutboundSocketChannelConfiguration extends AbstractIOSocket
         result = 31 * result + (noDelay != null ? noDelay.hashCode() : 0);
         result = 31 * result + (boundSocket != null ? boundSocket.hashCode() : 0);
         return result;
+    }
+
+    /**
+     * @return The default configuration
+     */
+    public static IOOutboundSocketChannelConfiguration defaultConfig() {
+        return new IOOutboundSocketChannelConfiguration();
     }
 }

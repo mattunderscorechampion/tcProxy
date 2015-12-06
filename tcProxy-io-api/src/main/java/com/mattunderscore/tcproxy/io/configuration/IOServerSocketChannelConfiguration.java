@@ -28,14 +28,22 @@ package com.mattunderscore.tcproxy.io.configuration;
 import java.io.IOException;
 import java.net.SocketAddress;
 
+import net.jcip.annotations.Immutable;
+
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 
 /**
  * The configuration for {@link IOServerSocketChannel}s.
  * @author Matt Champion on 02/12/2015
  */
-public final class IOServerSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOServerSocketChannel> {
+@Immutable
+public final class IOServerSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOServerSocketChannel, IOServerSocketChannelConfiguration> {
     protected final SocketAddress boundSocket;
+
+    /*package*/ IOServerSocketChannelConfiguration() {
+        super();
+        boundSocket = null;
+    }
 
     /*package*/ IOServerSocketChannelConfiguration(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress, SocketAddress boundSocket) {
         super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress);
@@ -59,11 +67,9 @@ public final class IOServerSocketChannelConfiguration extends AbstractIOSocketCo
         ioSocket.bind(boundSocket);
     }
 
-    /**
-     * @return Instance of {@link IOServerSocketChannelConfigurationBuilder}
-     */
-    public static IOServerSocketChannelConfigurationBuilder builder() {
-        return new IOServerSocketChannelConfigurationBuilder();
+    @Override
+    protected IOServerSocketChannelConfiguration newConfiguration(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress) {
+        return new IOServerSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
     }
 
     @Override
@@ -89,5 +95,12 @@ public final class IOServerSocketChannelConfiguration extends AbstractIOSocketCo
         int result = super.hashCode();
         result = 31 * result + (boundSocket != null ? boundSocket.hashCode() : 0);
         return result;
+    }
+
+    /**
+     * @return The default configuration
+     */
+    public static IOServerSocketChannelConfiguration defaultConfig() {
+        return new IOServerSocketChannelConfiguration();
     }
 }

@@ -12,4 +12,11 @@
     <artifactId>tcProxy-io-api</artifactId>
     <name>tcProxy IO API</name>
     <description>An IO API that provides interfaces for all components making it more testable.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.jcip</groupId>
+            <artifactId>jcip-annotations</artifactId>
+        </dependency>
+    </dependencies>
 </project>

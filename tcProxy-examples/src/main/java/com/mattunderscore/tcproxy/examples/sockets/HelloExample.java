@@ -31,11 +31,11 @@ import java.nio.ByteBuffer;
 
 import com.mattunderscore.tcproxy.io.CircularBuffer;
 import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketChannelFactory;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannelAcceptor;
-import com.mattunderscore.tcproxy.io.IOOutboundSocketChannelFactory;
-import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
 import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
 import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
@@ -54,7 +54,7 @@ public final class HelloExample {
                         .reuseAddress(true)
                         .bind(new InetSocketAddress(8080))
                         .create(),
-                    IOSocketChannelConfiguration.builder().build())));
+                    IOSocketChannelConfiguration.defaultConfig())));
         final Thread connectingThread = new Thread(
             new ConnectingTask(StaticIOFactory.socketFactory(IOOutboundSocketChannelFactory.class)));
         acceptingThread.start();
