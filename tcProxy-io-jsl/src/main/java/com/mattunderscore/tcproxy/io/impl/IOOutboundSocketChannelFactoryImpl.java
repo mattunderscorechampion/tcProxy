@@ -33,96 +33,43 @@ import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOOutboundSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
-import com.mattunderscore.tcproxy.io.IOSocketOption;
+import com.mattunderscore.tcproxy.io.configuration.IOOutboundSocketChannelConfiguration;
 
 /**
  * A {@link IOOutboundSocketFactory} implementation for {@link IOSocketChannel}s.
  * @author Matt Champion on 17/10/2015
  */
-final class IOOutboundSocketChannelFactoryImpl extends AbstractOutboundSocketFactoryImpl<IOOutboundSocketChannel> implements IOOutboundSocketChannelFactory {
-    protected final Boolean keepAlive;
-    protected final Boolean noDelay;
+final class IOOutboundSocketChannelFactoryImpl extends AbstractOutboundSocketFactoryImpl<IOOutboundSocketChannel, IOOutboundSocketChannelConfiguration> implements IOOutboundSocketChannelFactory {
 
-    IOOutboundSocketChannelFactoryImpl(IOFactory ioFactory) {
-        super(ioFactory);
-        keepAlive = false;
-        noDelay = false;
-    }
-
-    IOOutboundSocketChannelFactoryImpl(
+    /*package*/ IOOutboundSocketChannelFactoryImpl(
         IOFactory ioFactory,
-        Integer receiveBuffer,
-        Integer sendBuffer,
-        boolean blocking,
-        Boolean keepAlive,
-        Integer linger,
-        boolean reuseAddress,
-        boolean noDelay,
-        SocketAddress boundSocket) {
+        IOOutboundSocketChannelConfiguration configuration) {
 
-        super(ioFactory, receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
-        this.keepAlive = keepAlive;
-        this.noDelay = noDelay;
+        super(ioFactory, configuration);
     }
 
     @Override
-    protected IOOutboundSocketFactory<IOOutboundSocketChannel> newBuilder(
-        Integer receiveBuffer,
-        Integer sendBuffer,
-        boolean blocking,
-        Integer linger,
-        boolean reuseAddress,
-        SocketAddress boundSocket) {
-
-        return new IOOutboundSocketChannelFactoryImpl(
-            ioFactory,
-            receiveBuffer,
-            sendBuffer,
-            blocking,
-            keepAlive,
-            linger,
-            reuseAddress,
-            noDelay,
-            boundSocket);
+    protected IOOutboundSocketChannelFactoryImpl newBuilder(IOOutboundSocketChannelConfiguration configuration) {
+        return new IOOutboundSocketChannelFactoryImpl(ioFactory, configuration);
     }
 
     @Override
     protected IOOutboundSocketChannel newSocket() throws IOException {
-        final IOOutboundSocketChannel socket = ioFactory.openSocket();
-        if (keepAlive != null) {
-            socket.set(IOSocketOption.KEEP_ALIVE, keepAlive);
-        }
-        if (noDelay != null) {
-            socket.set(IOSocketOption.TCP_NO_DELAY, noDelay);
-        }
-        return socket;
+        return ioFactory.openSocket();
     }
 
     @Override
     public IOOutboundSocketFactory<IOOutboundSocketChannel> noDelay(boolean noDelay) {
-        return new IOOutboundSocketChannelFactoryImpl(
-            ioFactory,
-            receiveBuffer,
-            sendBuffer,
-            blocking,
-            keepAlive,
-            linger,
-            reuseAddress,
-            noDelay,
-            boundSocket);
+        return new IOOutboundSocketChannelFactoryImpl(ioFactory, configuration.noDelay(noDelay));
     }
 
     @Override
     public IOOutboundSocketFactory<IOOutboundSocketChannel> keepAlive(boolean keepAlive) {
-        return new IOOutboundSocketChannelFactoryImpl(
-            ioFactory,
-            receiveBuffer,
-            sendBuffer,
-            blocking,
-            keepAlive,
-            linger,
-            reuseAddress,
-            noDelay,
-            boundSocket);
+        return new IOOutboundSocketChannelFactoryImpl(ioFactory, configuration.keepAlive(keepAlive));
+    }
+
+    @Override
+    public IOOutboundSocketFactory<IOOutboundSocketChannel> bind(SocketAddress localAddress) {
+        return new IOOutboundSocketChannelFactoryImpl(ioFactory, configuration.bind(localAddress));
     }
 }

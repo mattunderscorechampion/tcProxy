@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.impl;
 
+import static com.mattunderscore.tcproxy.io.configuration.IOOutboundSocketChannelConfiguration.defaultConfig;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -62,7 +63,7 @@ public final class IOSocketChannelFactoryImplTest {
 
     @Test
     public void createDefault() throws IOException {
-        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOSocketChannel channel = factory.create();
 
@@ -78,7 +79,7 @@ public final class IOSocketChannelFactoryImplTest {
 
     @Test
     public void createWithReceiveBuffer() throws IOException {
-        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOSocketChannel channel = factory.receiveBuffer(1024).create();
 
@@ -95,7 +96,7 @@ public final class IOSocketChannelFactoryImplTest {
 
     @Test
     public void createNonBlocking() throws IOException {
-        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOSocketChannel channel = factory.blocking(false).create();
 
@@ -111,7 +112,7 @@ public final class IOSocketChannelFactoryImplTest {
 
     @Test
     public void createNonBlockingWithReceiveBuffer() throws IOException {
-        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOSocketChannel channel = factory.blocking(false).receiveBuffer(1024).create();
 
@@ -128,7 +129,7 @@ public final class IOSocketChannelFactoryImplTest {
 
     @Test
     public void createWithSendBuffer() throws IOException {
-        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOSocketChannel channel = factory.sendBuffer(1024).create();
 
@@ -145,7 +146,7 @@ public final class IOSocketChannelFactoryImplTest {
 
     @Test
     public void createWithKeepAlive() throws IOException {
-        final IOOutboundSocketChannelFactory factory = new IOOutboundSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketChannelFactory factory = new IOOutboundSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOSocketChannel channel = factory.keepAlive(true).create();
 
@@ -161,7 +162,7 @@ public final class IOSocketChannelFactoryImplTest {
 
     @Test
     public void createWithLinger() throws IOException {
-        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOSocketChannel channel = factory.linger(1024).create();
 
@@ -178,7 +179,7 @@ public final class IOSocketChannelFactoryImplTest {
 
     @Test
     public void createWithReuseAddress() throws IOException {
-        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOSocketChannel channel = factory.reuseAddress(true).create();
 
@@ -194,7 +195,7 @@ public final class IOSocketChannelFactoryImplTest {
 
     @Test
     public void createWithNoDelay() throws IOException {
-        final IOOutboundSocketChannelFactory factory = new IOOutboundSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketChannelFactory factory = new IOOutboundSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOSocketChannel channel = factory.noDelay(true).create();
 
@@ -210,7 +211,7 @@ public final class IOSocketChannelFactoryImplTest {
 
     @Test
     public void createBound() throws IOException {
-        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOSocketChannel channel = factory.bind(address).create();
 
@@ -226,7 +227,7 @@ public final class IOSocketChannelFactoryImplTest {
 
     @Test
     public void createWithLatestReceiveBuffer() throws IOException {
-        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOOutboundSocketChannel> factory = new IOOutboundSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOSocketChannel channel = factory.receiveBuffer(1024).receiveBuffer(2048).create();
 

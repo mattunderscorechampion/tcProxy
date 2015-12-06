@@ -32,111 +32,62 @@ import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOOutboundSocket;
 import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
 import com.mattunderscore.tcproxy.io.IOSocketOption;
+import com.mattunderscore.tcproxy.io.configuration.AbstractIOSocketConfiguration;
+import com.mattunderscore.tcproxy.io.configuration.IOOutboundSocketChannelConfiguration;
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 
 /**
  * Abstract implementation of {@link IOOutboundSocketFactory}.
  * @author Matt Champion on 17/10/2015
  */
-abstract class AbstractOutboundSocketFactoryImpl<T extends IOOutboundSocket> implements IOOutboundSocketFactory<T> {
+abstract class AbstractOutboundSocketFactoryImpl<T extends IOOutboundSocket, S extends AbstractIOSocketConfiguration<T, S>> implements IOOutboundSocketFactory<T> {
     protected final IOFactory ioFactory;
-    protected final Integer receiveBuffer;
-    protected final Integer sendBuffer;
-    protected final boolean blocking;
-    protected final Integer linger;
-    protected final boolean reuseAddress;
-    protected final SocketAddress boundSocket;
-
-    AbstractOutboundSocketFactoryImpl(IOFactory ioFactory) {
-        this.ioFactory = ioFactory;
-        boundSocket = null;
-        receiveBuffer = null;
-        sendBuffer = null;
-        blocking = true;
-        linger = null;
-        reuseAddress = false;
-    }
+    protected final S configuration;
 
     AbstractOutboundSocketFactoryImpl(
         IOFactory ioFactory,
-        Integer receiveBuffer,
-        Integer sendBuffer,
-        boolean blocking,
-        Integer linger,
-        boolean reuseAddress,
-        SocketAddress boundSocket) {
+        S configuration) {
 
         this.ioFactory = ioFactory;
-        this.receiveBuffer = receiveBuffer;
-        this.sendBuffer = sendBuffer;
-        this.blocking = blocking;
-        this.linger = linger;
-        this.reuseAddress = reuseAddress;
-        this.boundSocket = boundSocket;
+        this.configuration = configuration;
     }
 
     @Override
     public IOOutboundSocketFactory<T> receiveBuffer(Integer size) {
-        return newBuilder(size, sendBuffer, blocking, linger, reuseAddress, boundSocket);
+        return newBuilder(configuration.receiveBuffer(size));
     }
 
     @Override
     public IOOutboundSocketFactory<T> sendBuffer(Integer size) {
-        return newBuilder(receiveBuffer, size, blocking, linger, reuseAddress, boundSocket);
+        return newBuilder(configuration.sendBuffer(size));
     }
 
     @Override
     public IOOutboundSocketFactory<T> blocking(boolean enabled) {
-        return newBuilder(receiveBuffer, sendBuffer, enabled, linger, reuseAddress, boundSocket);
+        return newBuilder(configuration.blocking(enabled));
     }
 
     @Override
     public IOOutboundSocketFactory<T> linger(Integer time) {
-        return newBuilder(receiveBuffer, sendBuffer, blocking, time, reuseAddress, boundSocket);
+        return newBuilder(configuration.linger(time));
     }
 
     @Override
     public IOOutboundSocketFactory<T> reuseAddress(boolean enabled) {
-        return newBuilder(receiveBuffer, sendBuffer, blocking, linger, enabled, boundSocket);
-    }
-
-    @Override
-    public IOOutboundSocketFactory<T> bind(SocketAddress newSocket) {
-        return newBuilder(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, newSocket);
+        return newBuilder(configuration.reuseAddress(enabled));
     }
 
     /**
-     * @param receiveBuffer The receive buffer size
-     * @param sendBuffer The send buffer size
-     * @param blocking Enable blocking
-     * @param linger Set linger
-     * @param reuseAddress Enable reuse address
-     * @param boundSocket Local address
+     * @param configuration The configuration
      * @return A concrete builder
      */
-    protected abstract IOOutboundSocketFactory<T> newBuilder(
-        Integer receiveBuffer,
-        Integer sendBuffer,
-        boolean blocking,
-        Integer linger,
-        boolean reuseAddress,
-        SocketAddress boundSocket);
+    protected abstract AbstractOutboundSocketFactoryImpl<T, S> newBuilder(S configuration);
 
     @Override
     public final T create() throws IOException {
         final T socket = newSocket();
 
-        if (receiveBuffer != null) {
-            socket.set(IOSocketOption.RECEIVE_BUFFER, receiveBuffer);
-        }
-        if (sendBuffer != null) {
-            socket.set(IOSocketOption.SEND_BUFFER, sendBuffer);
-        }
-        socket.set(IOSocketOption.BLOCKING, blocking);
-        if (linger != null) {
-            socket.set(IOSocketOption.LINGER, linger);
-        }
-        socket.set(IOSocketOption.REUSE_ADDRESS, reuseAddress);
-        socket.bind(boundSocket);
+        configuration.apply(socket);
 
         return socket;
     }

@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.impl;
 
+import static com.mattunderscore.tcproxy.io.configuration.IOServerSocketChannelConfiguration.defaultConfig;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -39,8 +40,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import com.mattunderscore.tcproxy.io.IOFactory;
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
+import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketOption;
 
 public final class IOServerSocketChannelFactoryImplTest {
@@ -60,7 +61,7 @@ public final class IOServerSocketChannelFactoryImplTest {
 
     @Test
     public void createDefault() throws IOException {
-        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOServerSocketChannel channel = factory.create();
 
@@ -74,7 +75,7 @@ public final class IOServerSocketChannelFactoryImplTest {
 
     @Test
     public void createWithReceiveBuffer() throws IOException {
-        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOServerSocketChannel channel = factory.receiveBuffer(1024).create();
 
@@ -89,7 +90,7 @@ public final class IOServerSocketChannelFactoryImplTest {
 
     @Test
     public void createNonBlocking() throws IOException {
-        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOServerSocketChannel channel = factory.blocking(false).create();
 
@@ -103,7 +104,7 @@ public final class IOServerSocketChannelFactoryImplTest {
 
     @Test
     public void createNonBlockingWithReceiveBuffer() throws IOException {
-        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOServerSocketChannel channel = factory.blocking(false).receiveBuffer(1024).create();
 
@@ -118,7 +119,7 @@ public final class IOServerSocketChannelFactoryImplTest {
 
     @Test
     public void createWithSendBuffer() throws IOException {
-        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOServerSocketChannel channel = factory.sendBuffer(1024).create();
 
@@ -133,7 +134,7 @@ public final class IOServerSocketChannelFactoryImplTest {
 
     @Test
     public void createWithLinger() throws IOException {
-        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOServerSocketChannel channel = factory.linger(1024).create();
 
@@ -148,7 +149,7 @@ public final class IOServerSocketChannelFactoryImplTest {
 
     @Test
     public void createWithReuseAddress() throws IOException {
-        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOServerSocketChannel channel = factory.reuseAddress(true).create();
 
@@ -162,7 +163,7 @@ public final class IOServerSocketChannelFactoryImplTest {
 
     @Test
     public void createBound() throws IOException {
-        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOServerSocketChannel channel = factory.bind(address).create();
 
@@ -176,7 +177,7 @@ public final class IOServerSocketChannelFactoryImplTest {
 
     @Test
     public void createWithLatestReceiveBuffer() throws IOException {
-        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory);
+        final IOOutboundSocketFactory<IOServerSocketChannel> factory = new IOServerSocketChannelFactoryImpl(ioFactory, defaultConfig());
 
         final IOServerSocketChannel channel = factory.receiveBuffer(1024).receiveBuffer(2048).create();
 

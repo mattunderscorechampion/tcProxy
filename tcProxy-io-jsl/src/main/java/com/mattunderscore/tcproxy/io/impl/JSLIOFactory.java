@@ -32,11 +32,13 @@ import java.nio.channels.SocketChannel;
 
 import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketChannelFactory;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
 import com.mattunderscore.tcproxy.io.IOSelector;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannelFactory;
-import com.mattunderscore.tcproxy.io.IOOutboundSocketChannelFactory;
-import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
+import com.mattunderscore.tcproxy.io.configuration.IOOutboundSocketChannelConfiguration;
+import com.mattunderscore.tcproxy.io.configuration.IOServerSocketChannelConfiguration;
 
 /**
  * Factory implementation for sockets and selectors that uses the Java Standard Libary.
@@ -62,10 +64,10 @@ public final class JSLIOFactory implements IOFactory {
     @SuppressWarnings("unchecked")
     public <T extends IOOutboundSocketFactory<?>> T socketFactory(Class<T> type) {
         if (IOServerSocketChannelFactory.class.equals(type)) {
-            return (T) new IOServerSocketChannelFactoryImpl(this);
+            return (T) new IOServerSocketChannelFactoryImpl(this, IOServerSocketChannelConfiguration.defaultConfig());
         }
         else if (IOOutboundSocketChannelFactory.class.equals(type)) {
-            return (T) new IOOutboundSocketChannelFactoryImpl(this);
+            return (T) new IOOutboundSocketChannelFactoryImpl(this, IOOutboundSocketChannelConfiguration.defaultConfig());
         }
         else {
             throw new IllegalArgumentException("No factory available for " + type.getCanonicalName());

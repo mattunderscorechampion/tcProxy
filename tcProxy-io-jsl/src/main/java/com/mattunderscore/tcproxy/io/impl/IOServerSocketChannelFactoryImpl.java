@@ -29,53 +29,33 @@ import java.io.IOException;
 import java.net.SocketAddress;
 
 import com.mattunderscore.tcproxy.io.IOFactory;
+import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannelFactory;
-import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
+import com.mattunderscore.tcproxy.io.configuration.IOServerSocketChannelConfiguration;
 
 /**
  * A {@link IOOutboundSocketFactory} implementation for {@link IOServerSocketChannel}s.
  * @author Matt Champion on 17/10/2015
  */
-final class IOServerSocketChannelFactoryImpl extends AbstractOutboundSocketFactoryImpl<IOServerSocketChannel> implements IOServerSocketChannelFactory {
+final class IOServerSocketChannelFactoryImpl extends AbstractOutboundSocketFactoryImpl<IOServerSocketChannel, IOServerSocketChannelConfiguration> implements IOServerSocketChannelFactory {
 
-    IOServerSocketChannelFactoryImpl(IOFactory ioFactory) {
-        super(ioFactory, null, null, true, null, false, null);
-    }
-
-    IOServerSocketChannelFactoryImpl(
-        IOFactory ioFactory,
-        Integer receiveBuffer,
-        Integer sendBuffer,
-        boolean blocking,
-        Integer linger,
-        boolean reuseAddress,
-        SocketAddress boundSocket) {
-
-        super(ioFactory, receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
+    /*package*/ IOServerSocketChannelFactoryImpl(IOFactory ioFactory, IOServerSocketChannelConfiguration configuration) {
+        super(ioFactory, configuration);
     }
 
     @Override
-    protected IOOutboundSocketFactory<IOServerSocketChannel> newBuilder(
-        Integer receiveBuffer,
-        Integer sendBuffer,
-        boolean blocking,
-        Integer linger,
-        boolean reuseAddress,
-        SocketAddress boundSocket) {
-
-        return new IOServerSocketChannelFactoryImpl(
-            ioFactory,
-            receiveBuffer,
-            sendBuffer,
-            blocking,
-            linger,
-            reuseAddress,
-            boundSocket);
+    protected IOServerSocketChannelFactoryImpl newBuilder(IOServerSocketChannelConfiguration configuration) {
+        return new IOServerSocketChannelFactoryImpl(ioFactory, configuration);
     }
 
     @Override
     protected IOServerSocketChannel newSocket() throws IOException {
         return ioFactory.openServerSocket();
+    }
+
+    @Override
+    public IOOutboundSocketFactory<IOServerSocketChannel> bind(SocketAddress localAddress) {
+        return new IOServerSocketChannelFactoryImpl(ioFactory, configuration.bind(localAddress));
     }
 }

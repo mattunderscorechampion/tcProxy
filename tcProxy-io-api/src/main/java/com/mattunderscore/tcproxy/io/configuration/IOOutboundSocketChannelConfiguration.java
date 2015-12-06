@@ -42,14 +42,14 @@ import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
  */
 @Immutable
 public final class IOOutboundSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOOutboundSocketChannel, IOOutboundSocketChannelConfiguration> {
-    protected final Boolean keepAlive;
-    protected final Boolean noDelay;
+    protected final boolean keepAlive;
+    protected final boolean noDelay;
     protected final SocketAddress boundSocket;
 
     IOOutboundSocketChannelConfiguration() {
         super();
-        keepAlive = null;
-        noDelay = null;
+        keepAlive = false;
+        noDelay = false;
         boundSocket = null;
     }
 
@@ -65,12 +65,8 @@ public final class IOOutboundSocketChannelConfiguration extends AbstractIOSocket
     public void apply(IOOutboundSocketChannel ioSocketChannel) throws IOException {
         super.apply(ioSocketChannel);
 
-        if (keepAlive != null) {
-            ioSocketChannel.set(KEEP_ALIVE, keepAlive);
-        }
-        if (noDelay != null) {
-            ioSocketChannel.set(TCP_NO_DELAY, noDelay);
-        }
+        ioSocketChannel.set(KEEP_ALIVE, keepAlive);
+        ioSocketChannel.set(TCP_NO_DELAY, noDelay);
         ioSocketChannel.bind(boundSocket);
     }
 
@@ -121,19 +117,18 @@ public final class IOOutboundSocketChannelConfiguration extends AbstractIOSocket
             return false;
         }
 
-        final IOOutboundSocketChannelConfiguration that = (IOOutboundSocketChannelConfiguration) o;
+        IOOutboundSocketChannelConfiguration that = (IOOutboundSocketChannelConfiguration) o;
 
-        return !(keepAlive != null ? !keepAlive.equals(that.keepAlive) : that.keepAlive != null) &&
-            !(noDelay != null ? !noDelay.equals(that.noDelay) : that.noDelay != null) &&
+        return keepAlive == that.keepAlive &&
+            noDelay == that.noDelay &&
             !(boundSocket != null ? !boundSocket.equals(that.boundSocket) : that.boundSocket != null);
-
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (keepAlive != null ? keepAlive.hashCode() : 0);
-        result = 31 * result + (noDelay != null ? noDelay.hashCode() : 0);
+        result = 31 * result + (keepAlive ? 1 : 0);
+        result = 31 * result + (noDelay ? 1 : 0);
         result = 31 * result + (boundSocket != null ? boundSocket.hashCode() : 0);
         return result;
     }

@@ -49,7 +49,7 @@ public abstract class AbstractIOSocketConfiguration<T extends IOSocket, S extend
     protected AbstractIOSocketConfiguration() {
         receiveBuffer = null;
         sendBuffer = null;
-        blocking = false;
+        blocking = true;
         linger = null;
         reuseAddress = false;
     }
