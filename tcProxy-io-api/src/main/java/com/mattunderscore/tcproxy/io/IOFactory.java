@@ -27,6 +27,8 @@ package com.mattunderscore.tcproxy.io;
 
 import java.io.IOException;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
+
 /**
  * @author matt on 30/06/14.
  */
@@ -57,4 +59,13 @@ public interface IOFactory {
      * @throws IllegalArgumentException If no builder is available for the socket type
      */
     <T extends IOOutboundSocketFactory<?>> T socketFactory(Class<T> type);
+
+    /**
+     * @param configuration The configuration to use for the factory
+     * @param <T> The type of socket
+     * @param <S> The type of factory
+     * @return A socket factory
+     * @throws IllegalArgumentException If no builder is available for the socket type
+     */
+    <T extends IOOutboundSocket, S extends IOOutboundSocketFactory<T>> S socketFactory(IOSocketConfiguration<T> configuration);
 }
