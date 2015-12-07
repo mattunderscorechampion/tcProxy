@@ -25,6 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.examples;
 
+import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.socketFactory;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -38,11 +40,10 @@ import com.mattunderscore.tcproxy.examples.data.ThrottledDataProducer;
 import com.mattunderscore.tcproxy.examples.workers.Acceptor;
 import com.mattunderscore.tcproxy.examples.workers.Consumer;
 import com.mattunderscore.tcproxy.examples.workers.Producer;
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOServerSocketChannelFactory;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOOutboundSocketChannelFactory;
-import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
+import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.configuration.IOServerSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.proxy.ProxyServerFactory;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
@@ -93,10 +94,10 @@ public final class SimpleExample {
         final Acceptor acceptor;
         try {
             // Start an acceptor
-            final IOServerSocketChannel acceptorChannel = StaticIOFactory
-                .socketFactory(IOServerSocketChannelFactory.class)
-                .reuseAddress(true)
-                .bind(new InetSocketAddress("localhost", 8080))
+            final IOServerSocketChannel acceptorChannel =
+                socketFactory(IOServerSocketChannelConfiguration.defaultConfig()
+                    .reuseAddress(true)
+                    .bind(new InetSocketAddress("localhost", 8080)))
                 .create();
             acceptor = new Acceptor(acceptorChannel, channels);
             acceptor.start();
@@ -110,7 +111,7 @@ public final class SimpleExample {
         final Producer producer;
         try {
             // Start a producer
-            final IOSocketChannel producerChannel = StaticIOFactory.socketFactory(IOOutboundSocketChannelFactory.class).create();
+            final IOSocketChannel producerChannel = socketFactory(IOOutboundSocketChannelFactory.class).create();
             producerChannel.connect(new InetSocketAddress("localhost", 8085));
             producer = new Producer(
                 producerChannel,

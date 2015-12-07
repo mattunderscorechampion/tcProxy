@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.server;
 
+import static com.mattunderscore.tcproxy.io.configuration.IOServerSocketChannelConfiguration.defaultConfig;
 import static java.lang.String.format;
 
 import java.io.IOException;
@@ -42,6 +43,7 @@ import com.mattunderscore.tcproxy.io.IOFactory;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
+import com.mattunderscore.tcproxy.io.configuration.IOServerSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
 import com.mattunderscore.tcproxy.selector.threads.RestartableThread;
@@ -67,9 +69,10 @@ public abstract class AbstractServerStarter implements ServerStarter {
     @Override
     public final Collection<IOServerSocketChannel> bindServerSockets() throws IOException {
         final IOOutboundSocketFactory<IOServerSocketChannel> factory = ioFactory
-            .socketFactory(IOServerSocketChannelFactory.class)
-            .blocking(false)
-            .reuseAddress(true);
+            .socketFactory(
+                defaultConfig()
+                    .blocking(false)
+                    .reuseAddress(true));
 
         final Collection<IOServerSocketChannel> listenChannels = new HashSet<>();
         try {

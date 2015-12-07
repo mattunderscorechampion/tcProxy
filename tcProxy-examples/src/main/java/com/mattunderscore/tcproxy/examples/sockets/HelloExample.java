@@ -25,6 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.examples.sockets;
 
+import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.socketFactory;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -36,6 +38,8 @@ import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
 import com.mattunderscore.tcproxy.io.IOServerSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannelAcceptor;
+import com.mattunderscore.tcproxy.io.configuration.IOOutboundSocketChannelConfiguration;
+import com.mattunderscore.tcproxy.io.configuration.IOServerSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
 import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
@@ -50,13 +54,15 @@ public final class HelloExample {
         final Thread acceptingThread = new Thread(
             new AcceptingTask(
                 new IOSocketChannelAcceptor(
-                    StaticIOFactory.socketFactory(IOServerSocketChannelFactory.class)
-                        .reuseAddress(true)
-                        .bind(new InetSocketAddress(8080))
+                    socketFactory(
+                        IOServerSocketChannelConfiguration
+                            .defaultConfig()
+                            .reuseAddress(true)
+                            .bind(new InetSocketAddress(8080)))
                         .create(),
                     IOSocketChannelConfiguration.defaultConfig())));
         final Thread connectingThread = new Thread(
-            new ConnectingTask(StaticIOFactory.socketFactory(IOOutboundSocketChannelFactory.class)));
+            new ConnectingTask(socketFactory(IOOutboundSocketChannelFactory.class)));
         acceptingThread.start();
         connectingThread.start();
     }

@@ -25,6 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.examples;
 
+import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.socketFactory;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
@@ -110,7 +112,7 @@ public final class BiDirectionalExample {
 
         try {
             // Start client
-            final IOSocketChannel clientChannel = StaticIOFactory.socketFactory(IOOutboundSocketChannelFactory.class).create();
+            final IOSocketChannel clientChannel = socketFactory(IOOutboundSocketChannelFactory.class).create();
             clientChannel.connect(new InetSocketAddress("localhost", 8085));
             // Start a producer
             final Producer producer = new Producer(
