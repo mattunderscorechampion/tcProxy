@@ -114,9 +114,8 @@ final class ProxyServerStarter extends AbstractServerStarter {
 
     @Override
     protected SelectorFactory<SocketChannelSelector> getSelectorFactory(final Collection<IOServerSocketChannel> listenChannels) {
-        final OutboundSocketFactory socketFactory = new OutboundSocketFactory(outboundSocketSettings);
         final ConnectionHandlerFactory connectionHandlerFactory = new ProxyConnectionHandlerFactory(
-            socketFactory,
+            outboundSocketSettings,
             connectionSettings,
             manager);
         final SocketConfigurator socketConfigurator = new SocketConfigurator(inboundSocketSettings);

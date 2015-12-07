@@ -32,23 +32,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.IOOutboundSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
+import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 
 /**
- * Factory for outbound sockets.
+ * Factory for outbound sockets. Returns connected sockets.
  * @author Matt Champion on 18/02/14.
  */
-public final class OutboundSocketFactory {
+public final class OutboundConnectionFactory {
     private static final Logger LOG = LoggerFactory.getLogger("outbound socket factory");
     private static final long backOff = 5L;
     private final IOOutboundSocketFactory<IOOutboundSocketChannel> factory;
     private final InetSocketAddress remote;
 
-    public OutboundSocketFactory(final OutboundSocketSettings settings) {
+    public OutboundConnectionFactory(OutboundSocketSettings settings) {
         factory = StaticIOFactory
             .socketFactory(IOOutboundSocketChannelFactory.class)
             .sendBuffer(settings.getSendBuffer())

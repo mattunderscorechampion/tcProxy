@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.ConnectionImpl;
-import com.mattunderscore.tcproxy.proxy.OutboundSocketFactory;
+import com.mattunderscore.tcproxy.proxy.OutboundConnectionFactory;
 import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
 import com.mattunderscore.tcproxy.proxy.action.processor.DefaultActionProcessorFactory;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
@@ -51,13 +51,13 @@ import com.mattunderscore.tcproxy.selector.server.Server;
  */
 class ProxyConnectionHandler implements ConnectionHandler {
     private static final Logger LOG = LoggerFactory.getLogger("acceptor");
-    private final OutboundSocketFactory factory;
+    private final OutboundConnectionFactory factory;
     private final ConnectionSettings settings;
     private final ConnectionManager manager;
     private final Writer writer;
 
     public ProxyConnectionHandler(
-            OutboundSocketFactory factory,
+            OutboundConnectionFactory factory,
             ConnectionSettings settings,
             ConnectionManager manager,
             Writer writer) {

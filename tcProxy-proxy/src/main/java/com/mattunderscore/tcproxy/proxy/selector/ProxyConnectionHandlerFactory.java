@@ -26,10 +26,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy.selector;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.proxy.OutboundSocketFactory;
+import com.mattunderscore.tcproxy.proxy.OutboundConnectionFactory;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
+import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
@@ -39,22 +40,22 @@ import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
  * @author Matt Champion on 18/11/2015
  */
 public final class ProxyConnectionHandlerFactory implements ConnectionHandlerFactory {
-    private final OutboundSocketFactory factory;
+    private final OutboundSocketSettings outboundSocketSettings;
     private final ConnectionSettings settings;
     private final ConnectionManager manager;
 
     public ProxyConnectionHandlerFactory(
-            OutboundSocketFactory factory,
+            OutboundSocketSettings outboundSocketSettings,
             ConnectionSettings settings,
             ConnectionManager manager) {
-        this.factory = factory;
+        this.outboundSocketSettings = outboundSocketSettings;
         this.settings = settings;
         this.manager = manager;
     }
 
     @Override
     public ConnectionHandler create(final SocketChannelSelector selector) {
-        return new ProxyConnectionHandler(factory, settings, manager, new Writer() {
+        return new ProxyConnectionHandler(new OutboundConnectionFactory(outboundSocketSettings), settings, manager, new Writer() {
             @Override
             public void registerNewWork(DirectionAndConnection dc) {
                 selector.register(dc.getDirection().getTo(), IOSelectionKey.Op.WRITE, new WriteSelectionRunnable(dc));
