@@ -34,21 +34,26 @@ import org.slf4j.LoggerFactory;
 import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.IOOutboundSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
+import com.mattunderscore.tcproxy.io.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.impl.StaticIOFactory;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
+import com.mattunderscore.tcproxy.selector.SelectionRunnable;
+import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
+import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
 
 /**
- * Factory for outbound sockets. Returns connected sockets.
+ * Asynchronous, non-blocking factory for outbound sockets.
  * @author Matt Champion on 18/02/14.
  */
-public final class OutboundConnectionFactory {
+public final class AsynchronousOutboundConnectionFactory {
     private static final Logger LOG = LoggerFactory.getLogger("outbound socket factory");
-    private static final long backOff = 5L;
     private final IOOutboundSocketFactory<IOOutboundSocketChannel> factory;
     private final InetSocketAddress remote;
+    private final SocketChannelSelector selector;
 
-    public OutboundConnectionFactory(OutboundSocketSettings settings) {
+    public AsynchronousOutboundConnectionFactory(OutboundSocketSettings settings, SocketChannelSelector selector) {
+        this.selector = selector;
         factory = StaticIOFactory
             .socketFactory(IOOutboundSocketChannelFactory.class)
             .sendBuffer(settings.getSendBuffer())
@@ -57,16 +62,52 @@ public final class OutboundConnectionFactory {
         remote = new InetSocketAddress(settings.getHost(), settings.getPort());
     }
 
-    public IOSocketChannel createSocket() throws IOException {
-        final IOSocketChannel channel = factory.create();
-        channel.connect(remote);
-        while (!channel.finishConnect()) {
-            try {
-                Thread.sleep(backOff);
-            } catch (InterruptedException e) {
-                LOG.debug("Interrupted while waiting for socket to be connected");
-            }
+    public void createSocket(final ConnectionCallback connectionCallback) {
+        final IOOutboundSocketChannel channel;
+        try {
+            channel = factory.create();
+            channel.connect(remote);
         }
-        return channel;
+        catch (IOException e) {
+            connectionCallback.onException(e);
+            return;
+        }
+
+        selector.register(channel, IOSelectionKey.Op.CONNECT, new SelectionRunnable<IOSocketChannel>() {
+            @Override
+            public void run(IOSocketChannel socket, RegistrationHandle handle) {
+                if (!handle.isConnectable()) {
+                    return;
+                }
+
+                try {
+                    if (channel.finishConnect()) {
+                        handle.cancel();
+                        connectionCallback.onConnected(channel);
+                    }
+                }
+                catch (IOException e) {
+                    handle.cancel();
+                    connectionCallback.onException(e);
+                }
+            }
+        });
+    }
+
+    /**
+     * The callback.
+     */
+    public interface ConnectionCallback {
+        /**
+         * Called when the channel has been connected.
+         * @param channel Channel
+         */
+        void onConnected(IOOutboundSocketChannel channel);
+
+        /**
+         * Called if an exception was thrown when trying to connect.
+         * @param e The exception
+         */
+        void onException(IOException e);
     }
 }

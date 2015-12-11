@@ -30,9 +30,10 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.proxy.AsynchronousOutboundConnectionFactory;
 import com.mattunderscore.tcproxy.proxy.ConnectionImpl;
-import com.mattunderscore.tcproxy.proxy.OutboundConnectionFactory;
 import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
 import com.mattunderscore.tcproxy.proxy.action.processor.DefaultActionProcessorFactory;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
@@ -51,13 +52,13 @@ import com.mattunderscore.tcproxy.selector.server.Server;
  */
 class ProxyConnectionHandler implements ConnectionHandler {
     private static final Logger LOG = LoggerFactory.getLogger("acceptor");
-    private final OutboundConnectionFactory factory;
+    private final AsynchronousOutboundConnectionFactory factory;
     private final ConnectionSettings settings;
     private final ConnectionManager manager;
     private final Writer writer;
 
     public ProxyConnectionHandler(
-            OutboundConnectionFactory factory,
+            AsynchronousOutboundConnectionFactory factory,
             ConnectionSettings settings,
             ConnectionManager manager,
             Writer writer) {
@@ -68,23 +69,27 @@ class ProxyConnectionHandler implements ConnectionHandler {
     }
 
     @Override
-    public void onConnect(IOSocketChannel clientSide) {
-        try {
-            LOG.info("{} : Accepted {}", this, clientSide);
-            final IOSocketChannel serverSide = factory.createSocket();
-            LOG.info("{} : Opened {}", this, serverSide);
-            final ActionQueue actionQueue0 = new ActionQueueImpl(settings.getWriteQueueSize(), settings.getBatchSize());
-            final ActionQueue actionQueue1 = new ActionQueueImpl(settings.getWriteQueueSize(), settings.getBatchSize());
-            final Direction direction0 = new DirectionImpl(clientSide, serverSide, actionQueue0);
-            final Direction direction1 = new DirectionImpl(serverSide, clientSide, actionQueue1);
-            final Connection conn = new ConnectionImpl(manager, direction0, direction1);
-            final ActionProcessorFactory processorFactory = new DefaultActionProcessorFactory(conn, writer);
-            manager.register(conn);
-            direction0.chainProcessor(processorFactory);
-            direction1.chainProcessor(processorFactory);
-        }
-        catch (IOException e) {
-            LOG.warn("{} : There was an unhandled exception in the main loop - continuing", this, e);
-        }
+    public void onConnect(final IOSocketChannel clientSide) {
+        LOG.info("{} : Accepted {}", this, clientSide);
+        factory.createSocket(new AsynchronousOutboundConnectionFactory.ConnectionCallback() {
+            @Override
+            public void onConnected(IOOutboundSocketChannel serverSide) {
+                LOG.info("{} : Opened {}", this, serverSide);
+                final ActionQueue actionQueue0 = new ActionQueueImpl(settings.getWriteQueueSize(), settings.getBatchSize());
+                final ActionQueue actionQueue1 = new ActionQueueImpl(settings.getWriteQueueSize(), settings.getBatchSize());
+                final Direction direction0 = new DirectionImpl(clientSide, serverSide, actionQueue0);
+                final Direction direction1 = new DirectionImpl(serverSide, clientSide, actionQueue1);
+                final Connection conn = new ConnectionImpl(manager, direction0, direction1);
+                final ActionProcessorFactory processorFactory = new DefaultActionProcessorFactory(conn, writer);
+                manager.register(conn);
+                direction0.chainProcessor(processorFactory);
+                direction1.chainProcessor(processorFactory);
+            }
+
+            @Override
+            public void onException(IOException e) {
+                LOG.warn("{} : There was an exception attempting to connect an outbound channel", this, e);
+            }
+        });
     }
 }

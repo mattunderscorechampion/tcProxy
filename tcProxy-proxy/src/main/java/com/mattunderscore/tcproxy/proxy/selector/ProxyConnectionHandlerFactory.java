@@ -26,7 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy.selector;
 
 import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.proxy.OutboundConnectionFactory;
+import com.mattunderscore.tcproxy.proxy.AsynchronousOutboundConnectionFactory;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
@@ -55,7 +55,7 @@ public final class ProxyConnectionHandlerFactory implements ConnectionHandlerFac
 
     @Override
     public ConnectionHandler create(final SocketChannelSelector selector) {
-        return new ProxyConnectionHandler(new OutboundConnectionFactory(outboundSocketSettings), settings, manager, new Writer() {
+        return new ProxyConnectionHandler(new AsynchronousOutboundConnectionFactory(outboundSocketSettings, selector), settings, manager, new Writer() {
             @Override
             public void registerNewWork(DirectionAndConnection dc) {
                 selector.register(dc.getDirection().getTo(), IOSelectionKey.Op.WRITE, new WriteSelectionRunnable(dc));
