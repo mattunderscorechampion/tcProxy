@@ -25,3 +25,51 @@ The TCP proxy uses Java NIO. The socket reads and writes do not block, accepting
 thread is used to accepting connections, reading and writing data. Data read from a socket is placed on a queue
 that is consumed by the thread responsible for writing data. Since very small amounts of data can be returned by NIO
 reads, individual reads are batched before attempting to write them.
+
+Modules
+=======
+
+tcProxy IO API
+==============
+
+Module that provides an API for performing socket I/O. It is focused on providing non-blocking operations. It provides
+interfaces for classes responsible for performing network operations. It also provides some concrete classes for value
+objects used to configure sockets.
+
+tcProxy IO JSL
+==============
+
+Module that provides an implementation of the tcProxy IO API module that delegates to the Java Standard Library.
+
+tcProxy Selector
+================
+
+Module that provides a layer over the tcProxy IO API module to provide more friendly and common selector operations.
+
+tcProxy Proxy
+=============
+
+Module that implements a simple reverse proxy server. It uses non-blocking I/O, selectors and a limited number of
+threads to support multiple sockets.
+
+tcProxy Graphical User Interface
+================================
+
+Module that provides a GUI frontend to the proxy server.
+
+tcProxy Command Line Interface
+==============================
+
+Module that provides a CLI frontend to the proxy server.
+
+tcProxy Command Line Argument Parser
+====================================
+
+Module that supports parsing CLI arguments.
+
+tcProxy Examples
+================
+
+Module that provides examples of the other modules. It provides a HelloExample that shows how to use sockets from the
+I/O API. It provides an EchoServer that shows how to build on top of the selectors module. It provides the examples
+SimpleExample and BiDirectionalExampe to show the use of the proxy server.
