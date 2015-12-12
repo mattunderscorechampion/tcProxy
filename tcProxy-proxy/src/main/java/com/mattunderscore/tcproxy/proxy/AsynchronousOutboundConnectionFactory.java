@@ -28,9 +28,6 @@ package com.mattunderscore.tcproxy.proxy;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.IOOutboundSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
@@ -43,15 +40,19 @@ import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
 
 /**
- * Asynchronous, non-blocking factory for outbound sockets.
+ * Asynchronous, non-blocking factory for outbound sockets. Sends all connections to the same place.
  * @author Matt Champion on 18/02/14.
  */
 public final class AsynchronousOutboundConnectionFactory {
-    private static final Logger LOG = LoggerFactory.getLogger("outbound socket factory");
     private final IOOutboundSocketFactory<IOOutboundSocketChannel> factory;
     private final InetSocketAddress remote;
     private final SocketChannelSelector selector;
 
+    /**
+     * Constructor.
+     * @param settings The settings to use when creating the socket
+     * @param selector The selector to use to connect the socket
+     */
     public AsynchronousOutboundConnectionFactory(OutboundSocketSettings settings, SocketChannelSelector selector) {
         this.selector = selector;
         factory = StaticIOFactory
@@ -62,7 +63,11 @@ public final class AsynchronousOutboundConnectionFactory {
         remote = new InetSocketAddress(settings.getHost(), settings.getPort());
     }
 
-    public void createSocket(final ConnectionCallback connectionCallback) {
+    /**
+     * Asynchronously create a connection.
+     * @param connectionCallback The callback for when the connection has completed
+     */
+    public void createConnection(final ConnectionCallback connectionCallback) {
         final IOOutboundSocketChannel channel;
         try {
             channel = factory.create();
@@ -95,7 +100,7 @@ public final class AsynchronousOutboundConnectionFactory {
     }
 
     /**
-     * The callback.
+     * The callback for the creation of the connection.
      */
     public interface ConnectionCallback {
         /**

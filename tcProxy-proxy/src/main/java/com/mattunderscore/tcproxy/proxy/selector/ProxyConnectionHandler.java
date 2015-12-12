@@ -71,7 +71,7 @@ class ProxyConnectionHandler implements ConnectionHandler {
     @Override
     public void onConnect(final IOSocketChannel clientSide) {
         LOG.info("{} : Accepted {}", this, clientSide);
-        factory.createSocket(new AsynchronousOutboundConnectionFactory.ConnectionCallback() {
+        factory.createConnection(new AsynchronousOutboundConnectionFactory.ConnectionCallback() {
             @Override
             public void onConnected(IOOutboundSocketChannel serverSide) {
                 LOG.info("{} : Opened {}", this, serverSide);
