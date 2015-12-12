@@ -17,11 +17,11 @@ handled by the same threads.
 Implementation
 ==============
 
-There are severn separate modules. An I/O API module, an I/O implementation module, a proxy implementation module, a
-command line interface  argument parsing module, a command line interface module, a graphical user interface module and
-an examples module.
+There are eight separate modules. An I/O API module, an I/O implementation module, selector module, a proxy
+implementation module, a command line interface  argument parsing module, a command line interface module, a graphical
+user interface module and an examples module.
 
-The TCP proxy uses Java NIO. The socket reads and writes do not block, accepting new connections still block. There is
-a separate thread for accepting connections, reading and writing data. Data read from a socket is placed on a queue
+The TCP proxy uses Java NIO. The socket reads and writes do not block, accepting new connections still block. A single
+thread is used to accepting connections, reading and writing data. Data read from a socket is placed on a queue
 that is consumed by the thread responsible for writing data. Since very small amounts of data can be returned by NIO
 reads, individual reads are batched before attempting to write them.
