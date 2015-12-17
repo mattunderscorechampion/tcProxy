@@ -38,8 +38,8 @@ import com.mattunderscore.tcproxy.examples.data.ThrottledDataProducer;
 import com.mattunderscore.tcproxy.examples.selector.EchoServer;
 import com.mattunderscore.tcproxy.examples.workers.Consumer;
 import com.mattunderscore.tcproxy.examples.workers.Producer;
-import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketChannelFactory;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.proxy.ProxyServerFactory;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
@@ -111,7 +111,7 @@ public final class BiDirectionalExample {
 
         try {
             // Start client
-            final IOSocketChannel clientChannel = socketFactory(IOOutboundSocketChannelFactory.class).create();
+            final IOOutboundSocketChannel clientChannel = socketFactory(IOOutboundSocketChannelFactory.class).create();
             clientChannel.connect(new InetSocketAddress("localhost", 8085));
             // Start a producer
             final Producer producer = new Producer(

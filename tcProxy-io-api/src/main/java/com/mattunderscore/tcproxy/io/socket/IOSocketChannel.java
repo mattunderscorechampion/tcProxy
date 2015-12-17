@@ -34,23 +34,7 @@ import com.mattunderscore.tcproxy.io.selection.IOMultiOpSelectableChannel;
  * Provides a selectable {@link java.nio.channels.ByteChannel} for network operations.
  * @author matt on 12/03/14.
  */
-public interface IOSocketChannel extends IOMultiOpSelectableChannel, IOByteChannel, IOSocket {
-
-    /**
-     * Connect the socket to a remote address.
-     * @param remoteAddress The remote address to connect to
-     * @return If the connect has been established
-     * @throws IOException
-     */
-    boolean connect(SocketAddress remoteAddress) throws IOException;
-
-    /**
-     * Finish the connection.
-     * @return If the connect was completed
-     * @throws IOException
-     */
-    boolean finishConnect() throws IOException;
-
+public interface IOSocketChannel extends IOMultiOpSelectableChannel, IOByteChannel, IOSocket, IOConnectingSocket {
     /**
      * @return The address of the remote socket.
      * @throws IOException

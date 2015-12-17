@@ -25,9 +25,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.socket;
 
+import java.io.IOException;
+
 /**
- * An outbound {@link IOSocketChannel}.
- * @author Matt Champion on 05/12/2015
+ * A socket that can complete a connection process.
+ * @author Matt Champion on 17/12/2015
  */
-public interface IOOutboundSocketChannel extends IOSocketChannel, IOOutboundSocket, IOConnectableSocket {
+public interface IOConnectingSocket {
+    /**
+     * Finish the connection.
+     * @return If the connect was completed
+     * @throws IOException
+     */
+    boolean finishConnect() throws IOException;
 }

@@ -25,9 +25,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.socket;
 
+import java.io.IOException;
+import java.net.SocketAddress;
+
 /**
- * An outbound {@link IOSocketChannel}.
- * @author Matt Champion on 05/12/2015
+ * A socket that can start the connection process.
+ * @author Matt Champion on 17/12/2015
  */
-public interface IOOutboundSocketChannel extends IOSocketChannel, IOOutboundSocket, IOConnectableSocket {
+public interface IOConnectableSocket extends IOSocket, IOConnectingSocket {
+    /**
+     * Connect the socket to a remote address.
+     * @param remoteAddress The remote address to connect to
+     * @return If the connect has been established
+     * @throws IOException
+     */
+    boolean connect(SocketAddress remoteAddress) throws IOException;
 }

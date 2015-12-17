@@ -41,6 +41,7 @@ import com.mattunderscore.tcproxy.examples.workers.Acceptor;
 import com.mattunderscore.tcproxy.examples.workers.Consumer;
 import com.mattunderscore.tcproxy.examples.workers.Producer;
 import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketChannelFactory;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.configuration.IOServerSocketChannelConfiguration;
@@ -111,7 +112,7 @@ public final class SimpleExample {
         final Producer producer;
         try {
             // Start a producer
-            final IOSocketChannel producerChannel = socketFactory(IOOutboundSocketChannelFactory.class).create();
+            final IOOutboundSocketChannel producerChannel = socketFactory(IOOutboundSocketChannelFactory.class).create();
             producerChannel.connect(new InetSocketAddress("localhost", 8085));
             producer = new Producer(
                 producerChannel,
