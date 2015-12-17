@@ -31,7 +31,7 @@ import java.io.IOException;
  * A socket that can complete a connection process.
  * @author Matt Champion on 17/12/2015
  */
-public interface IOConnectingSocket {
+public interface IOConnectingSocket extends IOSocket {
     /**
      * Finish the connection.
      * @return If the connect was completed

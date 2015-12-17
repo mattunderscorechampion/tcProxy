@@ -32,7 +32,7 @@ import java.net.SocketAddress;
  * A socket that can start the connection process.
  * @author Matt Champion on 17/12/2015
  */
-public interface IOConnectableSocket extends IOSocket, IOConnectingSocket {
+public interface IOConnectableSocket extends IOConnectingSocket, IOOutboundSocket {
     /**
      * Connect the socket to a remote address.
      * @param remoteAddress The remote address to connect to
