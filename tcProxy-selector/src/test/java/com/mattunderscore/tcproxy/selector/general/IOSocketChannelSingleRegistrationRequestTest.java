@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.general;
 
-import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.READ;
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.READ;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.verify;
@@ -37,8 +37,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.selection.IOSelector;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 
 /**

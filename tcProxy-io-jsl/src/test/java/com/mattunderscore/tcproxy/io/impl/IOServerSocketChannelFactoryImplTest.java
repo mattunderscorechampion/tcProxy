@@ -39,10 +39,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import com.mattunderscore.tcproxy.io.IOFactory;
-import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketOption;
+import com.mattunderscore.tcproxy.io.factory.IOFactory;
+import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketFactory;
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocketOption;
 
 public final class IOServerSocketChannelFactoryImplTest {
     @Mock

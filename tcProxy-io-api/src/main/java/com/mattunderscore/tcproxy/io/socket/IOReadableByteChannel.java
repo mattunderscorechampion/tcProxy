@@ -1,4 +1,4 @@
-/* Copyright © 2014 Matthew Champion
+/* Copyright © 2015 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -23,65 +23,24 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy.direction;
+package com.mattunderscore.tcproxy.io.socket;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
 
 import com.mattunderscore.tcproxy.io.data.CircularBuffer;
-import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
-import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessor;
-import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
-import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
 
 /**
- * A direction.
- * @author Matt Champion on 18/02/14.
+ * A channel that can have bytes read from it in to a {@link CircularBuffer} or {@link ByteBuffer}.
+ * @author Matt Champion on 01/12/2015
  */
-public interface Direction {
-
-    IOSocketChannel getFrom();
-
-    IOSocketChannel getTo();
-
-    ActionQueue getQueue();
-
+public interface IOReadableByteChannel extends ReadableByteChannel {
     /**
-     * @return The first action processor in the chain to call.
+     * Reads data from the socket into a circular buffer
+     * @param dst The buffer
+     * @return The number of bytes read
+     * @throws IOException
      */
-    ActionProcessor getProcessor();
-
-    /**
-     * Chain a new action processor.
-     * @param processorFactory Factory for the action processor,
-     */
-    void chainProcessor(ActionProcessorFactory processorFactory);
-
-    /**
-     * Removes the last chained action processor.
-     */
-    void unchainProcessor();
-
-    int read();
-
-    int written();
-
-    int write(ByteBuffer data) throws IOException;
-
-    int read(CircularBuffer data) throws IOException;
-
-    void close() throws IOException;
-
-    void addListener(Listener listener);
-
-    /**
-     * Listener for direction events.
-     */
-    interface Listener {
-        void dataRead(Direction direction, int bytesRead);
-
-        void dataWritten(Direction direction, int bytesWritten);
-
-        void closed(Direction direction);
-    }
+    int read(CircularBuffer dst) throws IOException;
 }

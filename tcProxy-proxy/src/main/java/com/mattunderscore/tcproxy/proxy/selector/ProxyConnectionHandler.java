@@ -30,8 +30,8 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.AsynchronousOutboundConnectionFactory;
 import com.mattunderscore.tcproxy.proxy.ConnectionImpl;
 import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;

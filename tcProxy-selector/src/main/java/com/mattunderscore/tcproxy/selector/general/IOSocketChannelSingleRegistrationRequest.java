@@ -26,13 +26,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.selector.general;
 
 import java.nio.channels.ClosedChannelException;
-import java.util.HashSet;
-import java.util.Set;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSelectionKey.Op;
-import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op;
+import com.mattunderscore.tcproxy.io.selection.IOSelector;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 
 /**

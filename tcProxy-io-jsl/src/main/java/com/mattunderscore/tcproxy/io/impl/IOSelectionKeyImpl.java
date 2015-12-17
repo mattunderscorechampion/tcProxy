@@ -32,10 +32,10 @@ import static com.mattunderscore.tcproxy.io.impl.IOUtils.mapToOpsFromInt;
 import java.nio.channels.SelectionKey;
 import java.util.Set;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 
 /**
- * Implementation of {@link com.mattunderscore.tcproxy.io.IOSelectionKey}. Delegates to {@link SelectionKey}.
+ * Implementation of {@link IOSelectionKey}. Delegates to {@link SelectionKey}.
  * @author Matt Champion on 12/03/14.
  */
 final class IOSelectionKeyImpl implements IOSelectionKey {

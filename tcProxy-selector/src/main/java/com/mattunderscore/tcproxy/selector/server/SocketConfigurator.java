@@ -27,8 +27,8 @@ package com.mattunderscore.tcproxy.selector.server;
 
 import java.io.IOException;
 
-import com.mattunderscore.tcproxy.io.IOSocket;
-import com.mattunderscore.tcproxy.io.IOSocketOption;
+import com.mattunderscore.tcproxy.io.socket.IOSocket;
+import com.mattunderscore.tcproxy.io.socket.IOSocketOption;
 
 /**
  * Apply settings to a socket.

@@ -27,8 +27,8 @@ package com.mattunderscore.tcproxy.selector;
 
 import java.util.Set;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
 
 /**

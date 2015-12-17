@@ -33,7 +33,7 @@ import java.nio.ByteBuffer;
 
 import org.junit.Test;
 
-import com.mattunderscore.tcproxy.io.CircularBuffer;
+import com.mattunderscore.tcproxy.io.data.CircularBuffer;
 
 public final class CircularBufferImplTest {
 

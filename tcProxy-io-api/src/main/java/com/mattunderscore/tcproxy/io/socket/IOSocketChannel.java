@@ -1,4 +1,4 @@
-/* Copyright © 2014 Matthew Champion
+/* Copyright © 2014, 2015 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -23,9 +23,37 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
+package com.mattunderscore.tcproxy.io.socket;
+
+import java.io.IOException;
+import java.net.SocketAddress;
+
+import com.mattunderscore.tcproxy.io.selection.IOMultiOpSelectableChannel;
+
 /**
- * This package provides an IO API that supports testing by providing interfaces to all its classes. The
- * implementations generally delegate to the Java NIO API.
- * @author Matt Champion on 12/03/14.
+ * Provides a selectable {@link java.nio.channels.ByteChannel} for network operations.
+ * @author matt on 12/03/14.
  */
-package com.mattunderscore.tcproxy.io;
+public interface IOSocketChannel extends IOMultiOpSelectableChannel, IOByteChannel, IOSocket {
+
+    /**
+     * Connect the socket to a remote address.
+     * @param remoteAddress The remote address to connect to
+     * @return If the connect has been established
+     * @throws IOException
+     */
+    boolean connect(SocketAddress remoteAddress) throws IOException;
+
+    /**
+     * Finish the connection.
+     * @return If the connect was completed
+     * @throws IOException
+     */
+    boolean finishConnect() throws IOException;
+
+    /**
+     * @return The address of the remote socket.
+     * @throws IOException
+     */
+    SocketAddress getRemoteAddress() throws IOException;
+}

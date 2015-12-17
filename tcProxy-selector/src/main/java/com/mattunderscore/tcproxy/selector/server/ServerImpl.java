@@ -34,7 +34,7 @@ import net.jcip.annotations.ThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.selector.threads.LifecycleState;
 import com.mattunderscore.tcproxy.selector.threads.RestartableThreadSet;
 

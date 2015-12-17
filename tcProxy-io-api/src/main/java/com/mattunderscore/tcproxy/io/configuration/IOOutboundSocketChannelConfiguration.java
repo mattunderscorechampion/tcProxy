@@ -25,16 +25,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.configuration;
 
-import static com.mattunderscore.tcproxy.io.IOSocketOption.KEEP_ALIVE;
-import static com.mattunderscore.tcproxy.io.IOSocketOption.TCP_NO_DELAY;
+import static com.mattunderscore.tcproxy.io.socket.IOSocketOption.KEEP_ALIVE;
+import static com.mattunderscore.tcproxy.io.socket.IOSocketOption.TCP_NO_DELAY;
 
 import java.io.IOException;
 import java.net.SocketAddress;
 
 import net.jcip.annotations.Immutable;
 
-import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 
 /**
  * The configuration for {@link IOServerSocketChannel}s.

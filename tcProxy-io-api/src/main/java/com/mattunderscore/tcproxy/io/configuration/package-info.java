@@ -1,4 +1,4 @@
-/* Copyright © 2014 Matthew Champion
+/* Copyright © 2015 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -23,18 +23,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
-
-import java.io.IOException;
-
 /**
- * A server socket channel.
- * @author Matt Champion on 13/03/14.
+ * This package provides an I/O API for configuring sockets.
+ * @author Matt Champion on 17/12/15.
  */
-public interface IOServerSocketChannel extends IOSingleOpSelectableChannel, IOOutboundSocket {
-    /**
-     * @return An inbound IOSocketChannel attempting to connect to the server.
-     * @throws IOException
-     */
-    IOSocketChannel accept() throws IOException;
-}
+package com.mattunderscore.tcproxy.io.configuration;

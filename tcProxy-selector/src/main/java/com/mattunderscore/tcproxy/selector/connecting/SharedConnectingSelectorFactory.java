@@ -30,7 +30,7 @@ import static java.util.Collections.singleton;
 import java.io.IOException;
 import java.util.Collection;
 
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.connecting.task.AcceptingTask;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;

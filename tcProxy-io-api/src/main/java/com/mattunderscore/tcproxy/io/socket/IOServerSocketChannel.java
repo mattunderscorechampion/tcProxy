@@ -1,4 +1,4 @@
-/* Copyright © 2015 Matthew Champion
+/* Copyright © 2014 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -23,10 +23,20 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.socket;
+
+import java.io.IOException;
+
+import com.mattunderscore.tcproxy.io.selection.IOSingleOpSelectableChannel;
 
 /**
- * @author Matt Champion on 27/11/2015
+ * A server socket channel.
+ * @author Matt Champion on 13/03/14.
  */
-public interface IOServerSocketChannelFactory extends IOOutboundSocketFactory<IOServerSocketChannel> {
+public interface IOServerSocketChannel extends IOSingleOpSelectableChannel, IOOutboundSocket {
+    /**
+     * @return An inbound IOSocketChannel attempting to connect to the server.
+     * @throws IOException
+     */
+    IOSocketChannel accept() throws IOException;
 }

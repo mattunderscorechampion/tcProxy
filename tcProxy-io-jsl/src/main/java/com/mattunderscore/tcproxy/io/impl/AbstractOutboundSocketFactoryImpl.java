@@ -26,15 +26,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.io.impl;
 
 import java.io.IOException;
-import java.net.SocketAddress;
 
-import com.mattunderscore.tcproxy.io.IOFactory;
-import com.mattunderscore.tcproxy.io.IOOutboundSocket;
-import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
-import com.mattunderscore.tcproxy.io.IOSocketOption;
+import com.mattunderscore.tcproxy.io.factory.IOFactory;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocket;
+import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketFactory;
 import com.mattunderscore.tcproxy.io.configuration.AbstractIOSocketConfiguration;
-import com.mattunderscore.tcproxy.io.configuration.IOOutboundSocketChannelConfiguration;
-import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 
 /**
  * Abstract implementation of {@link IOOutboundSocketFactory}.

@@ -25,17 +25,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.connecting.task;
 
-import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.CONNECT;
-import static com.mattunderscore.tcproxy.io.IOSocketOption.BLOCKING;
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.CONNECT;
+import static com.mattunderscore.tcproxy.io.socket.IOSocketOption.BLOCKING;
 
 import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;

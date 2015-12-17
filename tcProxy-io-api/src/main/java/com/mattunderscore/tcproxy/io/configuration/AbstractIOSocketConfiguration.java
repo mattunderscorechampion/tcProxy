@@ -25,15 +25,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.configuration;
 
-import static com.mattunderscore.tcproxy.io.IOSocketOption.BLOCKING;
-import static com.mattunderscore.tcproxy.io.IOSocketOption.LINGER;
-import static com.mattunderscore.tcproxy.io.IOSocketOption.RECEIVE_BUFFER;
-import static com.mattunderscore.tcproxy.io.IOSocketOption.REUSE_ADDRESS;
-import static com.mattunderscore.tcproxy.io.IOSocketOption.SEND_BUFFER;
+import static com.mattunderscore.tcproxy.io.socket.IOSocketOption.BLOCKING;
+import static com.mattunderscore.tcproxy.io.socket.IOSocketOption.LINGER;
+import static com.mattunderscore.tcproxy.io.socket.IOSocketOption.RECEIVE_BUFFER;
+import static com.mattunderscore.tcproxy.io.socket.IOSocketOption.REUSE_ADDRESS;
+import static com.mattunderscore.tcproxy.io.socket.IOSocketOption.SEND_BUFFER;
 
 import java.io.IOException;
 
-import com.mattunderscore.tcproxy.io.IOSocket;
+import com.mattunderscore.tcproxy.io.socket.IOSocket;
 
 /**
  * Abstract implementation of socket configuration that contains the common properties of all sockets.

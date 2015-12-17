@@ -33,7 +33,7 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-import com.mattunderscore.tcproxy.io.CircularBuffer;
+import com.mattunderscore.tcproxy.io.data.CircularBuffer;
 
 /**
  * Implementation of {@link CircularBuffer}.

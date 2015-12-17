@@ -1,4 +1,4 @@
-/* Copyright © 2014 Matthew Champion
+/* Copyright © 2015 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -23,36 +23,13 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.socket;
 
-import java.io.IOException;
-import java.util.Set;
+import java.nio.channels.ByteChannel;
 
 /**
- * Provides a selector that can be used with this package.
- * @author matt on 12/03/14.
+ * A channel that can have bytes read from it and written to it.
+ * @author Matt Champion on 01/12/2015
  */
-public interface IOSelector extends AutoCloseable {
-
-    /**
-     * Non-blocking selection operation. Updates the set of selected keys.
-     * @throws IOException
-     */
-    void selectNow() throws IOException;
-
-    /**
-     * @return The set of selection keys provided by the last selection operation.
-     */
-    Set<IOSelectionKey> selectedKeys();
-
-    /**
-     * @return The set of registered selection keys, may include cancelled keys.
-     */
-    Set<IOSelectionKey> keys();
-
-    /**
-     * Close the selector. Any selection keys that have not been cancelled will be invalidated and their channels
-     * deregistered.
-     */
-    void close() throws IOException;
+public interface IOByteChannel extends IOReadableByteChannel, IOWritableByteChannel, ByteChannel {
 }

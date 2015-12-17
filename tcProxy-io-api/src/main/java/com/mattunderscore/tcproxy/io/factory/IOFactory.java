@@ -1,4 +1,4 @@
-/* Copyright © 2014 Matthew Champion
+/* Copyright © 2014, 2015 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -23,11 +23,15 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.factory;
 
 import java.io.IOException;
 
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocket;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
+import com.mattunderscore.tcproxy.io.selection.IOSelector;
 
 /**
  * @author matt on 30/06/14.

@@ -35,8 +35,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mattunderscore.tcproxy.io.CircularBuffer;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.data.CircularBuffer;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessor;
 import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;

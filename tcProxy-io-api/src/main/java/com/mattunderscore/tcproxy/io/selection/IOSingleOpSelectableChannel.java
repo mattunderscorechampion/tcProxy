@@ -23,17 +23,22 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.selection;
+
+import java.nio.channels.ClosedChannelException;
 
 /**
- * A channel that can have {@link IOSelectionKey}s register for it with a selector.
+ * A channel that can have {@link IOSelectionKey}s register for it with a selector with an interest in a single type of
+ * operation.
  * @author Matt Champion on 01/12/2015
  */
-public interface IOSelectableChannel {
+public interface IOSingleOpSelectableChannel extends IOSelectableChannel {
     /**
-     * Lookup the key for a channel/selector pair.
+     * Register a server socket channel with a selector for accepting connections.
      * @param selector The selector
-     * @return The key
+     * @param att A attachment
+     * @return The selection key
+     * @throws ClosedChannelException
      */
-    IOSelectionKey keyFor(IOSelector selector);
+    IOSelectionKey register(IOSelector selector, Object att) throws ClosedChannelException;
 }

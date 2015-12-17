@@ -30,7 +30,7 @@ import java.net.SocketAddress;
 
 import net.jcip.annotations.Immutable;
 
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 
 /**
  * The configuration for {@link IOServerSocketChannel}s.

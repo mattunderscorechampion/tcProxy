@@ -33,11 +33,11 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Set;
 
-import com.mattunderscore.tcproxy.io.CircularBuffer;
-import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOSocketOption;
+import com.mattunderscore.tcproxy.io.data.CircularBuffer;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.selection.IOSelector;
+import com.mattunderscore.tcproxy.io.socket.IOSocketOption;
 
 /**
  * Delegates to {@link SocketChannel}.

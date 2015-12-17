@@ -25,15 +25,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.general;
 
-import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.ACCEPT;
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.ACCEPT;
 
 import java.nio.channels.ClosedChannelException;
-import java.util.HashSet;
-import java.util.Set;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.selection.IOSelector;
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 
 /**

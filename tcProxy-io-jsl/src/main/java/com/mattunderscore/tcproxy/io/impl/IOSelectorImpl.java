@@ -31,11 +31,11 @@ import java.nio.channels.Selector;
 import java.util.Collections;
 import java.util.Set;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.selection.IOSelector;
 
 /**
- * Implements {@link com.mattunderscore.tcproxy.io.IOSelector}. Delegates to {@link Selector}.
+ * Implements {@link IOSelector}. Delegates to {@link Selector}.
  * @author Matt Champion on 12/03/14.
  */
 final class IOSelectorImpl implements IOSelector {

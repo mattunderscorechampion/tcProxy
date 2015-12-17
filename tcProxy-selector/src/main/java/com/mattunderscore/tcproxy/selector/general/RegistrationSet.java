@@ -25,17 +25,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.general;
 
-import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.ACCEPT;
-import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.CONNECT;
-import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.READ;
-import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.WRITE;
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.ACCEPT;
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.CONNECT;
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.READ;
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.WRITE;
 
 import java.util.Set;
 
 import net.jcip.annotations.NotThreadSafe;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSelectionKey.Op;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op;
 
 /**
  * @author Matt Champion on 29/11/2015

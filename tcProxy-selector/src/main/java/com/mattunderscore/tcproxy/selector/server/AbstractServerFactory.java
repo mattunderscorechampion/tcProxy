@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.server;
 
-import com.mattunderscore.tcproxy.io.IOFactory;
+import com.mattunderscore.tcproxy.io.factory.IOFactory;
 
 /**
  * An abstract server factory. Creates a server and provides it a suitable {@link ServerStarter}.

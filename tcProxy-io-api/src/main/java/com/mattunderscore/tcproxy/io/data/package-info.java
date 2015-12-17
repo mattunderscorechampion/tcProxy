@@ -23,18 +23,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.selector.connecting;
-
-import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
-
 /**
- * The handler for new connections.
- * @author Matt Champion on 06/11/2015
+ * This package provides an I/O API for storing data.
+ * @author Matt Champion on 17/12/15.
  */
-public interface ConnectionHandler {
-    /**
-     * Handle the completed connection of the socket.
-     * @param socket The socket
-     */
-    void onConnect(IOSocketChannel socket);
-}
+package com.mattunderscore.tcproxy.io.data;

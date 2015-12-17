@@ -23,34 +23,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
-
-import java.nio.channels.ClosedChannelException;
-import java.util.Set;
-
 /**
- * A channel that can have {@link IOSelectionKey}s register for it with a selector with an interest in a several types
- * of operation.
- * @author Matt Champion on 01/12/2015
+ * This package provides an I/O API for sockets.
+ * @author Matt Champion on 17/12/15.
  */
-public interface IOMultiOpSelectableChannel extends IOSelectableChannel {
-    /**
-     * Register the channel with a selector.
-     * @param selector The selector
-     * @param op The operation
-     * @param att A attachment
-     * @return The selection key
-     * @throws ClosedChannelException
-     */
-    IOSelectionKey register(IOSelector selector, IOSelectionKey.Op op, Object att) throws ClosedChannelException;
-
-    /**
-     * Register the channel with a selector.
-     * @param selector The selector
-     * @param ops The operations
-     * @param att A attachment
-     * @return The selection key
-     * @throws ClosedChannelException
-     */
-    IOSelectionKey register(IOSelector selector, Set<IOSelectionKey.Op> ops, Object att) throws ClosedChannelException;
-}
+package com.mattunderscore.tcproxy.io.socket;

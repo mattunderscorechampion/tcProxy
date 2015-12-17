@@ -28,8 +28,8 @@ package com.mattunderscore.tcproxy.examples.workers;
 import java.io.IOException;
 import java.util.Queue;
 
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 
 /**
  * Acceptor worker. Performs a block accept on a server socket channel and passes the opened sockets to a blocking

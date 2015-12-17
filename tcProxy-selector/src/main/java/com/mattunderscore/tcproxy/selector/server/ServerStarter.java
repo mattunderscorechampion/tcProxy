@@ -28,7 +28,7 @@ package com.mattunderscore.tcproxy.selector.server;
 import java.io.IOException;
 import java.util.Collection;
 
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.selector.threads.RestartableThreadSet;
 
 /**

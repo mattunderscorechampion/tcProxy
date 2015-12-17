@@ -1,4 +1,4 @@
-/* Copyright © 2014 Matthew Champion
+/* Copyright © 2015 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -23,50 +23,17 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.selection;
 
 /**
- * The available socket options.
- * @author Matt Champion on 13/03/14.
+ * A channel that can have {@link IOSelectionKey}s register for it with a selector.
+ * @author Matt Champion on 01/12/2015
  */
-public final class IOSocketOption<T> {
+public interface IOSelectableChannel {
     /**
-     * Socket option for SO_RCVBUF.
+     * Lookup the key for a channel/selector pair.
+     * @param selector The selector
+     * @return The key
      */
-    public final static IOSocketOption<Integer> RECEIVE_BUFFER = new IOSocketOption<>("RECEIVE_BUFFER");
-    /**
-     * Socket option for SO_SNDBUF.
-     */
-    public final static IOSocketOption<Integer> SEND_BUFFER = new IOSocketOption<>("SEND_BUFFER");
-    /**
-     * Socket option blocking socket.
-     */
-    public final static IOSocketOption<Boolean> BLOCKING = new IOSocketOption<>("BLOCKING");
-    /**
-     * Socket option for SO_KEEP_ALIVE.
-     */
-    public static final IOSocketOption<Boolean> KEEP_ALIVE = new IOSocketOption<>("KEEP_ALIVE");
-    /**
-     * Socket option for SO_LINGER.
-     */
-    public static final IOSocketOption<Integer> LINGER = new IOSocketOption<>("LINGER");
-    /**
-     * Socket option for SO_REUSEADDR.
-     */
-    public static final IOSocketOption<Boolean> REUSE_ADDRESS = new IOSocketOption<>("REUSE_ADDRESS");
-    /**
-     * Socket option for TCP_NODELAY.
-     */
-    public static final IOSocketOption<Boolean> TCP_NO_DELAY = new IOSocketOption<>("TCP_NO_DELAY");
-
-    private final String name;
-
-    private IOSocketOption(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
+    IOSelectionKey keyFor(IOSelector selector);
 }

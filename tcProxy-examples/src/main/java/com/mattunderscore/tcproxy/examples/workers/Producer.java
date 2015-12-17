@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import com.mattunderscore.tcproxy.examples.data.DataProducer;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 
 /**
  * Producer worker. Uses blocking writes to a channel.

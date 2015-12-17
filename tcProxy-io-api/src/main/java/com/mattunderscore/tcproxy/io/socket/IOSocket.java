@@ -1,4 +1,4 @@
-/* Copyright © 2015 Matthew Champion
+/* Copyright © 2014, 2015 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -23,23 +23,49 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.socket;
+
+import java.io.IOException;
+import java.net.SocketAddress;
 
 /**
- * @author Matt Champion on 27/11/2015
+ * A generic socket.
+ * @author Matt Champion on 13/03/14.
  */
-public interface IOOutboundSocketChannelFactory extends IOOutboundSocketFactory<IOOutboundSocketChannel> {
-    /**
-     * Set the socket option for TCP_NODELAY. Defaults to false.
-     * @param enabled Enable the option
-     * @return A new factory with the option set
-     */
-    IOOutboundSocketFactory<IOOutboundSocketChannel> noDelay(boolean enabled);
+public interface IOSocket extends AutoCloseable {
 
     /**
-     * Set the socket option for SO_KEEP_ALIVE. Defaults to false.
-     * @param enabled Enable the option
-     * @return A new factory with the option set
+     * @return The address of the lcoal socket.
+     * @throws IOException
      */
-    IOOutboundSocketFactory<IOOutboundSocketChannel> keepAlive(boolean enabled);
+    SocketAddress getLocalAddress() throws IOException;
+
+    /**
+     * @return {@code true} If the socket is open.
+     */
+    boolean isOpen();
+
+    /**
+     * Closes the socket.
+     * @throws IOException
+     */
+    void close() throws IOException;
+
+    /**
+     * Sets an option on the socket.
+     * @param option The option.
+     * @param value The value of the option.
+     * @param <T> The type of the value.
+     * @throws IOException
+     */
+    <T> void set(IOSocketOption<T> option, T value) throws IOException;
+
+    /**
+     * Get the value of an option for the socket.
+     * @param option The option.
+     * @param <T> The type of the value.
+     * @return The value of the option.
+     * @throws IOException
+     */
+    <T> T get(IOSocketOption<T> option) throws IOException;
 }

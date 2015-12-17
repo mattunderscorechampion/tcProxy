@@ -25,8 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSocket;
+import com.mattunderscore.tcproxy.io.socket.IOSocket;
 import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
 
 /**

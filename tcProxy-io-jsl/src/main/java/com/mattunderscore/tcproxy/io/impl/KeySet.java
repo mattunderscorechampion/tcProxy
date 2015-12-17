@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 
 /**
  * Implementation of {@link Set} for {@link IOSelectionKey} that delegates to a {@link Set} for {@link SelectionKey}.

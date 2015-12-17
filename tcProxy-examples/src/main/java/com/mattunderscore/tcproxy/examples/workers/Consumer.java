@@ -28,7 +28,7 @@ package com.mattunderscore.tcproxy.examples.workers;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 
 /**
  * Consumer worker. Makes blocking reads from a channel and discards the data.

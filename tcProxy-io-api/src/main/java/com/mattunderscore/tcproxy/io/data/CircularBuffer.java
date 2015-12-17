@@ -23,22 +23,59 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.data;
 
-import java.io.IOException;
+import java.nio.BufferOverflowException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
-import java.nio.channels.ReadableByteChannel;
 
 /**
- * A channel that can have bytes read from it in to a {@link CircularBuffer} or {@link ByteBuffer}.
- * @author Matt Champion on 01/12/2015
+ * A circular buffer.
+ * @author Matt Champion on 31/10/2015
  */
-public interface IOReadableByteChannel extends ReadableByteChannel {
+public interface CircularBuffer {
+
     /**
-     * Reads data from the socket into a circular buffer
-     * @param dst The buffer
-     * @return The number of bytes read
-     * @throws IOException
+     * Put a single byte into the buffer.
+     * @param b The byte
+     * @throws BufferOverflowException if there is not enough room in the buffer
      */
-    int read(CircularBuffer dst) throws IOException;
+    void put(byte b) throws BufferOverflowException;
+
+    /**
+     * Put an entire array of bytes into the buffer.
+     * @param bytes The byte array
+     * @throws BufferOverflowException if there is not enough room in the buffer
+     */
+    void put(byte[] bytes) throws BufferOverflowException;
+
+    /**
+     * Put some data from a {@link ByteBuffer} into the buffer. If the source contains more data then can fit into the
+     * buffer, some data will be written.
+     * @param src The source buffer
+     * @return The number of bytes copied into the buffer
+     */
+    int put(ByteBuffer src);
+
+    /**
+     * @return A single byte from the buffer
+     * @throws BufferUnderflowException if there is no data to read from the buffer
+     */
+    byte get() throws BufferUnderflowException;
+
+    /**
+     * @param dst A {@link ByteBuffer} to copy data into
+     * @return A number of bytes copied to the destination
+     */
+    int get(ByteBuffer dst);
+
+    /**
+     * @return The number of bytes that can be written to the buffer
+     */
+    int freeCapacity();
+
+    /**
+     * @return The number of bytes that can be read from the buffer
+     */
+    int usedCapacity();
 }

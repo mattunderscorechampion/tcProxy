@@ -23,22 +23,25 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.factory;
 
-import java.nio.channels.ClosedChannelException;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
 
 /**
- * A channel that can have {@link IOSelectionKey}s register for it with a selector with an interest in a single type of
- * operation.
- * @author Matt Champion on 01/12/2015
+ * @author Matt Champion on 27/11/2015
  */
-public interface IOSingleOpSelectableChannel extends IOSelectableChannel {
+public interface IOOutboundSocketChannelFactory extends IOOutboundSocketFactory<IOOutboundSocketChannel> {
     /**
-     * Register a server socket channel with a selector for accepting connections.
-     * @param selector The selector
-     * @param att A attachment
-     * @return The selection key
-     * @throws ClosedChannelException
+     * Set the socket option for TCP_NODELAY. Defaults to false.
+     * @param enabled Enable the option
+     * @return A new factory with the option set
      */
-    IOSelectionKey register(IOSelector selector, Object att) throws ClosedChannelException;
+    IOOutboundSocketFactory<IOOutboundSocketChannel> noDelay(boolean enabled);
+
+    /**
+     * Set the socket option for SO_KEEP_ALIVE. Defaults to false.
+     * @param enabled Enable the option
+     * @return A new factory with the option set
+     */
+    IOOutboundSocketFactory<IOOutboundSocketChannel> keepAlive(boolean enabled);
 }

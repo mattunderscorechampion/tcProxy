@@ -23,20 +23,42 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.factory;
 
 import java.io.IOException;
-import java.net.SocketAddress;
+
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
 
 /**
- * An outbound socket. Can be explicitly bound to a local address.
  * @author Matt Champion on 05/12/2015
  */
-public interface IOOutboundSocket extends IOSocket {
+public final class IOSocketChannelAcceptor {
+    private final IOServerSocketChannel serverSocketChannel;
+    private final IOSocketChannelConfiguration socketChannelConfiguration;
+
     /**
-     * Bind the socket to a local address.
-     * @param localAddress The local address
-     * @throws IOException
+     * Constructor.
+     * @param serverSocketChannel The {@link IOServerSocketChannel} to accept from
+     * @param socketChannelConfiguration The configuration for the accepted socket
      */
-    void bind(SocketAddress localAddress) throws IOException;
+    public IOSocketChannelAcceptor(IOServerSocketChannel serverSocketChannel, IOSocketChannelConfiguration socketChannelConfiguration) {
+        this.serverSocketChannel = serverSocketChannel;
+        this.socketChannelConfiguration = socketChannelConfiguration;
+    }
+
+    /**
+     * Accept a new {@link IOSocketChannel} from the {@link IOServerSocketChannel}.
+     * @return An {@link IOSocketChannel} if the {@link IOServerSocketChannel} is in non-blocking mode it may return
+     * null or a socket that has not finished connecting.
+     * @throws IOException If the accept or configuration operations failed
+     */
+    public IOSocketChannel accept() throws IOException {
+        final IOSocketChannel ioSocketChannel = serverSocketChannel.accept();
+        if (ioSocketChannel != null) {
+            socketChannelConfiguration.apply(ioSocketChannel);
+        }
+        return ioSocketChannel;
+    }
 }

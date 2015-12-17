@@ -27,7 +27,7 @@ package com.mattunderscore.tcproxy.selector.general;
 
 import java.nio.channels.ClosedChannelException;
 
-import com.mattunderscore.tcproxy.io.IOSelector;
+import com.mattunderscore.tcproxy.io.selection.IOSelector;
 
 /**
  * The request for the selector to register interest in the operation.

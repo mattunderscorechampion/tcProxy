@@ -27,7 +27,7 @@ package com.mattunderscore.tcproxy.io.configuration;
 
 import java.io.IOException;
 
-import com.mattunderscore.tcproxy.io.IOSocket;
+import com.mattunderscore.tcproxy.io.socket.IOSocket;
 
 /**
  * @author Matt Champion on 05/12/2015

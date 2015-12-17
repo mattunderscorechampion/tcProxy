@@ -1,4 +1,4 @@
-/* Copyright © 2014 Matthew Champion
+/* Copyright © 2014, 2015 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -23,65 +23,50 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.proxy.direction;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-
-import com.mattunderscore.tcproxy.io.data.CircularBuffer;
-import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
-import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessor;
-import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
-import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
+package com.mattunderscore.tcproxy.io.socket;
 
 /**
- * A direction.
- * @author Matt Champion on 18/02/14.
+ * The available socket options.
+ * @author Matt Champion on 13/03/14.
  */
-public interface Direction {
-
-    IOSocketChannel getFrom();
-
-    IOSocketChannel getTo();
-
-    ActionQueue getQueue();
-
+public final class IOSocketOption<T> {
     /**
-     * @return The first action processor in the chain to call.
+     * Socket option for SO_RCVBUF.
      */
-    ActionProcessor getProcessor();
-
+    public final static IOSocketOption<Integer> RECEIVE_BUFFER = new IOSocketOption<>("RECEIVE_BUFFER");
     /**
-     * Chain a new action processor.
-     * @param processorFactory Factory for the action processor,
+     * Socket option for SO_SNDBUF.
      */
-    void chainProcessor(ActionProcessorFactory processorFactory);
-
+    public final static IOSocketOption<Integer> SEND_BUFFER = new IOSocketOption<>("SEND_BUFFER");
     /**
-     * Removes the last chained action processor.
+     * Socket option blocking socket.
      */
-    void unchainProcessor();
-
-    int read();
-
-    int written();
-
-    int write(ByteBuffer data) throws IOException;
-
-    int read(CircularBuffer data) throws IOException;
-
-    void close() throws IOException;
-
-    void addListener(Listener listener);
-
+    public final static IOSocketOption<Boolean> BLOCKING = new IOSocketOption<>("BLOCKING");
     /**
-     * Listener for direction events.
+     * Socket option for SO_KEEP_ALIVE.
      */
-    interface Listener {
-        void dataRead(Direction direction, int bytesRead);
+    public static final IOSocketOption<Boolean> KEEP_ALIVE = new IOSocketOption<>("KEEP_ALIVE");
+    /**
+     * Socket option for SO_LINGER.
+     */
+    public static final IOSocketOption<Integer> LINGER = new IOSocketOption<>("LINGER");
+    /**
+     * Socket option for SO_REUSEADDR.
+     */
+    public static final IOSocketOption<Boolean> REUSE_ADDRESS = new IOSocketOption<>("REUSE_ADDRESS");
+    /**
+     * Socket option for TCP_NODELAY.
+     */
+    public static final IOSocketOption<Boolean> TCP_NO_DELAY = new IOSocketOption<>("TCP_NO_DELAY");
 
-        void dataWritten(Direction direction, int bytesWritten);
+    private final String name;
 
-        void closed(Direction direction);
+    private IOSocketOption(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

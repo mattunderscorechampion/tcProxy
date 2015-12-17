@@ -25,19 +25,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.connecting;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Set;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
-import com.mattunderscore.tcproxy.selector.connecting.task.AcceptingTask;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
-import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 
 /**
  * A selector that accepts and completes the connection of new sockets. A task is registered to accept new connections.

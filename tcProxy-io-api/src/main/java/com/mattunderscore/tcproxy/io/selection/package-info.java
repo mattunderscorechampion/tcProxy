@@ -23,22 +23,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.WritableByteChannel;
-
 /**
- * A channel that can have bytes written to it from a {@link CircularBuffer} or {@link ByteBuffer}.
- * @author Matt Champion on 01/12/2015
+ * This package provides an I/O API for selection operations.
+ * @author Matt Champion on 17/12/15.
  */
-public interface IOWritableByteChannel extends WritableByteChannel {
-    /**
-     * Writes data from the circular buffer to the socket.
-     * @param src The buffer
-     * @return The number of bytes written
-     * @throws IOException
-     */
-    int write(CircularBuffer src) throws IOException;
-}
+package com.mattunderscore.tcproxy.io.selection;

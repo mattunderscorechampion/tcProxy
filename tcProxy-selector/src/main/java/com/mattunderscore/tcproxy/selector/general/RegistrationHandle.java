@@ -2,7 +2,7 @@ package com.mattunderscore.tcproxy.selector.general;
 
 import java.util.Set;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 
 /**
  * Represent the registration of a channel with a selector for a specific operation.

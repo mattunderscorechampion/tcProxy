@@ -27,11 +27,11 @@ package com.mattunderscore.tcproxy.io.impl;
 
 import java.io.IOException;
 
-import com.mattunderscore.tcproxy.io.IOOutboundSocket;
-import com.mattunderscore.tcproxy.io.IOOutboundSocketChannel;
-import com.mattunderscore.tcproxy.io.IOOutboundSocketFactory;
-import com.mattunderscore.tcproxy.io.IOSelector;
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocket;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
+import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketFactory;
+import com.mattunderscore.tcproxy.io.selection.IOSelector;
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 
 /**

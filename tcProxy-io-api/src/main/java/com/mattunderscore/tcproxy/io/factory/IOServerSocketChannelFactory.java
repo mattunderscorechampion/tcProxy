@@ -23,11 +23,12 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io;
+package com.mattunderscore.tcproxy.io.factory;
+
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 
 /**
- * An outbound {@link IOSocketChannel}.
- * @author Matt Champion on 05/12/2015
+ * @author Matt Champion on 27/11/2015
  */
-public interface IOOutboundSocketChannel extends IOSocketChannel, IOOutboundSocket {
+public interface IOServerSocketChannelFactory extends IOOutboundSocketFactory<IOServerSocketChannel> {
 }

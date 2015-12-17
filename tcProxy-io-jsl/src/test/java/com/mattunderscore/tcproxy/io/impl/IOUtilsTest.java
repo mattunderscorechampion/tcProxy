@@ -34,8 +34,8 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey.Op;
-import com.mattunderscore.tcproxy.io.IOSocketOption;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op;
+import com.mattunderscore.tcproxy.io.socket.IOSocketOption;
 
 public final class IOUtilsTest {
 

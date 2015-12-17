@@ -29,8 +29,8 @@ import java.nio.channels.SelectionKey;
 import java.util.EnumSet;
 import java.util.Set;
 
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOSocketOption;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.socket.IOSocketOption;
 
 /**
  * @author Matt Champion on 13/03/14.

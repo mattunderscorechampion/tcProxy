@@ -25,8 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.examples.selector;
 
-import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.READ;
-import static com.mattunderscore.tcproxy.io.IOSelectionKey.Op.WRITE;
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.READ;
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.WRITE;
 import static com.mattunderscore.tcproxy.io.impl.CircularBufferImpl.allocateDirect;
 import static java.util.EnumSet.of;
 
@@ -37,11 +37,11 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mattunderscore.tcproxy.io.CircularBuffer;
-import com.mattunderscore.tcproxy.io.IOFactory;
-import com.mattunderscore.tcproxy.io.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.data.CircularBuffer;
+import com.mattunderscore.tcproxy.io.factory.IOFactory;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.impl.JSLIOFactory;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
