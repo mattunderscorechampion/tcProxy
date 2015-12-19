@@ -182,9 +182,13 @@ public final class CircularBufferImpl implements CircularBuffer {
     }
 
     /*package*/ int doSocketWrite(SocketChannel channel) throws IOException {
+        final int lengthToCopy = data;
+        if (lengthToCopy == 0) {
+            return 0;
+        }
+
         final ByteBuffer readableBuffer = buffer.asReadOnlyBuffer();
         readableBuffer.position(readPos);
-        final int lengthToCopy = data;
         final int maxReadableBeforeWrap = readableBuffer.remaining();
 
         int readFromBuffer;

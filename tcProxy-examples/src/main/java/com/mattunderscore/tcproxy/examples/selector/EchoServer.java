@@ -120,13 +120,11 @@ public final class EchoServer {
             }
 
             if (readyOperations.contains(WRITE)) {
-                if (buffer.usedCapacity() > 0) {
-                    try {
-                        socket.write(buffer);
-                    }
-                    catch (IOException e) {
-                        LOG.warn("Unable to write to socket", e);
-                    }
+                try {
+                    socket.write(buffer);
+                }
+                catch (IOException e) {
+                    LOG.warn("Unable to write to socket", e);
                 }
             }
 
