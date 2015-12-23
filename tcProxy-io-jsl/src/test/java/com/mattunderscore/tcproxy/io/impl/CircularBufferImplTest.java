@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.impl;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.nio.BufferOverflowException;
@@ -215,5 +216,93 @@ public final class CircularBufferImplTest {
         assertEquals(4, buffer.get());
         assertEquals(0, buffer.get());
         assertEquals(1, buffer.get());
+    }
+
+    @Test
+    public void advance() {
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
+        buffer.put(new byte[] { 0x0, 0x1, 0x2 });
+        buffer.advance(1);
+        assertEquals(2, buffer.usedCapacity());
+        assertEquals(0x1, buffer.get());
+    }
+
+    @Test
+    public void advancePastWrap() {
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
+        buffer.put(new byte[] { 0x0, 0x1, 0x2 });
+        buffer.get();
+        buffer.get();
+        buffer.put(new byte[] {0x3, 0x4});
+        buffer.advance(2);
+        assertEquals(1, buffer.usedCapacity());
+        assertEquals(0x4, buffer.get());
+    }
+
+    @Test(expected = BufferUnderflowException.class)
+    public void advanceTooFar() {
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
+        buffer.put(new byte[] { 0x0, 0x1, 0x2 });
+        buffer.advance(4);
+    }
+
+    @Test
+    public void getNewArray() {
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
+        buffer.put(new byte[] { 0x0, 0x1, 0x2 });
+        final byte[] bytes = buffer.get(2);
+        assertArrayEquals(new byte[] {0x0, 0x1}, bytes);
+        assertEquals(1, buffer.usedCapacity());
+    }
+
+    @Test
+    public void getNewArrayOverWrap() {
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
+        buffer.put(new byte[] { 0x0, 0x1, 0x2 });
+        buffer.get();
+        buffer.get();
+        buffer.put(new byte[] {0x3, 0x4});
+        final byte[] bytes = buffer.get(2);
+        assertArrayEquals(new byte[] {0x2, 0x3}, bytes);
+        assertEquals(1, buffer.usedCapacity());
+    }
+
+    @Test(expected = BufferUnderflowException.class)
+    public void getNewArrayTooMany() {
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
+        buffer.put(new byte[] { 0x0, 0x1, 0x2 });
+        buffer.get(4);
+    }
+
+    @Test
+    public void getIntoArray() {
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
+        buffer.put(new byte[] { 0x0, 0x1, 0x2 });
+        final byte[] bytes = new byte[2];
+        buffer.get(bytes);
+        assertArrayEquals(new byte[] {0x0, 0x1}, bytes);
+        assertEquals(1, buffer.usedCapacity());
+    }
+
+    @Test
+    public void getIntoArrayOverWrap() {
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
+        buffer.put(new byte[] { 0x0, 0x1, 0x2 });
+        buffer.get();
+        buffer.get();
+        buffer.put(new byte[] {0x3, 0x4});
+        assertEquals(3, buffer.usedCapacity());
+        final byte[] bytes = new byte[2];
+        buffer.get(bytes);
+        assertArrayEquals(new byte[] {0x2, 0x3}, bytes);
+        assertEquals(1, buffer.usedCapacity());
+    }
+
+    @Test(expected = BufferUnderflowException.class)
+    public void getIntoArrayTooMany() {
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
+        buffer.put(new byte[] { 0x0, 0x1, 0x2 });
+        final byte[] bytes = new byte[4];
+        buffer.get(bytes);
     }
 }

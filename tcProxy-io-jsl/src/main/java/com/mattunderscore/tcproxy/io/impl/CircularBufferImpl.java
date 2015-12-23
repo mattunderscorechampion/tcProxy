@@ -153,6 +153,63 @@ public final class CircularBufferImpl implements CircularBuffer {
     }
 
     @Override
+    public byte[] get(int bytes) throws BufferUnderflowException {
+        final byte[] byteArray = new byte[bytes];
+        get(byteArray);
+        return byteArray;
+    }
+
+    @Override
+    public void get(byte[] bytes) throws BufferUnderflowException {
+        if (bytes.length > data) {
+            throw new BufferUnderflowException();
+        }
+        else if (bytes.length == 0) {
+            return;
+        }
+
+        final ByteBuffer readBuffer = buffer.asReadOnlyBuffer();
+        final int initialReadPosition = readPos;
+        readBuffer.position(initialReadPosition);
+        final int maxReadableBeforeWrap = readBuffer.remaining();
+
+        if (bytes.length <= maxReadableBeforeWrap) {
+            // Copy to destination without wrapping circular buffer
+            readBuffer.limit(initialReadPosition + bytes.length);
+            readBuffer.get(bytes);
+        }
+        else {
+            // Copy to destination with wrapping circular buffer
+            readBuffer.limit(initialReadPosition + maxReadableBeforeWrap);
+            readBuffer.get(bytes, 0, maxReadableBeforeWrap);
+            readBuffer.position(0);
+            readBuffer.limit(bytes.length - maxReadableBeforeWrap);
+            readBuffer.get(bytes, maxReadableBeforeWrap, bytes.length - maxReadableBeforeWrap);
+        }
+        readPos = (readPos + bytes.length) % capacity();
+        data = data - bytes.length;
+        return;
+    }
+
+    @Override
+    public void advance(int bytes) throws BufferUnderflowException {
+        if (bytes > data) {
+            throw new BufferUnderflowException();
+        }
+        final ByteBuffer readBuffer = buffer.asReadOnlyBuffer();
+        final int initialReadPosition = readPos;
+        readBuffer.position(initialReadPosition);
+        final int maxReadableBeforeWrap = readBuffer.remaining();
+        if (bytes <= maxReadableBeforeWrap) {
+            readPos = readPos + bytes;
+        }
+        else {
+            readPos = bytes - maxReadableBeforeWrap;
+        }
+        data = data - bytes;
+    }
+
+    @Override
     public int freeCapacity() {
         return capacity() - data;
     }

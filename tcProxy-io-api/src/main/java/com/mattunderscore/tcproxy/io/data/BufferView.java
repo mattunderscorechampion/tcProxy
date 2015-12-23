@@ -46,6 +46,26 @@ public interface BufferView {
     int get(ByteBuffer dst);
 
     /**
+     * @param bytes The number of bytes to read
+     * @return An array containing the bytes read
+     * @throws BufferUnderflowException if attempting to read more than the used capacity
+     */
+    byte[] get(int bytes) throws BufferUnderflowException;
+
+    /**
+     * @param bytes The byte array to copy data into
+     * @throws BufferUnderflowException if the array contains more room than there is data available.
+     */
+    void get(byte[] bytes) throws BufferUnderflowException;
+
+    /**
+     * Advance the pointer by some number of bytes.
+     * @param bytes The number of bytes to advance
+     * @throws BufferUnderflowException if attempting to advance more than the used capacity
+     */
+    void advance(int bytes) throws BufferUnderflowException;
+
+    /**
      * @return The number of bytes that can be read from the buffer
      */
     int usedCapacity();
