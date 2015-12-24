@@ -34,6 +34,7 @@ import java.nio.ByteBuffer;
 
 import org.junit.Test;
 
+import com.mattunderscore.tcproxy.io.data.BufferView;
 import com.mattunderscore.tcproxy.io.data.CircularBuffer;
 
 public final class CircularBufferImplTest {
@@ -304,5 +305,22 @@ public final class CircularBufferImplTest {
         buffer.put(new byte[] { 0x0, 0x1, 0x2 });
         final byte[] bytes = new byte[4];
         buffer.get(bytes);
+    }
+
+    @Test
+    public void view() {
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
+        buffer.put(new byte[] { 0x0, 0x1, 0x2 });
+        assertEquals(3, buffer.usedCapacity());
+        final BufferView view0 = buffer.view();
+        assertArrayEquals(new byte[] {0x0, 0x1, 0x2}, view0.get(3));
+        assertEquals(0, view0.usedCapacity());
+        assertEquals(3, buffer.usedCapacity());
+        final BufferView view1 = buffer.view();
+        assertArrayEquals(new byte[] {0x0, 0x1, 0x2}, view1.get(3));
+        assertEquals(0, view1.usedCapacity());
+        assertEquals(3, buffer.usedCapacity());
+        assertArrayEquals(new byte[] {0x0, 0x1, 0x2}, buffer.get(3));
+        assertEquals(0, buffer.usedCapacity());
     }
 }

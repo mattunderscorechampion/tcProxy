@@ -29,23 +29,20 @@ import static java.lang.Math.min;
 
 import java.io.IOException;
 import java.nio.BufferOverflowException;
-import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+import com.mattunderscore.tcproxy.io.data.BufferView;
 import com.mattunderscore.tcproxy.io.data.CircularBuffer;
 
 /**
  * Implementation of {@link CircularBuffer}.
  * @author Matt Champion on 31/10/2015
  */
-public final class CircularBufferImpl implements CircularBuffer {
-    private final ByteBuffer buffer;
-    private int readPos = 0;
-    private int data = 0;
+public final class CircularBufferImpl extends CircularBufferView implements CircularBuffer {
 
     private CircularBufferImpl(ByteBuffer writableBuffer) {
-        buffer = writableBuffer;
+        super(writableBuffer);
     }
 
     @Override
@@ -109,114 +106,16 @@ public final class CircularBufferImpl implements CircularBuffer {
     }
 
     @Override
-    public byte get() throws BufferUnderflowException {
-        if (data > 0) {
-            final byte b = buffer.get(readPos);
-            readPos = (readPos + 1) % capacity();
-            data = data - 1;
-            return b;
-        }
-        else {
-            throw new BufferUnderflowException();
-        }
-    }
-
-    @Override
-    public int get(ByteBuffer dst) {
-        if (data > 0) {
-            final ByteBuffer readBuffer = buffer.asReadOnlyBuffer();
-            final int initialReadPosition = readPos;
-            readBuffer.position(initialReadPosition);
-            final int lengthToCopy = min(dst.remaining(), usedCapacity());
-            final int maxReadableBeforeWrap = readBuffer.remaining();
-
-            if (lengthToCopy <= maxReadableBeforeWrap) {
-                // Copy to destination without wrapping circular buffer
-                readBuffer.limit(initialReadPosition + lengthToCopy);
-                dst.put(readBuffer);
-            }
-            else {
-                // Copy to destination with wrapping circular buffer
-                readBuffer.limit(initialReadPosition + maxReadableBeforeWrap);
-                dst.put(readBuffer);
-                readBuffer.position(0);
-                readBuffer.limit(lengthToCopy - maxReadableBeforeWrap);
-                dst.put(readBuffer);
-            }
-            readPos = (readPos + lengthToCopy) % capacity();
-            data = data - lengthToCopy;
-            return lengthToCopy;
-        }
-        else {
-            return 0;
-        }
-    }
-
-    @Override
-    public byte[] get(int bytes) throws BufferUnderflowException {
-        final byte[] byteArray = new byte[bytes];
-        get(byteArray);
-        return byteArray;
-    }
-
-    @Override
-    public void get(byte[] bytes) throws BufferUnderflowException {
-        if (bytes.length > data) {
-            throw new BufferUnderflowException();
-        }
-        else if (bytes.length == 0) {
-            return;
-        }
-
-        final ByteBuffer readBuffer = buffer.asReadOnlyBuffer();
-        final int initialReadPosition = readPos;
-        readBuffer.position(initialReadPosition);
-        final int maxReadableBeforeWrap = readBuffer.remaining();
-
-        if (bytes.length <= maxReadableBeforeWrap) {
-            // Copy to destination without wrapping circular buffer
-            readBuffer.limit(initialReadPosition + bytes.length);
-            readBuffer.get(bytes);
-        }
-        else {
-            // Copy to destination with wrapping circular buffer
-            readBuffer.limit(initialReadPosition + maxReadableBeforeWrap);
-            readBuffer.get(bytes, 0, maxReadableBeforeWrap);
-            readBuffer.position(0);
-            readBuffer.limit(bytes.length - maxReadableBeforeWrap);
-            readBuffer.get(bytes, maxReadableBeforeWrap, bytes.length - maxReadableBeforeWrap);
-        }
-        readPos = (readPos + bytes.length) % capacity();
-        data = data - bytes.length;
-        return;
-    }
-
-    @Override
-    public void advance(int bytes) throws BufferUnderflowException {
-        if (bytes > data) {
-            throw new BufferUnderflowException();
-        }
-        final ByteBuffer readBuffer = buffer.asReadOnlyBuffer();
-        final int initialReadPosition = readPos;
-        readBuffer.position(initialReadPosition);
-        final int maxReadableBeforeWrap = readBuffer.remaining();
-        if (bytes <= maxReadableBeforeWrap) {
-            readPos = readPos + bytes;
-        }
-        else {
-            readPos = bytes - maxReadableBeforeWrap;
-        }
-        data = data - bytes;
-    }
-
-    @Override
     public int freeCapacity() {
         return capacity() - data;
     }
 
     @Override
-    public int usedCapacity() {
-        return data;
+    public BufferView view() {
+        final ByteBuffer byteBuffer = buffer.asReadOnlyBuffer();
+        byteBuffer.position(buffer.position());
+        byteBuffer.limit(buffer.limit());
+        return new CircularBufferView(byteBuffer, readPos, data);
     }
 
     private int capacity() {

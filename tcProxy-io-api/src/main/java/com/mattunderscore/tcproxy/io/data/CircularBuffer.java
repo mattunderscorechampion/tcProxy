@@ -60,4 +60,9 @@ public interface CircularBuffer extends BufferView {
      * @return The number of bytes that can be written to the buffer
      */
     int freeCapacity();
+
+    /**
+     * @return A view with separate pointers
+     */
+    BufferView view();
 }
