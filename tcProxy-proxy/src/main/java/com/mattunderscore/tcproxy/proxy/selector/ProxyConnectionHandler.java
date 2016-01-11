@@ -51,7 +51,7 @@ import com.mattunderscore.tcproxy.selector.server.Server;
  * Implementation of {@link ConnectionHandler} for the proxy {@link Server}.
  * @author Matt Champion on 18/11/2015
  */
-final class ProxyConnectionHandler implements ConnectionHandler {
+/*package*/ final class ProxyConnectionHandler implements ConnectionHandler {
     private static final Logger LOG = LoggerFactory.getLogger("acceptor");
     private final AsynchronousOutboundConnectionFactory factory;
     private final ConnectionSettings settings;
