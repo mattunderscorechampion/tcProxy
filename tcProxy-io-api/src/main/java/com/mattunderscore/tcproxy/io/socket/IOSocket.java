@@ -27,29 +27,19 @@ package com.mattunderscore.tcproxy.io.socket;
 
 import java.io.IOException;
 import java.net.SocketAddress;
+import java.nio.channels.Channel;
 
 /**
  * A generic socket.
  * @author Matt Champion on 13/03/14.
  */
-public interface IOSocket extends AutoCloseable {
+public interface IOSocket extends AutoCloseable, Channel {
 
     /**
      * @return The address of the lcoal socket.
      * @throws IOException
      */
     SocketAddress getLocalAddress() throws IOException;
-
-    /**
-     * @return {@code true} If the socket is open.
-     */
-    boolean isOpen();
-
-    /**
-     * Closes the socket.
-     * @throws IOException
-     */
-    void close() throws IOException;
 
     /**
      * Sets an option on the socket.
