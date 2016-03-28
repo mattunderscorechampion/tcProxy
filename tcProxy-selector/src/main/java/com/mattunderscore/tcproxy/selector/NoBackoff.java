@@ -29,7 +29,7 @@ package com.mattunderscore.tcproxy.selector;
  * No-op backoff.
  * @author Matt Champion on 23/11/2015
  */
-public class NoBackoff implements SelectorBackoff {
+public final class NoBackoff implements SelectorBackoff {
     @Override
     public void backoff(int selected) {
     }
