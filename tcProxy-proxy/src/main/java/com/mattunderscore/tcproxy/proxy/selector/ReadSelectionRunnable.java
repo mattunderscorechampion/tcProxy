@@ -61,7 +61,7 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
     @Override
     public void run(IOSocketChannel socket, RegistrationHandle handle) {
         if (!handle.isValid()) {
-            LOG.debug("{} : Selected key no longer valid, closing connection", this);
+            LOG.warn("{} : Selected key no longer valid, closing connection", this);
             try {
                 dc.getConnection().close();
             }
@@ -106,7 +106,7 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
             }
         }
         else {
-            LOG.debug("{} : Unexpected key state {}", this, handle);
+            LOG.warn("{} : Unexpected key state {}", this, handle);
         }
     }
 }
