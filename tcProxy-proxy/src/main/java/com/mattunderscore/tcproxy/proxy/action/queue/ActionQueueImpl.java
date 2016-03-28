@@ -46,11 +46,13 @@ public final class ActionQueueImpl implements ActionQueue {
         this.actions = new ArrayBlockingQueue<>(queueSize);
     }
 
+    @Override
     public boolean queueFull() {
         return actions.remainingCapacity() == 0;
     }
 
-    public int opsPending() {
+    @Override
+    public int actionsPending() {
         return actions.size();
     }
 
@@ -60,19 +62,23 @@ public final class ActionQueueImpl implements ActionQueue {
     }
 
     @Override
-    public Action current() {
+    public Action head() {
         final Action currentAction = current;
         if (currentAction != null && !currentAction.writeComplete()) {
+            // There is a head action that has not been completed
             return currentAction;
         }
         else {
-            final Action batchedAction = batchActions();
+            final Action batchedAction = pollActions();
             current = batchedAction;
             return batchedAction;
         }
     }
 
-    private Action batchActions() {
+    /**
+     * Polls the next action from the queue, batching multiple write actions.
+     */
+    private Action pollActions() {
         final BatchedWrite batchedWrite = new BatchedWrite(batchSize);
         boolean batchedData = false;
         while (true) {
@@ -104,7 +110,7 @@ public final class ActionQueueImpl implements ActionQueue {
 
     @Override
     public boolean hasData() {
-        return current() != null;
+        return head() != null;
     }
 
 }

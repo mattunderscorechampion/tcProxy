@@ -28,18 +28,34 @@ package com.mattunderscore.tcproxy.proxy.action.queue;
 import com.mattunderscore.tcproxy.proxy.action.Action;
 
 /**
- * The queue of actions for a single direction.
+ * The queue of actions for a single direction. Exposes the head head of the queue.
  * @author Matt Champion on 19/02/14.
  */
 public interface ActionQueue {
 
+    /**
+     * @return If the queue is full
+     */
     boolean queueFull();
 
+    /**
+     * Queue a new action
+     * @param action
+     */
     void add(final Action action);
 
-    Action current();
+    /**
+     * @return The head of the queue
+     */
+    Action head();
 
+    /**
+     * @return If there are any queued actions
+     */
     boolean hasData();
 
-    int opsPending();
+    /**
+     * @return The number of actions in the queue
+     */
+    int actionsPending();
 }

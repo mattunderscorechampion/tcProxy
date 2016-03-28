@@ -90,8 +90,8 @@ public final class ActionQueueImplTest {
         queue.add(write0);
         queue.add(write1);
         queue.add(write2);
-        final Action action = queue.current();
-        final Action duplicateAction = queue.current();
+        final Action action = queue.head();
+        final Action duplicateAction = queue.head();
         assertSame(action, duplicateAction);
         assertTrue(queue.hasData());
         action.writeToSocket();
@@ -116,7 +116,7 @@ public final class ActionQueueImplTest {
         assertEquals('b', outBuffer.get());
         assertEquals('y', outBuffer.get());
         assertFalse(queue.hasData());
-        assertNull(queue.current());
+        assertNull(queue.head());
     }
 
     @Test
@@ -125,8 +125,8 @@ public final class ActionQueueImplTest {
         queue.add(write0);
         queue.add(write1);
         queue.add(write2);
-        final Action action = queue.current();
-        final Action duplicateAction = queue.current();
+        final Action action = queue.head();
+        final Action duplicateAction = queue.head();
         assertSame(action, duplicateAction);
         assertTrue(queue.hasData());
         action.writeToSocket();
@@ -151,15 +151,15 @@ public final class ActionQueueImplTest {
         assertEquals('b', outBuffer.get());
         assertEquals('y', outBuffer.get());
         assertFalse(queue.hasData());
-        assertNull(queue.current());
+        assertNull(queue.head());
     }
 
     @Test
     public void write() throws IOException {
         final ActionQueueImpl queue = new ActionQueueImpl(3, 64);
         queue.add(write0);
-        final Action action = queue.current();
-        final Action duplicateAction = queue.current();
+        final Action action = queue.head();
+        final Action duplicateAction = queue.head();
         assertSame(action, duplicateAction);
         assertTrue(queue.hasData());
         action.writeToSocket();
@@ -172,9 +172,9 @@ public final class ActionQueueImplTest {
         assertEquals('l', outBuffer.get());
         assertEquals('o', outBuffer.get());
         assertTrue(queue.hasData());
-        assertNotNull(queue.current());
+        assertNotNull(queue.head());
         assertEquals(' ', outBuffer.get());
         assertFalse(queue.hasData());
-        assertNull(queue.current());
+        assertNull(queue.head());
     }
 }
