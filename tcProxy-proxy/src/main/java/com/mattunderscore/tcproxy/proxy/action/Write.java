@@ -34,7 +34,7 @@ import java.nio.ByteBuffer;
  * The write action.
  * @author Matt Champion on 19/02/14.
  */
-public final class Write implements Action, IWrite {
+public final class Write implements Action, WriteAction {
     final Direction direction;
     final ByteBuffer data;
 

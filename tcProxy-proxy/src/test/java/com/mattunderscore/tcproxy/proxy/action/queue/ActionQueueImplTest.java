@@ -28,7 +28,7 @@ package com.mattunderscore.tcproxy.proxy.action.queue;
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
 import com.mattunderscore.tcproxy.proxy.action.Action;
-import com.mattunderscore.tcproxy.proxy.action.IWrite;
+import com.mattunderscore.tcproxy.proxy.action.WriteAction;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -53,11 +53,11 @@ public final class ActionQueueImplTest {
     @Mock
     private Connection connection;
     @Mock
-    private IWrite write0;
+    private WriteAction write0;
     @Mock
-    private IWrite write1;
+    private WriteAction write1;
     @Mock
-    private IWrite write2;
+    private WriteAction write2;
     @Captor
     private ArgumentCaptor<ByteBuffer> outBufferCaptor;
 

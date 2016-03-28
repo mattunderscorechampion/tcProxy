@@ -30,7 +30,7 @@ import java.util.concurrent.BlockingQueue;
 
 import com.mattunderscore.tcproxy.proxy.action.Action;
 import com.mattunderscore.tcproxy.proxy.action.BatchedWrite;
-import com.mattunderscore.tcproxy.proxy.action.IWrite;
+import com.mattunderscore.tcproxy.proxy.action.WriteAction;
 
 /**
  * Implementation of {@link ActionQueue}.
@@ -78,7 +78,7 @@ public final class ActionQueueImpl implements ActionQueue {
         while (true) {
             final Action nextAction = actions.peek();
             if (nextAction != null && nextAction.isBatchable()) {
-                if (batchedWrite.batch((IWrite)nextAction)) {
+                if (batchedWrite.batch((WriteAction)nextAction)) {
                     batchedData = true;
                     actions.poll();
                 }

@@ -68,7 +68,7 @@ public final class BatchedWrite implements Action {
      * @param action The action
      * @return {@code true} if the action fits completely into the batch
      */
-    public boolean batch(IWrite action) {
+    public boolean batch(WriteAction action) {
         if (flipped) {
             return false;
         }

@@ -47,9 +47,9 @@ import com.mattunderscore.tcproxy.proxy.direction.Direction;
  */
 public final class BatchedWriteTest {
     @Mock
-    private IWrite write0;
+    private WriteAction write0;
     @Mock
-    private IWrite write1;
+    private WriteAction write1;
     @Mock
     private Direction direction;
     @Captor
