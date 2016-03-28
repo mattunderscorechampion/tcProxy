@@ -68,7 +68,7 @@ public final class ProxyServerMain {
     private static final Option<String> OUTBOUND_HOST = Option.create("-oh", "--oh", "Outbound host", "localhost", StringParser.PARSER);
     private static final Option<Integer> OUTBOUND_PORT = Option.create("-op", "--op", "Outbound port", 8080, IntegerParser.PARSER);
     private static final Option<Integer> QUEUE_SIZE = Option.create("-qs", "--qs", "Queue size", 10000, IntegerParser.PARSER);
-    private static final Option<Integer> BATCH_SIZE = Option.create("-bs", "--bs", "Batch size", 2048, IntegerParser.PARSER);
+    private static final Option<Integer> BATCH_SIZE = Option.create("-bs", "--bs", "Batch size", 10240, IntegerParser.PARSER);
     private static final Option<Integer> SEND_BUFFER = Option.create("-sb", "--sb", "Send buffer, ", 10240, IntegerParser.PARSER);
     private static final Option<Integer> RECEIVE_BUFFER = Option.create("-rb", "--rb", "Receive buffer", 10240, IntegerParser.PARSER);
 

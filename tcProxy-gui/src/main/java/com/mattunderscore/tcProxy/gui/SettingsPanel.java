@@ -65,15 +65,15 @@ public final class SettingsPanel extends JPanel {
 
     public SettingsPanel(final Runnable callback) {
         listeningPort = new JTextField("8085", 8);
-        inboundReceiveBufferSize = new JTextField("1024", 8);
-        inboundSendBufferSize = new JTextField("1024", 8);
-        outboundReceiveBufferSize = new JTextField("1024", 8);
-        outboundSendBufferSize = new JTextField("1024", 8);
+        inboundReceiveBufferSize = new JTextField("10240", 8);
+        inboundSendBufferSize = new JTextField("10240", 8);
+        outboundReceiveBufferSize = new JTextField("10240", 8);
+        outboundSendBufferSize = new JTextField("10240", 8);
         targetHost = new JTextField("localhost", 8);
         targetPort = new JTextField("8080", 8);
-        readBufferSize = new JTextField("1024", 8);
-        writeQueueBound = new JTextField("5000", 8);
-        batchSize = new JTextField("2048", 8);
+        readBufferSize = new JTextField("10240", 8);
+        writeQueueBound = new JTextField("10000", 8);
+        batchSize = new JTextField("10240", 8);
 
         setLayout(new GridBagLayout());
         final GridBagConstraints c = new GridBagConstraints();
