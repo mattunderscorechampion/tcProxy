@@ -69,12 +69,11 @@ import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 final class ProxyServerStarter extends AbstractServerStarter {
     private static final Logger LOG = LoggerFactory.getLogger("server");
     private static final AtomicInteger THREAD_COUNT = new AtomicInteger(0);
-    private final OutboundSocketSettings outboundSocketSettings;
     private final SelectorBackoff selectorBackoff;
-    private final ConnectionSettings connectionSettings;
     private final ConnectionManager manager;
     private final SocketSettings inboundSocketSettings;
     private final ReadSelectorSettings readSelectorSettings;
+    private final ConnectionHandlerFactory connectionHandlerFactory;
 
     protected ProxyServerStarter(
             IOFactory ioFactory,
@@ -87,12 +86,15 @@ final class ProxyServerStarter extends AbstractServerStarter {
             SocketSettings inboundSocketSettings,
             ReadSelectorSettings readSelectorSettings) {
         super(ioFactory, portsToListenOn, selectorThreads);
-        this.outboundSocketSettings = outboundSocketSettings;
         this.selectorBackoff = selectorBackoff;
-        this.connectionSettings = connectionSettings;
         this.manager = manager;
         this.inboundSocketSettings = inboundSocketSettings;
         this.readSelectorSettings = readSelectorSettings;
+
+        connectionHandlerFactory = new ProxyConnectionHandlerFactory(
+            outboundSocketSettings,
+            connectionSettings,
+            manager);
     }
 
     @Override
@@ -114,10 +116,6 @@ final class ProxyServerStarter extends AbstractServerStarter {
 
     @Override
     protected SelectorFactory<SocketChannelSelector> getSelectorFactory(final Collection<IOServerSocketChannel> listenChannels) {
-        final ConnectionHandlerFactory connectionHandlerFactory = new ProxyConnectionHandlerFactory(
-            outboundSocketSettings,
-            connectionSettings,
-            manager);
         final SocketConfigurator socketConfigurator = new SocketConfigurator(inboundSocketSettings);
         return new SelectorFactory<SocketChannelSelector>() {
             @Override
