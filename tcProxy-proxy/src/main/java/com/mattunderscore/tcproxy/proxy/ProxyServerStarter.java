@@ -37,10 +37,10 @@ import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.data.CircularBuffer;
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
+import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
-import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
@@ -69,12 +69,12 @@ import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 final class ProxyServerStarter extends AbstractServerStarter {
     private static final Logger LOG = LoggerFactory.getLogger("server");
     private static final AtomicInteger THREAD_COUNT = new AtomicInteger(0);
-    private OutboundSocketSettings outboundSocketSettings;
-    private SelectorBackoff selectorBackoff;
-    private ConnectionSettings connectionSettings;
-    private ConnectionManager manager;
-    private SocketSettings inboundSocketSettings;
-    private ReadSelectorSettings readSelectorSettings;
+    private final OutboundSocketSettings outboundSocketSettings;
+    private final SelectorBackoff selectorBackoff;
+    private final ConnectionSettings connectionSettings;
+    private final ConnectionManager manager;
+    private final SocketSettings inboundSocketSettings;
+    private final ReadSelectorSettings readSelectorSettings;
 
     protected ProxyServerStarter(
             IOFactory ioFactory,
