@@ -53,7 +53,7 @@ import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.READ;
  * Discard server. Reads and then discards all bytes sent to it.
  * @author Matt Champion on 19/12/15
  */
-public class DiscardServer {
+public final class DiscardServer {
     private static final Logger LOG = LoggerFactory.getLogger("selector");
 
     public static void main(String[] args) throws IOException {
