@@ -64,12 +64,10 @@ public final class BatchedWriteTest {
         buffer0.put("Hello ".getBytes());
         buffer0.flip();
         when(write0.getData()).thenReturn(buffer0);
-        when(write0.isBatchable()).thenReturn(Boolean.TRUE);
         final ByteBuffer buffer1 = ByteBuffer.allocate(64);
         buffer1.put("world".getBytes());
         buffer1.flip();
         when(write1.getData()).thenReturn(buffer1);
-        when(write1.isBatchable()).thenReturn(Boolean.TRUE);
     }
 
     @Test

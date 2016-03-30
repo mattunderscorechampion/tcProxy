@@ -67,9 +67,6 @@ public final class ActionQueueImplTest {
         when(write0.getDirection()).thenReturn(direction);
         when(write1.getDirection()).thenReturn(direction);
         when(write2.getDirection()).thenReturn(direction);
-        when(write0.isBatchable()).thenReturn(Boolean.TRUE);
-        when(write1.isBatchable()).thenReturn(Boolean.TRUE);
-        when(write2.isBatchable()).thenReturn(Boolean.TRUE);
         final ByteBuffer buffer0 = ByteBuffer.allocate(64);
         buffer0.put("Hello ".getBytes());
         buffer0.flip();

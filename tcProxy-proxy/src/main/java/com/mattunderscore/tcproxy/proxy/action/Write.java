@@ -54,11 +54,6 @@ public final class Write implements Action, WriteAction {
     }
 
     @Override
-    public boolean isBatchable() {
-        return true;
-    }
-
-    @Override
     public ByteBuffer getData() {
         return data;
     }

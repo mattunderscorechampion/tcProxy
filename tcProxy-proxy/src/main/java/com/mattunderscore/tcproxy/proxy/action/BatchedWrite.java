@@ -58,11 +58,6 @@ public final class BatchedWrite implements Action {
         return data.remaining() == 0;
     }
 
-    @Override
-    public boolean isBatchable() {
-        return false;
-    }
-
     /**
      * Add the action to the batch. The action must be batchable.
      * @param action The action
@@ -73,7 +68,6 @@ public final class BatchedWrite implements Action {
             return false;
         }
         else {
-            assert action.isBatchable() : "The action should already have been checked to be batchable";
             final ByteBuffer batchData = action.getData();
             if (batchData.remaining() < data.remaining()) {
                 data.put(batchData);

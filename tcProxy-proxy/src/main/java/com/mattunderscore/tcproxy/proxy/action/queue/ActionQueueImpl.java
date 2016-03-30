@@ -84,7 +84,7 @@ public final class ActionQueueImpl implements ActionQueue {
         boolean batchedData = false;
         while (true) {
             final Action nextAction = actions.peek();
-            if (nextAction != null && nextAction.isBatchable()) {
+            if (nextAction != null && nextAction instanceof WriteAction) {
                 if (batchedWrite.batch((WriteAction)nextAction)) {
                     batchedData = true;
                     actions.poll();

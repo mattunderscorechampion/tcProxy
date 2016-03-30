@@ -36,6 +36,4 @@ public interface Action {
     int writeToSocket() throws IOException;
 
     boolean writeComplete();
-
-    boolean isBatchable();
 }
