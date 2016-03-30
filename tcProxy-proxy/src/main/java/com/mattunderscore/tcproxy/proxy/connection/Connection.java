@@ -49,4 +49,6 @@ public interface Connection {
      * @throws IOException
      */
     void close() throws IOException;
+
+    void needsWrite(Direction direction);
 }

@@ -28,9 +28,13 @@ package com.mattunderscore.tcproxy.proxy;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
+import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
+import com.mattunderscore.tcproxy.proxy.selector.WriteSelectionRunnable;
+import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 
 /**
  * Implementation of {@link Connection}.
@@ -41,12 +45,14 @@ public final class ConnectionImpl implements Connection {
     private final Direction serverToClient;
     private final ConnectionManager manager;
     private final AtomicBoolean halfClosed;
+    private final SocketChannelSelector selector;
 
-    public ConnectionImpl(final ConnectionManager manager, final Direction clientToServer, final Direction serverToClient) {
+    public ConnectionImpl(ConnectionManager manager, Direction clientToServer, Direction serverToClient, SocketChannelSelector selector) {
         this.manager = manager;
         this.clientToServer = clientToServer;
         this.serverToClient = serverToClient;
         halfClosed = new AtomicBoolean(false);
+        this.selector = selector;
 
         final DirectionListener listener = new DirectionListener();
         clientToServer.addListener(listener);
@@ -67,6 +73,15 @@ public final class ConnectionImpl implements Connection {
     public void close() throws IOException {
         clientToServer.close();
         serverToClient.close();
+    }
+
+    @Override
+    public void needsWrite(Direction direction) {
+        if (direction != clientToServer && direction != serverToClient) {
+            throw new IllegalArgumentException("The direction is not valid for this connection");
+        }
+
+        selector.register(direction.getTo(), IOSelectionKey.Op.WRITE, new WriteSelectionRunnable(new DirectionAndConnection(direction, this)));
     }
 
     /**

@@ -31,19 +31,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import java.io.IOException;
+import java.net.SocketAddress;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
 import com.mattunderscore.tcproxy.proxy.direction.DirectionImpl;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-
-import java.io.IOException;
-import java.net.SocketAddress;
+import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 
 /**
  * Unit tests for {@link ConnectionManager}.
@@ -64,6 +65,8 @@ public final class ConnectionManagerTest {
     private ConnectionManager.Listener listener;
     @Mock
     private Direction.Listener directionListener;
+    @Mock
+    private SocketChannelSelector selector;
 
     @Before
     public void setUp() throws IOException {
@@ -84,7 +87,7 @@ public final class ConnectionManagerTest {
 
         final Direction dir0 = new DirectionImpl(channel0, channel1, actionQueue);
         final Direction dir1 = new DirectionImpl(channel1, channel0, actionQueue);
-        final Connection conn = new ConnectionImpl(manager, dir0, dir1);
+        final Connection conn = new ConnectionImpl(manager, dir0, dir1, selector);
         manager.addListener(listener);
         dir0.addListener(directionListener);
         dir1.addListener(directionListener);
@@ -105,7 +108,7 @@ public final class ConnectionManagerTest {
 
         final Direction dir0 = new DirectionImpl(channel0, channel1, actionQueue);
         final Direction dir1 = new DirectionImpl(channel1, channel0, actionQueue);
-        final Connection conn = new ConnectionImpl(manager, dir0, dir1);
+        final Connection conn = new ConnectionImpl(manager, dir0, dir1, selector);
         manager.addListener(listener);
         dir0.addListener(directionListener);
         dir1.addListener(directionListener);
@@ -125,7 +128,7 @@ public final class ConnectionManagerTest {
 
         final Direction dir0 = new DirectionImpl(channel0, channel1, actionQueue);
         final Direction dir1 = new DirectionImpl(channel1, channel0, actionQueue);
-        final Connection conn = new ConnectionImpl(manager, dir0, dir1);
+        final Connection conn = new ConnectionImpl(manager, dir0, dir1, selector);
 
         manager.register(conn);
 

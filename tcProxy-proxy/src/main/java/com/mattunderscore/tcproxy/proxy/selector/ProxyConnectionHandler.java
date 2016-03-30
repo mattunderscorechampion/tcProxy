@@ -43,6 +43,7 @@ import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
 import com.mattunderscore.tcproxy.proxy.direction.DirectionImpl;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
+import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.server.Server;
 
@@ -55,17 +56,17 @@ final class ProxyConnectionHandler implements ConnectionHandler {
     private final AsynchronousOutboundConnectionFactory factory;
     private final ConnectionSettings settings;
     private final ConnectionManager manager;
-    private final Writer writer;
+    private final SocketChannelSelector selector;
 
     public ProxyConnectionHandler(
             AsynchronousOutboundConnectionFactory factory,
             ConnectionSettings settings,
             ConnectionManager manager,
-            Writer writer) {
+            SocketChannelSelector selector) {
         this.factory = factory;
         this.settings = settings;
         this.manager = manager;
-        this.writer = writer;
+        this.selector = selector;
     }
 
     @Override
@@ -79,8 +80,8 @@ final class ProxyConnectionHandler implements ConnectionHandler {
                 final ActionQueue actionQueue1 = new ActionQueueImpl(settings.getWriteQueueSize(), settings.getBatchSize());
                 final Direction direction0 = new DirectionImpl(clientSide, serverSide, actionQueue0);
                 final Direction direction1 = new DirectionImpl(serverSide, clientSide, actionQueue1);
-                final Connection conn = new ConnectionImpl(manager, direction0, direction1);
-                final ActionProcessorFactory processorFactory = new DefaultActionProcessorFactory(conn, writer);
+                final Connection conn = new ConnectionImpl(manager, direction0, direction1, selector);
+                final ActionProcessorFactory processorFactory = new DefaultActionProcessorFactory(conn);
                 manager.register(conn);
                 direction0.chainProcessor(processorFactory);
                 direction1.chainProcessor(processorFactory);
