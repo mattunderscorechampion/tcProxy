@@ -25,9 +25,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy;
 
-import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.openSelector;
-
-import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,28 +32,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mattunderscore.tcproxy.io.data.CircularBuffer;
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
-import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
-import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
-import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
-import com.mattunderscore.tcproxy.proxy.direction.Direction;
-import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.proxy.selector.ProxyConnectionHandlerFactory;
-import com.mattunderscore.tcproxy.proxy.selector.ReadSelectionRunnable;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
-import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
-import com.mattunderscore.tcproxy.selector.connecting.SharedConnectingSelectorFactory;
-import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.server.AbstractServerStarter;
 import com.mattunderscore.tcproxy.selector.server.Server;
 import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
@@ -117,43 +103,7 @@ final class ProxyServerStarter extends AbstractServerStarter {
     @Override
     protected SelectorFactory<SocketChannelSelector> getSelectorFactory(final Collection<IOServerSocketChannel> listenChannels) {
         final SocketConfigurator socketConfigurator = new SocketConfigurator(inboundSocketSettings);
-        return new SelectorFactory<SocketChannelSelector>() {
-            @Override
-            public SocketChannelSelector create() throws IOException {
-                final GeneralPurposeSelector generalPurposeSelector =
-                    new GeneralPurposeSelector(openSelector(), selectorBackoff);
-
-                final SelectorFactory<ConnectingSelector> connectingSelectorFactory = new SharedConnectingSelectorFactory(
-                    generalPurposeSelector,
-                    listenChannels,
-                    connectionHandlerFactory,
-                    socketConfigurator);
-
-                final SocketChannelSelector selector = connectingSelectorFactory.create();
-
-                final CircularBuffer circularBuffer = CircularBufferImpl.allocateDirect(readSelectorSettings.getReadBufferSize());
-                manager.addListener(new ConnectionManager.Listener() {
-                    @Override
-                    public void newConnection(final Connection connection) {
-                        final Direction cTs = connection.clientToServer();
-                        final DirectionAndConnection dc0 = new DirectionAndConnection(cTs, connection);
-                        final IOSocketChannel channel0 = cTs.getFrom();
-                        selector.register(channel0, IOSelectionKey.Op.READ, new ReadSelectionRunnable(dc0, circularBuffer));
-
-                        final Direction sTc = connection.serverToClient();
-                        final DirectionAndConnection dc1 = new DirectionAndConnection(sTc, connection);
-                        final IOSocketChannel channel1 = sTc.getFrom();
-                        selector.register(channel1, IOSelectionKey.Op.READ, new ReadSelectionRunnable(dc1, circularBuffer));
-                    }
-
-                    @Override
-                    public void closedConnection(final Connection connection) {
-                    }
-                });
-
-                return selector;
-            }
-        };
+        return new ProxySelectorFactory(connectionHandlerFactory, manager, readSelectorSettings, selectorBackoff, listenChannels, socketConfigurator);
     }
 
     private final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
@@ -169,4 +119,5 @@ final class ProxyServerStarter extends AbstractServerStarter {
             server.stop();
         }
     }
+
 }
