@@ -25,15 +25,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.connection;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+
+import net.jcip.annotations.GuardedBy;
+import net.jcip.annotations.ThreadSafe;
 
 /**
  * Manager for connections.
  * @author Matt Champion on 22/02/14.
  */
+@ThreadSafe
 public final class ConnectionManager {
-    private final Set<Connection> connections = new CopyOnWriteArraySet<>();
+    @GuardedBy("connections")
+    private final Set<Connection> connections = new HashSet<>();
     private final Set<Listener> listeners = new CopyOnWriteArraySet<>();
 
     /**
@@ -41,7 +47,11 @@ public final class ConnectionManager {
      * @param connection The new connection
      */
     public void register(Connection connection) {
-        if (connections.add(connection)) {
+        final boolean add;
+        synchronized (connections) {
+            add = connections.add(connection);
+        }
+        if (add) {
             for (final Listener listener : listeners) {
                 listener.newConnection(connection);
             }
@@ -53,7 +63,11 @@ public final class ConnectionManager {
      * @param connection The existing connection
      */
     public void unregister(Connection connection) {
-        if (connections.remove(connection)) {
+        final boolean remove;
+        synchronized (connections) {
+            remove = connections.remove(connection);
+        }
+        if (remove) {
             for (final Listener listener : listeners) {
                 listener.closedConnection(connection);
             }
