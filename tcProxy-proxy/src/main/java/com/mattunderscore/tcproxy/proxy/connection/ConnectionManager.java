@@ -36,30 +36,57 @@ public final class ConnectionManager {
     private final Set<Connection> connections = new CopyOnWriteArraySet<>();
     private final Set<Listener> listeners = new CopyOnWriteArraySet<>();
 
-    public void register(final Connection connection) {
+    /**
+     * Register a new connection.
+     * @param connection The new connection
+     */
+    public void register(Connection connection) {
         connections.add(connection);
         for (final Listener listener : listeners) {
             listener.newConnection(connection);
         }
     }
 
-    public void unregister(final Connection connection) {
+    /**
+     * Unregister an existing connection.
+     * @param connection The existing connection
+     */
+    public void unregister(Connection connection) {
         connections.remove(connection);
         for (final Listener listener : listeners) {
             listener.closedConnection(connection);
         }
     }
 
+    /**
+     * @return The current connections
+     */
     public Set<Connection> getConnections() {
         return connections;
     }
 
+    /**
+     * Add a listener for connection events.
+     * @param listener The listener
+     */
     public void addListener(final Listener listener) {
         listeners.add(listener);
     }
 
+    /**
+     * Connection event listener.
+     */
     public interface Listener {
+        /**
+         * Notified of new connections.
+         * @param connection The new connection
+         */
         void newConnection(Connection connection);
+
+        /**
+         * Notified of closed connections.
+         * @param connection The close connections
+         */
         void closedConnection(Connection connection);
     }
 }
