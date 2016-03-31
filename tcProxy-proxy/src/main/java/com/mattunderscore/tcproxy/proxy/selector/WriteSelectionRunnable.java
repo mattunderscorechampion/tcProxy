@@ -33,8 +33,8 @@ import org.slf4j.LoggerFactory;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.action.Action;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
+import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
-import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
 
@@ -44,10 +44,12 @@ import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
  */
 public final class WriteSelectionRunnable implements SelectionRunnable<IOSocketChannel> {
     public static final Logger LOG = LoggerFactory.getLogger("writer");
-    private final DirectionAndConnection dc;
+    private final Direction direction;
+    private final Connection connection;
 
-    public WriteSelectionRunnable(DirectionAndConnection dc) {
-        this.dc = dc;
+    public WriteSelectionRunnable(Direction direction, Connection connection) {
+        this.direction = direction;
+        this.connection = connection;
     }
 
     @Override
@@ -55,14 +57,13 @@ public final class WriteSelectionRunnable implements SelectionRunnable<IOSocketC
         if (!handle.isValid()) {
             LOG.warn("{} : Selected key no longer valid, closing connection", this);
             try {
-                dc.getConnection().close();
+                connection.close();
             }
             catch (IOException e) {
                 LOG.warn("{} : Error closing connection", this, e);
             }
         }
         else if (handle.isWritable()) {
-            final Direction direction = dc.getDirection();
             final ActionQueue write = direction.getQueue();
 
             synchronized (write) {
@@ -75,7 +76,7 @@ public final class WriteSelectionRunnable implements SelectionRunnable<IOSocketC
                         else {
                             LOG.debug("{} : Selected key no longer valid, closing connection", this);
                             try {
-                                dc.getConnection().close();
+                                connection.close();
                             }
                             catch (IOException e) {
                                 LOG.warn("{} : Error closing connection", this, e);
@@ -91,7 +92,7 @@ public final class WriteSelectionRunnable implements SelectionRunnable<IOSocketC
                     LOG.warn("{} : Error writing", this, e);
                     handle.cancel();
                     try {
-                        dc.getConnection().close();
+                        connection.close();
                     }
                     catch (IOException closeError) {
                         LOG.warn("{} : Error closing connection", this, closeError);

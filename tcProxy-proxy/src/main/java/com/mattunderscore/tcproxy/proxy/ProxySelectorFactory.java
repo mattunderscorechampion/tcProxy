@@ -38,7 +38,6 @@ import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
-import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.proxy.selector.ReadSelectionRunnable;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import com.mattunderscore.tcproxy.selector.SelectorBackoff;
@@ -88,14 +87,12 @@ final class ProxySelectorFactory implements SelectorFactory<SocketChannelSelecto
             @Override
             public void newConnection(final Connection connection) {
                 final Direction cTs = connection.clientToServer();
-                final DirectionAndConnection dc0 = new DirectionAndConnection(cTs, connection);
                 final IOSocketChannel channel0 = cTs.getFrom();
-                selector.register(channel0, IOSelectionKey.Op.READ, new ReadSelectionRunnable(dc0, circularBuffer));
+                selector.register(channel0, IOSelectionKey.Op.READ, new ReadSelectionRunnable(cTs, connection, circularBuffer));
 
                 final Direction sTc = connection.serverToClient();
-                final DirectionAndConnection dc1 = new DirectionAndConnection(sTc, connection);
                 final IOSocketChannel channel1 = sTc.getFrom();
-                selector.register(channel1, IOSelectionKey.Op.READ, new ReadSelectionRunnable(dc1, circularBuffer));
+                selector.register(channel1, IOSelectionKey.Op.READ, new ReadSelectionRunnable(sTc, connection, circularBuffer));
             }
 
             @Override

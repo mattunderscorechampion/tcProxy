@@ -32,7 +32,6 @@ import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
-import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.proxy.selector.WriteSelectionRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 
@@ -81,7 +80,7 @@ public final class ConnectionImpl implements Connection {
             throw new IllegalArgumentException("The direction is not valid for this connection");
         }
 
-        selector.register(direction.getTo(), IOSelectionKey.Op.WRITE, new WriteSelectionRunnable(new DirectionAndConnection(direction, this)));
+        selector.register(direction.getTo(), IOSelectionKey.Op.WRITE, new WriteSelectionRunnable(direction, this));
     }
 
     /**

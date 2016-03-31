@@ -39,8 +39,8 @@ import com.mattunderscore.tcproxy.proxy.ConnectionImpl;
 import com.mattunderscore.tcproxy.proxy.action.Close;
 import com.mattunderscore.tcproxy.proxy.action.Write;
 import com.mattunderscore.tcproxy.proxy.action.queue.ActionQueue;
+import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
-import com.mattunderscore.tcproxy.proxy.direction.DirectionAndConnection;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
 
@@ -50,11 +50,13 @@ import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
  */
 public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketChannel> {
     private static final Logger LOG = LoggerFactory.getLogger("reader");
-    private final DirectionAndConnection dc;
+    private final Direction direction;
+    private final Connection connection;
     private final CircularBuffer readBuffer;
 
-    public ReadSelectionRunnable(DirectionAndConnection dc, CircularBuffer readBuffer) {
-        this.dc = dc;
+    public ReadSelectionRunnable(Direction direction, Connection connection, CircularBuffer readBuffer) {
+        this.direction = direction;
+        this.connection = connection;
         this.readBuffer = readBuffer;
     }
 
@@ -63,14 +65,13 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
         if (!handle.isValid()) {
             LOG.warn("{} : Selected key no longer valid, closing connection", this);
             try {
-                dc.getConnection().close();
+                connection.close();
             }
             catch (IOException e) {
                 LOG.warn("{} : Error closing connection", this, e);
             }
         }
         else if (handle.isReadable()) {
-            final Direction direction = dc.getDirection();
             final ActionQueue queue = direction.getQueue();
             if (!queue.queueFull()) {
                 final ByteChannel channel = direction.getFrom();
@@ -90,7 +91,7 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
                         // Close the connection
                         handle.cancel();
                         direction.getProcessor().process(new Close(direction));
-                        final ConnectionImpl conn = (ConnectionImpl) dc.getConnection();
+                        final ConnectionImpl conn = (ConnectionImpl) connection;
                         final Direction otherDirection = conn.otherDirection(direction);
                         LOG.debug("{} : Closed {} ", this, otherDirection);
                         otherDirection.close();
