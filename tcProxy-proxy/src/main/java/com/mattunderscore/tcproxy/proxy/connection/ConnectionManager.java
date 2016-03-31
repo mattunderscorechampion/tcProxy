@@ -41,9 +41,10 @@ public final class ConnectionManager {
      * @param connection The new connection
      */
     public void register(Connection connection) {
-        connections.add(connection);
-        for (final Listener listener : listeners) {
-            listener.newConnection(connection);
+        if (connections.add(connection)) {
+            for (final Listener listener : listeners) {
+                listener.newConnection(connection);
+            }
         }
     }
 
@@ -52,9 +53,10 @@ public final class ConnectionManager {
      * @param connection The existing connection
      */
     public void unregister(Connection connection) {
-        connections.remove(connection);
-        for (final Listener listener : listeners) {
-            listener.closedConnection(connection);
+        if (connections.remove(connection)) {
+            for (final Listener listener : listeners) {
+                listener.closedConnection(connection);
+            }
         }
     }
 
