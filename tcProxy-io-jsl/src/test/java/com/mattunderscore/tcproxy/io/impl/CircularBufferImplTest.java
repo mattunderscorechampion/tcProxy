@@ -27,17 +27,38 @@ package com.mattunderscore.tcproxy.io.impl;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.isA;
+import static org.mockito.MockitoAnnotations.initMocks;
 
+import java.io.IOException;
 import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+import java.util.ArrayDeque;
+import java.util.List;
+import java.util.Queue;
+import java.util.Stack;
 
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.mattunderscore.tcproxy.io.data.BufferView;
 import com.mattunderscore.tcproxy.io.data.CircularBuffer;
 
 public final class CircularBufferImplTest {
+    @Mock
+    private SocketChannel socketChannel;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+    }
 
     @Test
     public void empty() {
@@ -322,5 +343,143 @@ public final class CircularBufferImplTest {
         assertEquals(3, buffer.usedCapacity());
         assertArrayEquals(new byte[] {0x0, 0x1, 0x2}, buffer.get(3));
         assertEquals(0, buffer.usedCapacity());
+    }
+
+    @Test
+    public void doSocketRead0() throws IOException {
+        when(socketChannel.read(isA(ByteBuffer.class))).then(new WriteToBufferArgument(0x1));
+        final CircularBufferImpl buffer = (CircularBufferImpl) CircularBufferImpl.allocate(3);
+        final int read0 = buffer.doSocketRead(socketChannel);
+        assertEquals(1, read0);
+        assertEquals(1, buffer.usedCapacity());
+        assertEquals(2, buffer.freeCapacity());
+
+        when(socketChannel.read(isA(ByteBuffer.class))).then(new WriteToBufferArgument(new byte[] {0x2, 0x3}));
+        final int read1 = buffer.doSocketRead(socketChannel);
+        assertEquals(2, read1);
+        assertEquals(3, buffer.usedCapacity());
+        assertEquals(0, buffer.freeCapacity());
+
+        assertEquals(0x1, buffer.get());
+        assertEquals(2, buffer.usedCapacity());
+        assertEquals(1, buffer.freeCapacity());
+
+        when(socketChannel.read(isA(ByteBuffer.class))).then(new WriteToBufferArgument(0x4));
+        final int read2 = buffer.doSocketRead(socketChannel);
+        assertEquals(1, read2);
+
+        assertEquals(0x2, buffer.get());
+        assertEquals(0x3, buffer.get());
+        assertEquals(0x4, buffer.get());
+        assertEquals(0, buffer.usedCapacity());
+        assertEquals(3, buffer.freeCapacity());
+    }
+
+    @Test
+    public void doSocketRead1() throws IOException {
+        when(socketChannel.read(isA(ByteBuffer.class))).then(new WriteToBufferArgument(new byte[] {0x1, 0x2}));
+        final CircularBufferImpl buffer = (CircularBufferImpl) CircularBufferImpl.allocate(3);
+        final int read0 = buffer.doSocketRead(socketChannel);
+        assertEquals(2, read0);
+        assertEquals(2, buffer.usedCapacity());
+        assertEquals(1, buffer.freeCapacity());
+
+        assertEquals(0x1, buffer.get());
+        assertEquals(1, buffer.usedCapacity());
+        assertEquals(2, buffer.freeCapacity());
+
+        when(socketChannel.read(isA(ByteBuffer.class))).then(new WriteToBufferArgument(0x3));
+        final int read1 = buffer.doSocketRead(socketChannel);
+        when(socketChannel.read(isA(ByteBuffer.class))).then(new WriteToBufferArgument(0x4));
+        final int read2 = buffer.doSocketRead(socketChannel);
+        assertEquals(1, read1);
+        assertEquals(1, read2);
+        assertEquals(3, buffer.usedCapacity());
+        assertEquals(0, buffer.freeCapacity());
+
+        assertEquals(0x2, buffer.get());
+        assertEquals(0x3, buffer.get());
+        assertEquals(0x4, buffer.get());
+        assertEquals(0, buffer.usedCapacity());
+        assertEquals(3, buffer.freeCapacity());
+    }
+
+    @Test
+    public void doSocketWrite0() throws IOException {
+        when(socketChannel.write(isA(ByteBuffer.class))).then(new AssertReadFromBufferArgument(new byte[] {0x1, 0x2, 0x3}));
+        final CircularBufferImpl buffer = (CircularBufferImpl) CircularBufferImpl.allocate(3);
+        buffer.put(new byte[] {0x1, 0x2, 0x3});
+        final int written = buffer.doSocketWrite(socketChannel);
+        assertEquals(written, 3);
+    }
+
+    @Test
+    public void doSocketWrite1() throws IOException {
+        when(socketChannel.write(isA(ByteBuffer.class))).then(
+            new AssertReadFromBufferArgument(new byte[] {0x2, 0x3}, 0x4));
+        final CircularBufferImpl buffer = (CircularBufferImpl) CircularBufferImpl.allocate(3);
+        buffer.put(new byte[] {0x1, 0x2, 0x3});
+        buffer.get();
+        buffer.put((byte) 0x4);
+        final int written = buffer.doSocketWrite(socketChannel);
+        assertEquals(written, 3);
+    }
+
+    @Test
+    public void doSocketWrite2() throws IOException {
+        final CircularBufferImpl buffer = (CircularBufferImpl) CircularBufferImpl.allocate(3);
+        final int written = buffer.doSocketWrite(socketChannel);
+        assertEquals(written, 0);
+    }
+
+    private static final class WriteToBufferArgument implements Answer<Integer> {
+        private final byte[] bytes;
+
+        public WriteToBufferArgument(int aByte) {
+            this.bytes = new byte[1];
+            bytes[0] = (byte) aByte;
+        }
+
+        public WriteToBufferArgument(byte[] bytes) {
+            this.bytes = bytes;
+        }
+
+        @Override
+        public Integer answer(InvocationOnMock invocationOnMock) throws Throwable {
+            final ByteBuffer buffer = (ByteBuffer) invocationOnMock.getArguments()[0];
+            buffer.put(bytes);
+            return bytes.length;
+        }
+    }
+
+    private static final class AssertReadFromBufferArgument implements Answer<Integer> {
+        private final Queue<byte[]> allBytes = new ArrayDeque<>();
+
+        public AssertReadFromBufferArgument(int aByte) {
+            final byte[] bytes = new byte[1];
+            bytes[0] = (byte) aByte;
+            allBytes.add(bytes);
+        }
+
+        public AssertReadFromBufferArgument(byte[] bytes) {
+            allBytes.add(bytes);
+        }
+
+        public AssertReadFromBufferArgument(byte[] bytes, int aByte) {
+            allBytes.add(bytes);
+            final byte[] moreBytes = new byte[1];
+            moreBytes[0] = (byte) aByte;
+            allBytes.add(moreBytes);
+        }
+
+        @Override
+        public Integer answer(InvocationOnMock invocationOnMock) throws Throwable {
+            final byte[] bytes = allBytes.poll();
+            final ByteBuffer buffer = (ByteBuffer) invocationOnMock.getArguments()[0];
+            final byte[] readBytes = new byte[bytes.length];
+            buffer.get(readBytes);
+            Assert.assertArrayEquals(bytes, readBytes);
+            return bytes.length;
+        }
     }
 }
