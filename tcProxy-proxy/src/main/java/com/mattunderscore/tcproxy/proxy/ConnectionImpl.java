@@ -80,7 +80,7 @@ public final class ConnectionImpl implements Connection {
             throw new IllegalArgumentException("The direction is not valid for this connection");
         }
 
-        selector.register(direction.getTo(), IOSelectionKey.Op.WRITE, new WriteSelectionRunnable(direction, this));
+        selector.register(direction.getTo(), IOSelectionKey.Op.WRITE, new WriteSelectionRunnable(direction.getQueue(), this));
     }
 
     /**

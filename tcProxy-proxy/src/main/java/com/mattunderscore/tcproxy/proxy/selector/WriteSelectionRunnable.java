@@ -44,11 +44,11 @@ import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
  */
 public final class WriteSelectionRunnable implements SelectionRunnable<IOSocketChannel> {
     public static final Logger LOG = LoggerFactory.getLogger("writer");
-    private final Direction direction;
+    private final ActionQueue actionQueue;
     private final Connection connection;
 
-    public WriteSelectionRunnable(Direction direction, Connection connection) {
-        this.direction = direction;
+    public WriteSelectionRunnable(ActionQueue actionQueue, Connection connection) {
+        this.actionQueue = actionQueue;
         this.connection = connection;
     }
 
@@ -64,13 +64,11 @@ public final class WriteSelectionRunnable implements SelectionRunnable<IOSocketC
             }
         }
         else if (handle.isWritable()) {
-            final ActionQueue write = direction.getQueue();
-
-            synchronized (write) {
+            synchronized (actionQueue) {
                 try {
-                    if (write.hasData()) {
+                    if (actionQueue.hasData()) {
                         if (handle.isValid()) {
-                            final Action data = write.head();
+                            final Action data = actionQueue.head();
                             data.writeToSocket();
                         }
                         else {
