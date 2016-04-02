@@ -55,6 +55,7 @@ public final class OrderTest {
         private volatile boolean running = false;
         private final CountDownLatch runningLatch = new CountDownLatch(1);
         private byte lastValueReceived = 0x0;
+        private byte lastValueSent = 0x0;
 
         public OrderServer() {
         }
@@ -80,9 +81,8 @@ public final class OrderTest {
                 System.out.println("Accepted " + socketChannel);
 
                 while (running) {
-                    socketChannel.read(buffer);
-
-                    checkOrder(buffer);
+                    readAndCheckValues(buffer, socketChannel);
+                    sendNextValue(buffer, socketChannel);
                 }
             }
             catch (IOException e) {
@@ -91,7 +91,9 @@ public final class OrderTest {
             }
         }
 
-        private void checkOrder(CircularBuffer buffer) {
+        private void readAndCheckValues(CircularBuffer buffer, IOSocketChannel socketChannel) throws IOException {
+            socketChannel.read(buffer);
+
             while (buffer.usedCapacity() > 0) {
                 final byte nextValue = buffer.get();
                 if (nextValue != lastValueReceived + 1) {
@@ -103,12 +105,20 @@ public final class OrderTest {
                 lastValueReceived = (byte) (nextValue % 127);
             }
         }
+
+        private void sendNextValue(CircularBuffer buffer, IOSocketChannel socketChannel) throws IOException {
+            lastValueSent = (byte) ((lastValueSent % 127) + 0x1);
+            buffer.put(lastValueSent);
+            socketChannel.write(buffer);
+            System.out.println("Client sent " + lastValueSent);
+        }
     }
 
     public static final class OrderClient implements Runnable {
         private volatile boolean running = false;
-        private byte lastValueSent = 0x0;
         private final CountDownLatch runningLatch = new CountDownLatch(1);
+        private byte lastValueReceived = 0x0;
+        private byte lastValueSent = 0x0;
 
         public OrderClient() {
         }
@@ -127,16 +137,36 @@ public final class OrderTest {
                 runningLatch.countDown();
 
                 while (running) {
-                    lastValueSent = (byte) ((lastValueSent % 127) + 0x1);
-                    buffer.put(lastValueSent);
-                    socketChannel.write(buffer);
-                    System.out.println("Sent " + lastValueSent);
+                    sendNextValue(buffer, socketChannel);
+                    readAndCheckValues(buffer, socketChannel);
                 }
             }
             catch (IOException e) {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
+        }
+
+        private void readAndCheckValues(CircularBuffer buffer, IOSocketChannel socketChannel) throws IOException {
+            socketChannel.read(buffer);
+
+            while (buffer.usedCapacity() > 0) {
+                final byte nextValue = buffer.get();
+                if (nextValue != lastValueReceived + 1) {
+                    throw new AssertionError("Expected " + (lastValueReceived + 1) + " was " + nextValue);
+                }
+                else {
+                    System.out.println("Received " + nextValue);
+                }
+                lastValueReceived = (byte) (nextValue % 127);
+            }
+        }
+
+        private void sendNextValue(CircularBuffer buffer, IOSocketChannel socketChannel) throws IOException {
+            lastValueSent = (byte) ((lastValueSent % 127) + 0x1);
+            buffer.put(lastValueSent);
+            socketChannel.write(buffer);
+            System.out.println("Client sent " + lastValueSent);
         }
     }
 
