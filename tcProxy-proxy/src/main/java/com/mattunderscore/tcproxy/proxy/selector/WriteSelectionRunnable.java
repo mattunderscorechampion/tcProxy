@@ -69,8 +69,8 @@ public final class WriteSelectionRunnable implements SelectionRunnable<IOSocketC
             synchronized (write) {
                 try {
                     if (write.hasData()) {
-                        final Action data = write.head();
                         if (handle.isValid()) {
+                            final Action data = write.head();
                             data.writeToSocket();
                         }
                         else {
