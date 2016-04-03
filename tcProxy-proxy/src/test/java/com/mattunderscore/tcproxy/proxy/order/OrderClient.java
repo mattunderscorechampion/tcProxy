@@ -41,11 +41,11 @@ import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
  * @author Matt Champion on 03/04/2016
  */
 public final class OrderClient implements Runnable {
+    public static final int MAX_VAL = 15;
     private volatile boolean running = false;
 
     private final CountDownLatch runningLatch = new CountDownLatch(1);
     private byte lastValueReceived = 0x0;
-    private byte lastValueSent = 0x0;
 
     public OrderClient() {
     }
@@ -90,17 +90,12 @@ public final class OrderClient implements Runnable {
             if (nextValue != lastValueReceived + 1) {
                 throw new AssertionError("Expected " + (lastValueReceived + 1) + " was " + nextValue);
             }
-            else {
-                System.out.println("Received " + nextValue);
-            }
-            lastValueReceived = (byte) (nextValue % 127);
+            lastValueReceived = (byte) (nextValue % MAX_VAL);
         }
     }
 
     private void sendNextValue(CircularBuffer buffer, IOSocketChannel socketChannel) throws IOException {
-        lastValueSent = (byte) ((lastValueSent % 127) + 0x1);
-        buffer.put(lastValueSent);
+        buffer.put(new byte[]{ 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf });
         socketChannel.write(buffer);
-        System.out.println("Client sent " + lastValueSent);
     }
 }

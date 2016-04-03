@@ -87,10 +87,10 @@ public final class OrderServer implements Runnable {
     }
 
     private final class ClientTask implements Runnable {
+        public static final int MAX_VAL = 15;
         private final CircularBuffer buffer = CircularBufferImpl.allocateDirect(64);
         private final IOSocketChannel socketChannel;
         private byte lastValueReceived = 0x0;
-        private byte lastValueSent = 0x0;
 
         public ClientTask(IOSocketChannel socketChannel) {
             this.socketChannel = socketChannel;
@@ -104,18 +104,13 @@ public final class OrderServer implements Runnable {
                 if (nextValue != lastValueReceived + 1) {
                     throw new AssertionError("Expected " + (lastValueReceived + 1) + " was " + nextValue);
                 }
-                else {
-                    System.out.println("Received " + nextValue);
-                }
-                lastValueReceived = (byte) (nextValue % 127);
+                lastValueReceived = (byte) (nextValue % MAX_VAL);
             }
         }
 
         private void sendNextValue() throws IOException {
-            lastValueSent = (byte) ((lastValueSent % 127) + 0x1);
-            buffer.put(lastValueSent);
+            buffer.put(new byte[]{ 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf });
             socketChannel.write(buffer);
-            System.out.println("Client sent " + lastValueSent);
         }
 
         @Override
