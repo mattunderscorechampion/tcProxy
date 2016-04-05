@@ -29,11 +29,15 @@ import com.mattunderscore.tcproxy.proxy.direction.Direction;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The close action.
  * @author Matt Champion on 19/02/14.
  */
 public final class Close implements Action {
+    private static final Logger LOG = LoggerFactory.getLogger("proxy-data-write");
     public final Direction direction;
     public volatile boolean written;
 
@@ -48,6 +52,9 @@ public final class Close implements Action {
             return 0;
         }
         else {
+            // Log written data
+            LOG.trace("{} close", direction);
+
             direction.close();
             written = true;
             return -1;

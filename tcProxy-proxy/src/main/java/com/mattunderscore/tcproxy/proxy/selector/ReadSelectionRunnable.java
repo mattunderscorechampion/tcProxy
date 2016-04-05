@@ -49,6 +49,7 @@ import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
  * @author Matt Champion on 18/11/2015
  */
 public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketChannel> {
+    private static final Logger DATA_LOG = LoggerFactory.getLogger("proxy-data-read");
     private static final Logger LOG = LoggerFactory.getLogger("reader");
     private final Direction direction;
     private final Connection connection;
@@ -84,6 +85,21 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
                         final ByteBuffer writeBuffer = ByteBuffer.allocate(readBuffer.usedCapacity());
                         readBuffer.get(writeBuffer);
                         writeBuffer.flip();
+
+                        if (DATA_LOG.isInfoEnabled()) {
+                            final int position = writeBuffer.position();
+                            writeBuffer.position(0);
+
+                            // Read data into byte array
+                            final byte[] readBytes = new byte[writeBuffer.remaining()];
+                            writeBuffer.get(readBytes);
+
+                            // Log read data
+                            DATA_LOG.trace("{} data: {}", direction, new String(readBytes));
+
+                            // Return to initial position
+                            writeBuffer.position(position);
+                        }
 
                         direction.getProcessor().process(new Write(direction, writeBuffer));
                     }

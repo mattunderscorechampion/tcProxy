@@ -30,11 +30,15 @@ import com.mattunderscore.tcproxy.proxy.direction.Direction;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The write action.
  * @author Matt Champion on 19/02/14.
  */
 public final class Write implements Action, WriteAction {
+    private static final Logger LOG = LoggerFactory.getLogger("proxy-data-write");
     final Direction direction;
     final ByteBuffer data;
 
@@ -45,6 +49,20 @@ public final class Write implements Action, WriteAction {
 
     @Override
     public int writeToSocket() throws IOException {
+        if (LOG.isTraceEnabled()) {
+            final int position = data.position();
+
+            // Read data into byte array
+            final byte[] bytes = new byte[data.remaining()];
+            data.get(bytes);
+
+            // Log written data
+            LOG.trace("{} data: {}", direction, new String(bytes));
+
+            // Return to initial position
+            data.position(position);
+        }
+
         return direction.write(data);
     }
 

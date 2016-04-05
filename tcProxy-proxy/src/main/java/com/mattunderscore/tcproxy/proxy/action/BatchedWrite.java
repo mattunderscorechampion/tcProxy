@@ -28,6 +28,9 @@ package com.mattunderscore.tcproxy.proxy.action;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
 
 /**
@@ -35,6 +38,7 @@ import com.mattunderscore.tcproxy.proxy.direction.Direction;
  * @author matt on 20/04/14.
  */
 public final class BatchedWrite implements Action {
+    private static final Logger LOG = LoggerFactory.getLogger("proxy-data-write");
     private final ByteBuffer data;
     private volatile boolean flipped;
     private volatile Direction direction;
@@ -50,6 +54,21 @@ public final class BatchedWrite implements Action {
             flipped = true;
             data.flip();
         }
+
+        if (LOG.isTraceEnabled()) {
+            final int position = data.position();
+
+            // Read data into byte array
+            final byte[] bytes = new byte[data.remaining()];
+            data.get(bytes);
+
+            // Log written data
+            LOG.trace("{} data: {}", direction, new String(bytes));
+
+            // Return to initial position
+            data.position(position);
+        }
+
         return direction.write(data);
     }
 
