@@ -405,6 +405,59 @@ public final class CircularBufferImplTest {
     }
 
     @Test
+    public void doSocketRead2() throws IOException {
+        when(socketChannel.read(isA(ByteBuffer.class))).then(new WriteToBufferArgument(new byte[] {0x1, 0x2, 0x3}));
+        final CircularBufferImpl buffer = (CircularBufferImpl) CircularBufferImpl.allocate(3);
+        final int read0 = buffer.doSocketRead(socketChannel);
+        assertEquals(3, read0);
+        assertEquals(3, buffer.usedCapacity());
+        assertEquals(0, buffer.freeCapacity());
+
+        assertEquals(0x1, buffer.get());
+        assertEquals(2, buffer.usedCapacity());
+        assertEquals(1, buffer.freeCapacity());
+
+        assertEquals(0x2, buffer.get());
+        assertEquals(0x3, buffer.get());
+
+        when(socketChannel.read(isA(ByteBuffer.class))).then(new WriteToBufferArgument(new byte[]{0x4, 0x5, 0x6}));
+        final int read2 = buffer.doSocketRead(socketChannel);
+        assertEquals(3, read2);
+        assertEquals(0x4, buffer.get());
+        assertEquals(0x5, buffer.get());
+        assertEquals(0x6, buffer.get());
+        assertEquals(0, buffer.usedCapacity());
+        assertEquals(3, buffer.freeCapacity());
+    }
+
+    @Test
+    public void doSocketRead3() throws IOException {
+        when(socketChannel.read(isA(ByteBuffer.class))).then(new WriteToBufferArgument(new byte[] {0x1, 0x2}));
+        final CircularBufferImpl buffer = (CircularBufferImpl) CircularBufferImpl.allocate(3);
+        final int read0 = buffer.doSocketRead(socketChannel);
+        assertEquals(2, read0);
+        assertEquals(2, buffer.usedCapacity());
+        assertEquals(1, buffer.freeCapacity());
+
+        assertEquals(0x1, buffer.get());
+        assertEquals(0x2, buffer.get());
+        assertEquals(0, buffer.usedCapacity());
+        assertEquals(3, buffer.freeCapacity());
+
+        when(socketChannel.read(isA(ByteBuffer.class))).then(new WriteToBufferArgument(0x3));
+        final int read1 = buffer.doSocketRead(socketChannel);
+        assertEquals(1, read1);
+        when(socketChannel.read(isA(ByteBuffer.class))).then(new WriteToBufferArgument(new byte[] {0x4, 0x5}));
+        final int read2 = buffer.doSocketRead(socketChannel);
+        assertEquals(2, read2);
+        assertEquals(0x3, buffer.get());
+        assertEquals(0x4, buffer.get());
+        assertEquals(0x5, buffer.get());
+        assertEquals(0, buffer.usedCapacity());
+        assertEquals(3, buffer.freeCapacity());
+    }
+
+    @Test
     public void doSocketWrite0() throws IOException {
         when(socketChannel.write(isA(ByteBuffer.class))).then(new AssertReadFromBufferArgument(new byte[] {0x1, 0x2, 0x3}));
         final CircularBufferImpl buffer = (CircularBufferImpl) CircularBufferImpl.allocate(3);
