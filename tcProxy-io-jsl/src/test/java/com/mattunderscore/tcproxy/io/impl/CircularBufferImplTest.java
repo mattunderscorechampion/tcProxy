@@ -439,10 +439,13 @@ public final class CircularBufferImplTest {
         assertEquals(2, buffer.usedCapacity());
         assertEquals(1, buffer.freeCapacity());
 
-        assertEquals(0x1, buffer.get());
-        assertEquals(0x2, buffer.get());
+        final ByteBuffer checkBuffer0 = ByteBuffer.allocate(buffer.usedCapacity());
+        buffer.get(checkBuffer0);
         assertEquals(0, buffer.usedCapacity());
         assertEquals(3, buffer.freeCapacity());
+        checkBuffer0.flip();
+        assertEquals(0x1, checkBuffer0.get());
+        assertEquals(0x2, checkBuffer0.get());
 
         when(socketChannel.read(isA(ByteBuffer.class))).then(new WriteToBufferArgument(0x3));
         final int read1 = buffer.doSocketRead(socketChannel);
@@ -450,11 +453,14 @@ public final class CircularBufferImplTest {
         when(socketChannel.read(isA(ByteBuffer.class))).then(new WriteToBufferArgument(new byte[] {0x4, 0x5}));
         final int read2 = buffer.doSocketRead(socketChannel);
         assertEquals(2, read2);
-        assertEquals(0x3, buffer.get());
-        assertEquals(0x4, buffer.get());
-        assertEquals(0x5, buffer.get());
+        final ByteBuffer checkBuffer1 = ByteBuffer.allocate(buffer.usedCapacity());
+        buffer.get(checkBuffer1);
         assertEquals(0, buffer.usedCapacity());
         assertEquals(3, buffer.freeCapacity());
+        checkBuffer1.flip();
+        assertEquals(0x3, checkBuffer1.get());
+        assertEquals(0x4, checkBuffer1.get());
+        assertEquals(0x5, checkBuffer1.get());
     }
 
     @Test
