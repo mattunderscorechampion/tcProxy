@@ -161,6 +161,32 @@ public final class CircularBufferImplTest {
     }
 
     @Test
+    public void getBufferFromEdge() {
+        final CircularBuffer buffer = CircularBufferImpl.allocate(3);
+        buffer.put((byte) 4);
+        buffer.put((byte) 5);
+        buffer.put((byte) 3);
+
+        buffer.get();
+        buffer.get();
+        buffer.get();
+
+        buffer.put((byte) 4);
+        buffer.put((byte) 5);
+        buffer.put((byte) 3);
+
+        final ByteBuffer byteBuffer = ByteBuffer.allocate(5);
+        assertEquals(3, buffer.get(byteBuffer));
+        assertEquals(0, buffer.usedCapacity());
+
+        byteBuffer.flip();
+        assertEquals(3, byteBuffer.remaining());
+        assertEquals(4, byteBuffer.get());
+        assertEquals(5, byteBuffer.get());
+        assertEquals(3, byteBuffer.get());
+    }
+
+    @Test
     public void getBufferWrap() {
         final CircularBuffer buffer = CircularBufferImpl.allocate(3);
         buffer.put((byte) 4);
@@ -181,7 +207,7 @@ public final class CircularBufferImplTest {
     }
 
     @Test
-    public void getBufferSome() {
+    public void getBufferSomeAndWrap() {
         final CircularBuffer buffer = CircularBufferImpl.allocate(3);
         buffer.put((byte) 4);
         buffer.put((byte) 5);
@@ -195,6 +221,19 @@ public final class CircularBufferImplTest {
         assertEquals(2, byteBuffer.remaining());
         assertEquals(4, byteBuffer.get());
         assertEquals(5, byteBuffer.get());
+
+        buffer.put((byte) 2);
+
+        byteBuffer.position(0);
+        byteBuffer.limit(byteBuffer.capacity());
+
+        assertEquals(2, buffer.get(byteBuffer));
+        assertEquals(0, buffer.usedCapacity());
+
+        byteBuffer.flip();
+        assertEquals(2, byteBuffer.remaining());
+        assertEquals(3, byteBuffer.get());
+        assertEquals(2, byteBuffer.get());
     }
 
     @Test
