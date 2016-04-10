@@ -503,6 +503,28 @@ public final class CircularBufferImplTest {
     }
 
     @Test
+    public void doSocketRead4() throws IOException {
+        final CircularBufferImpl buffer = (CircularBufferImpl) CircularBufferImpl.allocate(3);
+
+        buffer.put((byte) 0x0);
+        buffer.put((byte) 0x1);
+        buffer.put((byte) 0x2);
+
+        when(socketChannel.read(isA(ByteBuffer.class))).then(new WriteToBufferArgument(0x3));
+        final int read = buffer.doSocketRead(socketChannel);
+        assertEquals(0, read);
+
+        final ByteBuffer checkBuffer1 = ByteBuffer.allocate(buffer.usedCapacity());
+        buffer.get(checkBuffer1);
+        assertEquals(0, buffer.usedCapacity());
+        assertEquals(3, buffer.freeCapacity());
+        checkBuffer1.flip();
+        assertEquals(0x0, checkBuffer1.get());
+        assertEquals(0x1, checkBuffer1.get());
+        assertEquals(0x2, checkBuffer1.get());
+    }
+
+    @Test
     public void doSocketWrite0() throws IOException {
         when(socketChannel.write(isA(ByteBuffer.class))).then(new AssertReadFromBufferArgument(new byte[] {0x1, 0x2, 0x3}));
         final CircularBufferImpl buffer = (CircularBufferImpl) CircularBufferImpl.allocate(3);

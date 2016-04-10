@@ -123,6 +123,10 @@ public final class CircularBufferImpl extends CircularBufferView implements Circ
     }
 
     /*package*/ int doSocketRead(SocketChannel channel) throws IOException {
+        if (freeCapacity() == 0) {
+            return 0;
+        }
+
         final int read;
         if (readPos > buffer.position()) {
             buffer.limit(readPos);
