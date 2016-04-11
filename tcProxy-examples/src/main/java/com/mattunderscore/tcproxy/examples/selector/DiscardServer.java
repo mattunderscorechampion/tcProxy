@@ -38,7 +38,7 @@ import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
 import com.mattunderscore.tcproxy.selector.server.*;
-import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
+import com.mattunderscore.tcproxy.threads.RestartableTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

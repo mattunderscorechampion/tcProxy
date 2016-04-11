@@ -59,7 +59,7 @@ import com.mattunderscore.tcproxy.selector.server.ServerConfig;
 import com.mattunderscore.tcproxy.selector.server.ServerStarter;
 import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
-import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
+import com.mattunderscore.tcproxy.threads.RestartableTask;
 
 /**
  * Added example of using a {@link GeneralPurposeSelector} as an echo server. Accepts, reads and writes on the main

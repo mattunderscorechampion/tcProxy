@@ -43,9 +43,9 @@ import com.mattunderscore.tcproxy.io.factory.IOFactory;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketFactory;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
-import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
-import com.mattunderscore.tcproxy.selector.threads.RestartableThread;
-import com.mattunderscore.tcproxy.selector.threads.RestartableThreadSet;
+import com.mattunderscore.tcproxy.threads.RestartableTask;
+import com.mattunderscore.tcproxy.threads.RestartableThread;
+import com.mattunderscore.tcproxy.threads.RestartableThreadSet;
 
 /**
  * Abstract implementation of {@link ServerStarter}. The accessor for the {@link SelectorFactory} must be implemented.

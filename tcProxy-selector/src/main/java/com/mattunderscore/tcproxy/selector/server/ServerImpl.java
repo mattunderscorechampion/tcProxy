@@ -35,8 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.selector.threads.LifecycleState;
-import com.mattunderscore.tcproxy.selector.threads.RestartableThreadSet;
+import com.mattunderscore.tcproxy.threads.LifecycleState;
+import com.mattunderscore.tcproxy.threads.RestartableThreadSet;
 
 /**
  * A basic server implementation. Relies on a {@link ServerStarter} to bind the sockets and create the selector threads.

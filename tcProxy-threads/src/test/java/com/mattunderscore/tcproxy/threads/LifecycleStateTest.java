@@ -1,13 +1,16 @@
-package com.mattunderscore.tcproxy.selector.threads;
+package com.mattunderscore.tcproxy.threads;
 
-import static com.mattunderscore.tcproxy.selector.threads.LifecycleState.State.RUNNING;
-import static com.mattunderscore.tcproxy.selector.threads.LifecycleState.State.STOPPED;
-import static com.mattunderscore.tcproxy.selector.threads.LifecycleState.State.STOPPING;
+import static com.mattunderscore.tcproxy.threads.LifecycleState.State.RUNNING;
+import static com.mattunderscore.tcproxy.threads.LifecycleState.State.STOPPED;
+import static com.mattunderscore.tcproxy.threads.LifecycleState.State.STOPPING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Assert;
 import org.junit.Test;
+
+import com.mattunderscore.tcproxy.threads.LifecycleState;
 
 /**
  * Unit tests for {@link LifecycleState}.

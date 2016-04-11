@@ -45,7 +45,7 @@ import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.ServerSocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
-import com.mattunderscore.tcproxy.selector.threads.LifecycleState;
+import com.mattunderscore.tcproxy.threads.LifecycleState;
 
 /**
  * A general purpose selector. {@link SelectionRunnable}s can be registered against it for both

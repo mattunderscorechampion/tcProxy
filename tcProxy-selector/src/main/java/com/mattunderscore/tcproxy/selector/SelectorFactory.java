@@ -27,7 +27,7 @@ package com.mattunderscore.tcproxy.selector;
 
 import java.io.IOException;
 
-import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
+import com.mattunderscore.tcproxy.threads.RestartableTask;
 
 /**
  * Factory for selectors.

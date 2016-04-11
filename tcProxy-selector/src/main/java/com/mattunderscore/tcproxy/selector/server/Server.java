@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.server;
 
-import com.mattunderscore.tcproxy.selector.threads.RestartableTask;
+import com.mattunderscore.tcproxy.threads.RestartableTask;
 
 /**
  * A server.
