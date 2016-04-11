@@ -38,7 +38,7 @@ import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
 import com.mattunderscore.tcproxy.selector.server.*;
-import com.mattunderscore.tcproxy.threads.RestartableTask;
+import com.mattunderscore.tcproxy.workers.Worker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,7 +117,7 @@ public final class DiscardServer {
         }
 
         @Override
-        protected SelectorFactory<? extends RestartableTask> getSelectorFactory(Collection<IOServerSocketChannel> listenChannels) {
+        protected SelectorFactory<? extends Worker> getSelectorFactory(Collection<IOServerSocketChannel> listenChannels) {
             return new ConnectingSelectorFactory(
                     ioFactory,
                     listenChannels,

@@ -9,9 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>tcProxy-threads</artifactId>
-    <name>tcProxy Threads</name>
-    <description>Threading support for the proxy and other servers.</description>
+    <artifactId>tcProxy-workers</artifactId>
+    <name>tcProxy Workers</name>
+    <description>Worker API and implementation for the proxy and other servers.</description>
 
     <dependencies>
         <dependency>

@@ -23,7 +23,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.threads;
+package com.mattunderscore.tcproxy.workers;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import net.jcip.annotations.ThreadSafe;
 
 /**
- * Helper for managing {@link RestartableTask}.
+ * Helper for managing {@link Worker}.
  * @author Matt Champion on 10/11/2015
  */
 @ThreadSafe

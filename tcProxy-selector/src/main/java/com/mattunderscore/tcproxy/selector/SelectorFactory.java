@@ -27,13 +27,13 @@ package com.mattunderscore.tcproxy.selector;
 
 import java.io.IOException;
 
-import com.mattunderscore.tcproxy.threads.RestartableTask;
+import com.mattunderscore.tcproxy.workers.Worker;
 
 /**
  * Factory for selectors.
  * @author Matt Champion on 09/11/2015
  */
-public interface SelectorFactory<T extends RestartableTask> {
+public interface SelectorFactory<T extends Worker> {
     /**
      * @return Create a new selector
      */

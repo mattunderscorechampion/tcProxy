@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.threads.RestartableThreadSet;
+import com.mattunderscore.tcproxy.workers.WorkerSet;
 
 /**
  * Provides the initial state needed to start the server. Binds the listening sockets and creates the server threads.
@@ -48,5 +48,5 @@ public interface ServerStarter {
      * @return The set of server threads
      * @throws IOException If there was a problem setting up the selectors
      */
-    RestartableThreadSet createServerThreads(Collection<IOServerSocketChannel> listenChannels, Server server) throws IOException;
+    WorkerSet createServerThreads(Collection<IOServerSocketChannel> listenChannels, Server server) throws IOException;
 }

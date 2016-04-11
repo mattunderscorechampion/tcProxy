@@ -23,38 +23,17 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.threads;
+package com.mattunderscore.tcproxy.workers;
 
 /**
- * A task that can be repeated started and stopped.
- * @author Matt Champion on 06/11/2015
+ * Unchecked version of {@link InterruptedException}.
+ * @author Matt Champion on 10/11/2015
  */
-public interface RestartableTask {
-    /**
-     * Start it.
-     */
-    void start();
+public final class UncheckedInterruptedException extends RuntimeException {
+    public UncheckedInterruptedException() {
+    }
 
-    /**
-     * Stop it.
-     */
-    void stop();
-
-    /**
-     * Restart it.
-     * @throws UncheckedInterruptedException It the task was interrupted while waiting for stop
-     */
-    void restart();
-
-    /**
-     * Block until it has started. Will return immediately after starting.
-     * @throws UncheckedInterruptedException It the task was interrupted while waiting for start
-     */
-    void waitForRunning();
-
-    /**
-     * Block until it has stopped. Will return immediately before starting.
-     * @throws UncheckedInterruptedException It the task was interrupted while waiting for stop
-     */
-    void waitForStopped();
+    public UncheckedInterruptedException(InterruptedException e) {
+        super(e);
+    }
 }

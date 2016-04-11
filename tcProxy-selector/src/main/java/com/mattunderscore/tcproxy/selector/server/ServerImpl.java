@@ -35,8 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.threads.LifecycleState;
-import com.mattunderscore.tcproxy.threads.RestartableThreadSet;
+import com.mattunderscore.tcproxy.workers.LifecycleState;
+import com.mattunderscore.tcproxy.workers.WorkerSet;
 
 /**
  * A basic server implementation. Relies on a {@link ServerStarter} to bind the sockets and create the selector threads.
@@ -49,7 +49,7 @@ public final class ServerImpl implements Server {
     private final LifecycleState state = new LifecycleState();
     private final ServerStarter serverStarter;
     @GuardedBy("this")
-    private RestartableThreadSet serverThreads;
+    private WorkerSet serverThreads;
     @GuardedBy("this")
     private Collection<IOServerSocketChannel> serverSockets;
 

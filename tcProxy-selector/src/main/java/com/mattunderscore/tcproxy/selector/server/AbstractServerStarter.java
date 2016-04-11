@@ -43,9 +43,9 @@ import com.mattunderscore.tcproxy.io.factory.IOFactory;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketFactory;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
-import com.mattunderscore.tcproxy.threads.RestartableTask;
-import com.mattunderscore.tcproxy.threads.RestartableThread;
-import com.mattunderscore.tcproxy.threads.RestartableThreadSet;
+import com.mattunderscore.tcproxy.workers.Worker;
+import com.mattunderscore.tcproxy.workers.WorkerThread;
+import com.mattunderscore.tcproxy.workers.WorkerSet;
 
 /**
  * Abstract implementation of {@link ServerStarter}. The accessor for the {@link SelectorFactory} must be implemented.
@@ -100,17 +100,17 @@ public abstract class AbstractServerStarter implements ServerStarter {
     }
 
     @Override
-    public final RestartableThreadSet createServerThreads(Collection<IOServerSocketChannel> listenChannels, Server server) throws IOException {
-        final SelectorFactory<? extends RestartableTask> selectorFactory =
+    public final WorkerSet createServerThreads(Collection<IOServerSocketChannel> listenChannels, Server server) throws IOException {
+        final SelectorFactory<? extends Worker> selectorFactory =
             getSelectorFactory(listenChannels);
 
         final ThreadFactory threadFactory = getThreadFactory(server);
-        final Set<RestartableThread> threads = new HashSet<>();
+        final Set<WorkerThread> threads = new HashSet<>();
         for (int i = 0; i < selectorThreads; i++) {
-            threads.add(new RestartableThread(threadFactory, selectorFactory.create()));
+            threads.add(new WorkerThread(threadFactory, selectorFactory.create()));
         }
 
-        return new RestartableThreadSet(threads);
+        return new WorkerSet(threads);
     }
 
     /**
@@ -143,5 +143,5 @@ public abstract class AbstractServerStarter implements ServerStarter {
      * @param listenChannels Channels to listen on
      * @return A selector factory
      */
-    protected abstract SelectorFactory<? extends RestartableTask> getSelectorFactory(Collection<IOServerSocketChannel> listenChannels);
+    protected abstract SelectorFactory<? extends Worker> getSelectorFactory(Collection<IOServerSocketChannel> listenChannels);
 }

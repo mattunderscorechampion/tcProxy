@@ -23,35 +23,47 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.threads;
+package com.mattunderscore.tcproxy.workers;
 
-import java.util.concurrent.ThreadFactory;
+import static java.util.Collections.addAll;
+import static java.util.Collections.singleton;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * This "thread" can be started and stopped. A new {@link Thread} is created every time this "thread" is started.
- * @author Matt Champion on 10/11/2015
+ * A set of restartable workers that are managed together.
+ * @author Matt Champion on 25/11/2015
  */
-public final class RestartableThread implements RestartableTask {
-    private final LifecycleState state = new LifecycleState();
-    private final ThreadFactory threadFactory;
-    private final InnerTask innerTask;
+public final class WorkerSet implements Worker {
+    private final Collection<WorkerThread> threads;
 
-    public RestartableThread(ThreadFactory threadFactory, RestartableTask task) {
-        this.threadFactory = threadFactory;
-        this.innerTask = new InnerTask(state, task);
+    public WorkerSet(WorkerThread thread) {
+        this(singleton(thread));
+    }
+
+    public WorkerSet(WorkerThread... threads) {
+        this.threads = new HashSet<>();
+        addAll(this.threads, threads);
+    }
+
+    public WorkerSet(Set<WorkerThread> threads) {
+        this.threads = threads;
     }
 
     @Override
     public void start() {
-        state.beginStartup();
-
-        threadFactory.newThread(innerTask).start();
+        for (Worker thread : threads) {
+            thread.start();
+        }
     }
 
     @Override
     public void stop() {
-        state.beginShutdown();
-        innerTask.stop();
+        for (Worker thread : threads) {
+            thread.stop();
+        }
     }
 
     @Override
@@ -63,31 +75,15 @@ public final class RestartableThread implements RestartableTask {
 
     @Override
     public void waitForRunning() {
-        state.waitForRunning();
+        for (Worker thread : threads) {
+            thread.waitForRunning();
+        }
     }
 
     @Override
     public void waitForStopped() {
-        state.waitForStopped();
-    }
-
-    private static final class InnerTask implements Runnable {
-        private LifecycleState state;
-        private RestartableTask task;
-
-        public InnerTask(LifecycleState state, RestartableTask task) {
-            this.state = state;
-            this.task = task;
-        }
-
-        @Override
-        public void run() {
-            task.start();
-            state.endShutdown();
-        }
-
-        public void stop() {
-            task.stop();
+        for (Worker thread : threads) {
+            thread.waitForStopped();
         }
     }
 }

@@ -47,10 +47,10 @@ tcProxy IO JSL
 
 Module that provides an implementation of the tcProxy IO API module that delegates to the Java Standard Library.
 
-tcProxy Threads
+tcProxy Workers
 ================
 
-Module that provides an extension to threads and workers that can be stopped and restarted.
+Module that provides simple workers that can be stopped and restarted.
 
 tcProxy Selector
 ================

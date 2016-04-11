@@ -27,7 +27,7 @@
         <module>tcProxy-cli-argument-parser</module>
         <module>tcProxy-examples</module>
         <module>tcProxy-selector</module>
-        <module>tcProxy-threads</module>
+        <module>tcProxy-workers</module>
     </modules>
 
     <licenses>
@@ -91,7 +91,7 @@
             </dependency>
             <dependency>
                 <groupId>com.mattunderscore.tcproxy</groupId>
-                <artifactId>tcProxy-threads</artifactId>
+                <artifactId>tcProxy-workers</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
