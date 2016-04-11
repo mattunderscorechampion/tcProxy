@@ -25,11 +25,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.server;
 
-import com.mattunderscore.tcproxy.workers.Worker;
+import com.mattunderscore.tcproxy.workers.RestartableWorker;
 
 /**
  * A server.
  * @author Matt Champion on 08/11/2015
  */
-public interface Server extends Worker {
+public interface Server extends RestartableWorker {
 }

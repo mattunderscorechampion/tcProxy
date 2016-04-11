@@ -31,7 +31,7 @@ import java.util.concurrent.ThreadFactory;
  * This worker can be started and stopped. A new {@link Thread} is created every time this worker is started.
  * @author Matt Champion on 10/11/2015
  */
-public final class WorkerThread implements Worker {
+public final class WorkerThread implements RestartableWorker {
     private final LifecycleState state = new LifecycleState();
     private final ThreadFactory threadFactory;
     private final InnerTask innerTask;

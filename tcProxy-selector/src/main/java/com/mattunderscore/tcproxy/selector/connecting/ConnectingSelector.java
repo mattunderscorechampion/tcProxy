@@ -66,11 +66,6 @@ public final class ConnectingSelector implements SocketChannelSelector {
     }
 
     @Override
-    public void restart() {
-        selector.restart();
-    }
-
-    @Override
     public void waitForRunning() {
         selector.waitForRunning();
     }

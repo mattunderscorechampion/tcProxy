@@ -113,13 +113,6 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
     }
 
     @Override
-    public void restart() {
-        stop();
-        waitForStopped();
-        start();
-    }
-
-    @Override
     public void waitForRunning() {
         lifecycleState.waitForRunning();
     }

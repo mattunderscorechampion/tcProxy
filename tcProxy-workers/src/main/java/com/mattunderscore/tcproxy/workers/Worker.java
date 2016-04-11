@@ -41,12 +41,6 @@ public interface Worker {
     void stop();
 
     /**
-     * Restart it.
-     * @throws UncheckedInterruptedException It the task was interrupted while waiting for stop
-     */
-    void restart();
-
-    /**
      * Block until it has started. Will return immediately after starting.
      * @throws UncheckedInterruptedException It the task was interrupted while waiting for start
      */

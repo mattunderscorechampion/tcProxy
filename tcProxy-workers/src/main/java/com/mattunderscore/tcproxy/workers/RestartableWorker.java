@@ -1,4 +1,4 @@
-/* Copyright © 2015 Matthew Champion
+/* Copyright © 2016 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -25,66 +25,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.workers;
 
-import static java.util.Collections.addAll;
-import static java.util.Collections.singleton;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
- * A set of restartable workers that are managed together.
- * @author Matt Champion on 25/11/2015
+ * A restartable extension to {@link Worker}.
+ * @author Matt Champion on 11/04/2016
  */
-public final class WorkerSet implements RestartableWorker {
-    private final Collection<RestartableWorker> threads;
-
-    public WorkerSet(RestartableWorker thread) {
-        this(singleton(thread));
-    }
-
-    public WorkerSet(RestartableWorker... threads) {
-        this.threads = new HashSet<>();
-        addAll(this.threads, threads);
-    }
-
-    public WorkerSet(Set<? extends RestartableWorker> threads) {
-        this.threads = new HashSet<>();
-        this.threads.addAll(threads);
-    }
-
-    @Override
-    public void start() {
-        for (Worker thread : threads) {
-            thread.start();
-        }
-    }
-
-    @Override
-    public void stop() {
-        for (Worker thread : threads) {
-            thread.stop();
-        }
-    }
-
-    @Override
-    public void restart() {
-        stop();
-        waitForStopped();
-        start();
-    }
-
-    @Override
-    public void waitForRunning() {
-        for (Worker thread : threads) {
-            thread.waitForRunning();
-        }
-    }
-
-    @Override
-    public void waitForStopped() {
-        for (Worker thread : threads) {
-            thread.waitForStopped();
-        }
-    }
+public interface RestartableWorker extends Worker {
+    /**
+     * Restart it.
+     * @throws UncheckedInterruptedException It the task was interrupted while waiting for stop
+     */
+    void restart();
 }
