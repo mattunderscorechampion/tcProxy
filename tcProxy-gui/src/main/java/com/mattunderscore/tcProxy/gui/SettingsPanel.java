@@ -155,7 +155,11 @@ public final class SettingsPanel extends JPanel {
     }
 
     public ConnectionSettings getConnectionSettings() {
-        return new ConnectionSettings(parseInt(writeQueueBound.getText()), parseInt(batchSize.getText()));
+        return ConnectionSettings
+            .builder()
+            .writeQueueSize(parseInt(writeQueueBound.getText()))
+            .batchSize(parseInt(batchSize.getText()))
+            .build();
     }
 
     public SocketSettings getInboundSocketSettings() {
@@ -176,6 +180,9 @@ public final class SettingsPanel extends JPanel {
     }
 
     public ReadSelectorSettings getReadSelectorSettings() {
-        return new ReadSelectorSettings(parseInt(readBufferSize.getText()));
+        return ReadSelectorSettings
+            .builder()
+            .readBufferSize(parseInt(readBufferSize.getText()))
+            .build();
     }
 }

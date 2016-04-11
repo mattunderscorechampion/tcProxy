@@ -25,24 +25,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.settings;
 
+import lombok.Builder;
+import lombok.Value;
+
 /**
  * Settings for the proxied connections.
  * @author Matt Champion on 21/02/14.
  */
+@Value
+@Builder
 public final class ConnectionSettings {
-    private final int writeQueueSize;
-    private final int batchSize;
-
-    public ConnectionSettings(final int writeQueueSize, int batchSize) {
-        this.writeQueueSize = writeQueueSize;
-        this.batchSize = batchSize;
-    }
-
-    public int getWriteQueueSize() {
-        return writeQueueSize;
-    }
-
-    public int getBatchSize() {
-        return batchSize;
-    }
+    int writeQueueSize;
+    int batchSize;
 }

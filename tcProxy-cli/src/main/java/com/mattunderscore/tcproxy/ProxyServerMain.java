@@ -92,7 +92,11 @@ public final class ProxyServerMain {
                         .builder()
                         .listenOn((Integer) settings.get(INBOUND_PORT))
                         .build())
-                    .connectionSettings(new ConnectionSettings((Integer)settings.get(QUEUE_SIZE), (Integer)settings.get(BATCH_SIZE)))
+                    .connectionSettings(ConnectionSettings
+                        .builder()
+                        .writeQueueSize((Integer)settings.get(QUEUE_SIZE))
+                        .batchSize((Integer)settings.get(BATCH_SIZE))
+                        .build())
                     .inboundSocketSettings(SocketSettings
                         .builder()
                         .receiveBuffer((Integer) settings.get(RECEIVE_BUFFER))
@@ -106,7 +110,10 @@ public final class ProxyServerMain {
                             .receiveBuffer((Integer)settings.get(RECEIVE_BUFFER))
                             .sendBuffer((Integer)settings.get(SEND_BUFFER))
                             .build())
-                    .readSelectorSettings(new ReadSelectorSettings((Integer)settings.get(RECEIVE_BUFFER)))
+                    .readSelectorSettings(ReadSelectorSettings
+                        .builder()
+                        .readBufferSize((Integer)settings.get(RECEIVE_BUFFER))
+                        .build())
                     .build(),
                 manager);
 

@@ -25,18 +25,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.settings;
 
+import lombok.Builder;
+import lombok.Value;
+
 /**
  * Settings for the read selector thread.
  * @author Matt Champion on 21/02/14.
  */
+@Value
+@Builder
 public final class ReadSelectorSettings {
-    private final int readBufferSize;
-
-    public ReadSelectorSettings(final int readBufferSize) {
-        this.readBufferSize = readBufferSize;
-    }
-
-    public int getReadBufferSize() {
-        return readBufferSize;
-    }
+    int readBufferSize;
 }
