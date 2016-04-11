@@ -27,12 +27,13 @@ package com.mattunderscore.tcproxy.selector;
 
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.workers.Worker;
+import com.mattunderscore.tcproxy.workers.WorkerRunnable;
 
 /**
  * A selector that can have tasks for {@link IOServerSocketChannel} registered against it.
  * @author Matt Champion on 06/11/2015
  */
-public interface ServerSocketChannelSelector extends Worker {
+public interface ServerSocketChannelSelector extends WorkerRunnable {
     /**
      * Register accept with the selector.
      * @param channel The channel

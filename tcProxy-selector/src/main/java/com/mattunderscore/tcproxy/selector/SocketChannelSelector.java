@@ -30,12 +30,13 @@ import java.util.Set;
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.workers.Worker;
+import com.mattunderscore.tcproxy.workers.WorkerRunnable;
 
 /**
  * A selector that can have tasks for {@link IOSocketChannel} registered against it.
  * @author Matt Champion on 06/11/2015
  */
-public interface SocketChannelSelector extends Worker {
+public interface SocketChannelSelector extends WorkerRunnable {
     /**
      * Register operations with the selector.
      * @param channel The channel

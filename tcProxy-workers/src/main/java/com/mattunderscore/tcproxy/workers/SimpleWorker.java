@@ -26,7 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.workers;
 
 /**
- * A simple {@link Worker} that delegates to a {@link WorkerRunnable}.
+ * A simple {@link Worker} that delegates work to a {@link WorkerRunnable} and manages the state of the worker itself.
  * @author Matt Champion on 11/04/2016
  */
 public final class SimpleWorker implements Worker {

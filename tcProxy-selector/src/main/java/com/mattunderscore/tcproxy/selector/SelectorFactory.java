@@ -27,13 +27,13 @@ package com.mattunderscore.tcproxy.selector;
 
 import java.io.IOException;
 
-import com.mattunderscore.tcproxy.workers.Worker;
+import com.mattunderscore.tcproxy.workers.WorkerRunnable;
 
 /**
  * Factory for selectors.
  * @author Matt Champion on 09/11/2015
  */
-public interface SelectorFactory<T extends Worker> {
+public interface SelectorFactory<T extends WorkerRunnable> {
     /**
      * @return Create a new selector
      */

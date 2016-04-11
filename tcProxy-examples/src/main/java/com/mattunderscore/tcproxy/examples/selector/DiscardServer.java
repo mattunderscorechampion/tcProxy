@@ -25,6 +25,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.examples.selector;
 
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.READ;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Collection;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
 import com.mattunderscore.tcproxy.io.impl.JSLIOFactory;
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
@@ -37,17 +47,15 @@ import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelectorFactory;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
-import com.mattunderscore.tcproxy.selector.server.*;
-import com.mattunderscore.tcproxy.workers.Worker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Collection;
-import java.util.Set;
-
-import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.READ;
+import com.mattunderscore.tcproxy.selector.server.AbstractServerFactory;
+import com.mattunderscore.tcproxy.selector.server.AbstractServerStarter;
+import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
+import com.mattunderscore.tcproxy.selector.server.Server;
+import com.mattunderscore.tcproxy.selector.server.ServerConfig;
+import com.mattunderscore.tcproxy.selector.server.ServerStarter;
+import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
+import com.mattunderscore.tcproxy.selector.server.SocketSettings;
+import com.mattunderscore.tcproxy.workers.WorkerRunnable;
 
 /**
  * Discard server. Reads and then discards all bytes sent to it.
@@ -117,7 +125,7 @@ public final class DiscardServer {
         }
 
         @Override
-        protected SelectorFactory<? extends Worker> getSelectorFactory(Collection<IOServerSocketChannel> listenChannels) {
+        protected SelectorFactory<? extends WorkerRunnable> getSelectorFactory(Collection<IOServerSocketChannel> listenChannels) {
             return new ConnectingSelectorFactory(
                     ioFactory,
                     listenChannels,

@@ -56,7 +56,6 @@ import com.mattunderscore.tcproxy.workers.LifecycleState;
 public final class GeneralPurposeSelector implements SocketChannelSelector, ServerSocketChannelSelector {
     private static final Logger LOG = LoggerFactory.getLogger("selector");
     private final BlockingQueue<RegistrationRequest> registrations = new ArrayBlockingQueue<>(64);
-    private final LifecycleState lifecycleState = new LifecycleState();
     private final IOSelector selector;
     private final SelectorBackoff backoff;
 
@@ -66,60 +65,47 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
     }
 
     @Override
-    public void start() {
-        lifecycleState.beginStartup();
+    public void onStart() {
+    }
 
-        while (lifecycleState.isRunning()) {
-            // Populate the selected set
-            try {
-                selector.selectNow();
-            }
-            catch (final IOException e) {
-                LOG.debug("{} : Error selecting keys", this, e);
-            }
-
-            // Process any new registrations that have been requested
-            final Collection<RegistrationRequest> newRegistrations = new HashSet<>();
-            registrations.drainTo(newRegistrations);
-            for (final RegistrationRequest registrationRequest : newRegistrations) {
-                try {
-                    registrationRequest.register(selector);
-                }
-                catch (ClosedChannelException e) {
-                    LOG.debug("{} : Problem registering key", this, e);
-                }
-            }
-
-            // Process the selector set
-            final Set<IOSelectionKey> selectedKeySet = selector.selectedKeys();
-            final int selectedSize = selectedKeySet.size();
-            final Iterator<IOSelectionKey> selectedKeys = selectedKeySet.iterator();
-            while (selectedKeys.hasNext()) {
-                final IOSelectionKey key = selectedKeys.next();
-                selectedKeys.remove();
-                final RegistrationSet registrationSet = (RegistrationSet) key.attachment();
-                registrationSet.run(key);
-            }
-
-            backoff.backoff(selectedSize);
+    @Override
+    public void run() {
+        // Populate the selected set
+        try {
+            selector.selectNow();
+        }
+        catch (final IOException e) {
+            LOG.debug("{} : Error selecting keys", this, e);
         }
 
-        lifecycleState.endShutdown();
+        // Process any new registrations that have been requested
+        final Collection<RegistrationRequest> newRegistrations = new HashSet<>();
+        registrations.drainTo(newRegistrations);
+        for (final RegistrationRequest registrationRequest : newRegistrations) {
+            try {
+                registrationRequest.register(selector);
+            }
+            catch (ClosedChannelException e) {
+                LOG.debug("{} : Problem registering key", this, e);
+            }
+        }
+
+        // Process the selector set
+        final Set<IOSelectionKey> selectedKeySet = selector.selectedKeys();
+        final int selectedSize = selectedKeySet.size();
+        final Iterator<IOSelectionKey> selectedKeys = selectedKeySet.iterator();
+        while (selectedKeys.hasNext()) {
+            final IOSelectionKey key = selectedKeys.next();
+            selectedKeys.remove();
+            final RegistrationSet registrationSet = (RegistrationSet) key.attachment();
+            registrationSet.run(key);
+        }
+
+        backoff.backoff(selectedSize);
     }
 
     @Override
-    public void stop() {
-        lifecycleState.beginShutdown();
-    }
-
-    @Override
-    public void waitForRunning() {
-        lifecycleState.waitForRunning();
-    }
-
-    @Override
-    public void waitForStopped() {
-        lifecycleState.waitForStopped();
+    public void onStop() {
     }
 
     @Override

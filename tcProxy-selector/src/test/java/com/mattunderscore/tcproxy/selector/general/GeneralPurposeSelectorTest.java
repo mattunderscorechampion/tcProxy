@@ -28,6 +28,8 @@ package com.mattunderscore.tcproxy.selector.general;
 import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.READ;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -59,6 +61,8 @@ public final class GeneralPurposeSelectorTest {
     private IOSocketChannel channel;
     @Mock
     private IOSelectionKey key;
+    @Mock
+    private SelectionRunnable<IOSocketChannel> runnable;
 
     @Before
     public void setUp() {
@@ -83,15 +87,10 @@ public final class GeneralPurposeSelectorTest {
         when(ioSelector.selectedKeys()).thenReturn(selectionKeySet);
 
         final GeneralPurposeSelector selector = new GeneralPurposeSelector(ioSelector, new NoBackoff());
-        selector.register(channel, READ, new SelectionRunnable<IOSocketChannel>() {
-            @Override
-            public void run(IOSocketChannel socket, RegistrationHandle handle) {
-                selector.waitForRunning();
-                selector.stop();
-            }
-        });
+        selector.register(channel, READ, runnable);
 
-        selector.start();
-        selector.waitForStopped();
+        selector.run();
+
+        verify(runnable).run(eq(channel), isA(RegistrationHandle.class));
     }
 }

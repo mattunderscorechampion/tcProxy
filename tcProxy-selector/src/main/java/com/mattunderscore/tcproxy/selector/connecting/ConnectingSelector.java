@@ -56,22 +56,17 @@ public final class ConnectingSelector implements SocketChannelSelector {
     }
 
     @Override
-    public void start() {
-        selector.start();
+    public void onStart() {
+        selector.onStart();
     }
 
     @Override
-    public void stop() {
-        selector.stop();
+    public void run() {
+        selector.run();
     }
 
     @Override
-    public void waitForRunning() {
-        selector.waitForRunning();
-    }
-
-    @Override
-    public void waitForStopped() {
-        selector.waitForStopped();
+    public void onStop() {
+        selector.onStop();
     }
 }

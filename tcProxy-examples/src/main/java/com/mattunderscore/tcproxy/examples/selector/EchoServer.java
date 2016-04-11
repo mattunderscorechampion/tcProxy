@@ -25,9 +25,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.examples.selector;
 
+import static com.mattunderscore.tcproxy.io.impl.CircularBufferImpl.allocateDirect;
 import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.READ;
 import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.WRITE;
-import static com.mattunderscore.tcproxy.io.impl.CircularBufferImpl.allocateDirect;
 import static java.util.EnumSet.of;
 
 import java.io.IOException;
@@ -39,10 +39,10 @@ import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.data.CircularBuffer;
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
+import com.mattunderscore.tcproxy.io.impl.JSLIOFactory;
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
-import com.mattunderscore.tcproxy.io.impl.JSLIOFactory;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
@@ -59,7 +59,7 @@ import com.mattunderscore.tcproxy.selector.server.ServerConfig;
 import com.mattunderscore.tcproxy.selector.server.ServerStarter;
 import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
-import com.mattunderscore.tcproxy.workers.Worker;
+import com.mattunderscore.tcproxy.workers.WorkerRunnable;
 
 /**
  * Added example of using a {@link GeneralPurposeSelector} as an echo server. Accepts, reads and writes on the main
@@ -150,7 +150,7 @@ public final class EchoServer {
         }
 
         @Override
-        protected SelectorFactory<? extends Worker> getSelectorFactory(Collection<IOServerSocketChannel> listenChannels) {
+        protected SelectorFactory<? extends WorkerRunnable> getSelectorFactory(Collection<IOServerSocketChannel> listenChannels) {
             return new ConnectingSelectorFactory(
                 ioFactory,
                 listenChannels,
