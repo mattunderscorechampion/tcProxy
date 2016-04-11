@@ -1,7 +1,13 @@
 tcProxy
 =======
 
-A simple TCP proxy.
+A simple TCP proxy and a few other pieces. The TCP proxy is embeddable in other Java applications. Two front ends are
+provided a CLI and a GUI. The TCP proxy was originally implemented after using a TCP proxy in tests so it is possible
+to do things not usually desirable such as dropping or delaying writes.
+
+An alternative networking API is provided that wraps the Java standard library implementation. This was done to
+simplify unit testing. The opportunity was taken to clean up some of the rough edges around the socket API. It is
+focused on non-blocking I/O but does not differ significantly from the JSL.
 
 Motivation
 ==========
