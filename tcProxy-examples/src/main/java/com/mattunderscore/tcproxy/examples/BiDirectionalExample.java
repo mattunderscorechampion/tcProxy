@@ -67,11 +67,12 @@ public final class BiDirectionalExample {
                         .builder()
                         .listenOn(8085)
                         .build())
-                .connectionSettings(ConnectionSettings
-                    .builder()
-                    .batchSize(1024)
-                    .writeQueueSize(1024)
-                    .build())
+                .connectionSettings(
+                    ConnectionSettings
+                        .builder()
+                        .batchSize(1024)
+                        .writeQueueSize(1024)
+                        .build())
                 .inboundSocketSettings(
                     SocketSettings
                         .builder()
@@ -86,10 +87,11 @@ public final class BiDirectionalExample {
                         .receiveBuffer(1024)
                         .sendBuffer(1024)
                         .build())
-                .readSelectorSettings(ReadSelectorSettings
-                    .builder()
-                    .readBufferSize(1024)
-                    .build())
+                .readSelectorSettings(
+                    ReadSelectorSettings
+                        .builder()
+                        .readBufferSize(1024)
+                        .build())
                 .build());
         proxyServer.start();
 

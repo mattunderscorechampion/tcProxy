@@ -88,20 +88,23 @@ public final class ProxyServerMain {
             final Server server = new ProxyServerFactory().create(
                 ProxyServerSettings
                     .builder()
-                    .acceptSettings(AcceptSettings
-                        .builder()
-                        .listenOn((Integer) settings.get(INBOUND_PORT))
-                        .build())
-                    .connectionSettings(ConnectionSettings
-                        .builder()
-                        .writeQueueSize((Integer)settings.get(QUEUE_SIZE))
-                        .batchSize((Integer)settings.get(BATCH_SIZE))
-                        .build())
-                    .inboundSocketSettings(SocketSettings
-                        .builder()
-                        .receiveBuffer((Integer) settings.get(RECEIVE_BUFFER))
-                        .sendBuffer((Integer) settings.get(SEND_BUFFER))
-                        .build())
+                    .acceptSettings(
+                        AcceptSettings
+                            .builder()
+                            .listenOn((Integer) settings.get(INBOUND_PORT))
+                            .build())
+                    .connectionSettings(
+                        ConnectionSettings
+                            .builder()
+                            .writeQueueSize((Integer)settings.get(QUEUE_SIZE))
+                            .batchSize((Integer)settings.get(BATCH_SIZE))
+                            .build())
+                    .inboundSocketSettings(
+                        SocketSettings
+                            .builder()
+                            .receiveBuffer((Integer) settings.get(RECEIVE_BUFFER))
+                            .sendBuffer((Integer) settings.get(SEND_BUFFER))
+                            .build())
                     .outboundSocketSettings(
                         OutboundSocketSettings
                             .builder()
@@ -110,10 +113,11 @@ public final class ProxyServerMain {
                             .receiveBuffer((Integer)settings.get(RECEIVE_BUFFER))
                             .sendBuffer((Integer)settings.get(SEND_BUFFER))
                             .build())
-                    .readSelectorSettings(ReadSelectorSettings
-                        .builder()
-                        .readBufferSize((Integer)settings.get(RECEIVE_BUFFER))
-                        .build())
+                    .readSelectorSettings(
+                        ReadSelectorSettings
+                            .builder()
+                            .readBufferSize((Integer)settings.get(RECEIVE_BUFFER))
+                            .build())
                     .build(),
                 manager);
 
