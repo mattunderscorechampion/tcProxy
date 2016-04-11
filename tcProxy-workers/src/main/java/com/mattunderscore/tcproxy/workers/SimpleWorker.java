@@ -1,4 +1,4 @@
-/* Copyright © 2015 Matthew Champion
+/* Copyright © 2016 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -25,69 +25,78 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.workers;
 
-import java.util.concurrent.ThreadFactory;
-
 /**
- * This worker can be started and stopped. A new {@link Thread} is created every time this worker is started.
- * @author Matt Champion on 10/11/2015
+ * A simple {@link Worker} that delegates to a {@link WorkerRunnable}.
+ * @author Matt Champion on 11/04/2016
  */
-public final class WorkerThread implements RestartableWorker {
-    private final LifecycleState state = new LifecycleState();
-    private final ThreadFactory threadFactory;
-    private final InnerTask innerTask;
+public final class SimpleWorker implements Worker {
+    private final LifecycleState lifecycleState = new LifecycleState();
+    private final WorkerRunnable task;
 
-    public WorkerThread(ThreadFactory threadFactory, Worker task) {
-        this.threadFactory = threadFactory;
-        this.innerTask = new InnerTask(state, task);
+    /**
+     * Constructor.
+     * @param task A runnable that will be adapted to a {@link WorkerRunnable}
+     */
+    public SimpleWorker(Runnable task) {
+        this.task = new RunnableAdapter(task);
+    }
+
+    /**
+     * Constructor.
+     * @param task A worker runnable
+     */
+    public SimpleWorker(WorkerRunnable task) {
+        this.task = task;
     }
 
     @Override
     public void start() {
-        state.beginStartup();
+        lifecycleState.beginStartup();
 
-        threadFactory.newThread(innerTask).start();
+        task.onStart();
+
+        while (lifecycleState.isRunning()) {
+            task.run();
+        }
+
+        task.onStop();
+
+        lifecycleState.endShutdown();
     }
 
     @Override
     public void stop() {
-        state.beginShutdown();
-        innerTask.stop();
-    }
-
-    @Override
-    public void restart() {
-        stop();
-        waitForStopped();
-        start();
+        lifecycleState.beginShutdown();
     }
 
     @Override
     public void waitForRunning() {
-        state.waitForRunning();
+        lifecycleState.waitForRunning();
     }
 
     @Override
     public void waitForStopped() {
-        state.waitForStopped();
+        lifecycleState.waitForStopped();
     }
 
-    private static final class InnerTask implements Runnable {
-        private final LifecycleState state;
-        private final Worker task;
+    private static final class RunnableAdapter implements WorkerRunnable {
+        private final Runnable task;
 
-        public InnerTask(LifecycleState state, Worker task) {
-            this.state = state;
+        public RunnableAdapter(Runnable task) {
             this.task = task;
         }
 
         @Override
-        public void run() {
-            task.start();
-            state.endShutdown();
+        public void onStart() {
         }
 
-        public void stop() {
-            task.stop();
+        @Override
+        public void onStop() {
+        }
+
+        @Override
+        public void run() {
+            task.run();
         }
     }
 }
