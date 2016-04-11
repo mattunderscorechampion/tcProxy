@@ -115,7 +115,11 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
                         final Direction otherDirection = conn.otherDirection(direction);
                         LOG.debug("{} : Closed {} ", this, otherDirection);
                         otherDirection.close();
+
+                        assert readBuffer.usedCapacity() == 0 : "The read buffer should be empty";
                     }
+
+                    assert bytes != 0 || readBuffer.usedCapacity() == 0 : "The read buffer should be empty";
                 }
                 catch (final ClosedChannelException e) {
                     LOG.debug("{} : Channel {} already closed", this, channel);
