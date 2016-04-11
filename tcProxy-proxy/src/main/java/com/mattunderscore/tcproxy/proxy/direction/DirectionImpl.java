@@ -35,7 +35,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mattunderscore.tcproxy.io.data.CircularBuffer;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessor;
 import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
@@ -148,7 +147,7 @@ public final class DirectionImpl implements Direction {
     }
 
     @Override
-    public int read(final CircularBuffer destination) throws IOException {
+    public int read(final ByteBuffer destination) throws IOException {
         final int newlyRead = from.read(destination);
         if (newlyRead > 0) {
             read += newlyRead;

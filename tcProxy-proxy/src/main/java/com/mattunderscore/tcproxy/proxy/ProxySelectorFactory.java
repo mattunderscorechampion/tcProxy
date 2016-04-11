@@ -28,10 +28,9 @@ package com.mattunderscore.tcproxy.proxy;
 import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.openSelector;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Collection;
 
-import com.mattunderscore.tcproxy.io.data.CircularBuffer;
-import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
@@ -82,7 +81,7 @@ final class ProxySelectorFactory implements SelectorFactory<SocketChannelSelecto
 
         final SocketChannelSelector selector = connectingSelectorFactory.create();
 
-        final CircularBuffer circularBuffer = CircularBufferImpl.allocateDirect(readSelectorSettings.getReadBufferSize());
+        final ByteBuffer circularBuffer = ByteBuffer.allocateDirect(readSelectorSettings.getReadBufferSize());
         manager.addListener(new ConnectionManager.Listener() {
             @Override
             public void newConnection(final Connection connection) {

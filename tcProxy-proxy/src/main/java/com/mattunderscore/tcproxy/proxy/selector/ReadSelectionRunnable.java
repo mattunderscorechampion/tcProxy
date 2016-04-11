@@ -33,7 +33,6 @@ import java.nio.channels.ClosedChannelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mattunderscore.tcproxy.io.data.CircularBuffer;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.ConnectionImpl;
 import com.mattunderscore.tcproxy.proxy.action.Close;
@@ -53,9 +52,9 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
     private static final Logger LOG = LoggerFactory.getLogger("reader");
     private final Direction direction;
     private final Connection connection;
-    private final CircularBuffer readBuffer;
+    private final ByteBuffer readBuffer;
 
-    public ReadSelectionRunnable(Direction direction, Connection connection, CircularBuffer readBuffer) {
+    public ReadSelectionRunnable(Direction direction, Connection connection, ByteBuffer readBuffer) {
         this.direction = direction;
         this.connection = connection;
         this.readBuffer = readBuffer;
@@ -77,15 +76,15 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
             if (!queue.queueFull()) {
                 final ByteChannel channel = direction.getFrom();
                 try {
-                    assert readBuffer.usedCapacity() == 0 : "The read buffer should be empty";
 
                     // Read data in
                     final int bytes = direction.read(readBuffer);
 
                     if (bytes > 0) {
+                        readBuffer.flip();
                         // Copy the data read to a write buffer and prepare for the next read
-                        final ByteBuffer writeBuffer = ByteBuffer.allocate(readBuffer.usedCapacity());
-                        readBuffer.get(writeBuffer);
+                        final ByteBuffer writeBuffer = ByteBuffer.allocate(readBuffer.remaining());
+                        writeBuffer.put(readBuffer);
                         writeBuffer.flip();
 
                         if (DATA_LOG.isInfoEnabled()) {
@@ -105,7 +104,7 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
 
                         direction.getProcessor().process(new Write(direction, writeBuffer));
 
-                        assert readBuffer.usedCapacity() == 0 : "The read buffer should have been completely drained";
+                        assert readBuffer.remaining() == 0 : "The read buffer should have been completely drained";
                     }
                     else if (bytes == -1) {
                         // Close the connection
@@ -115,11 +114,7 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
                         final Direction otherDirection = conn.otherDirection(direction);
                         LOG.debug("{} : Closed {} ", this, otherDirection);
                         otherDirection.close();
-
-                        assert readBuffer.usedCapacity() == 0 : "The read buffer should be empty";
                     }
-
-                    assert bytes != 0 || readBuffer.usedCapacity() == 0 : "The read buffer should be empty";
                 }
                 catch (final ClosedChannelException e) {
                     LOG.debug("{} : Channel {} already closed", this, channel);
@@ -127,6 +122,9 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
                 }
                 catch (final IOException e) {
                     LOG.debug("{} : Error on channel {}, {}", this, channel, handle, e);
+                }
+                finally {
+                    readBuffer.clear();
                 }
             }
         }

@@ -28,7 +28,6 @@ package com.mattunderscore.tcproxy.proxy.direction;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import com.mattunderscore.tcproxy.io.data.CircularBuffer;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessor;
 import com.mattunderscore.tcproxy.proxy.action.processor.ActionProcessorFactory;
@@ -68,7 +67,7 @@ public interface Direction {
 
     int write(ByteBuffer data) throws IOException;
 
-    int read(CircularBuffer data) throws IOException;
+    int read(ByteBuffer data) throws IOException;
 
     void close() throws IOException;
 
