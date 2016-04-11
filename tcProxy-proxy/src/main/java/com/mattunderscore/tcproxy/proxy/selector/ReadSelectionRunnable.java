@@ -77,6 +77,8 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
             if (!queue.queueFull()) {
                 final ByteChannel channel = direction.getFrom();
                 try {
+                    assert readBuffer.usedCapacity() == 0 : "The read buffer should be empty";
+
                     // Read data in
                     final int bytes = direction.read(readBuffer);
 
@@ -102,6 +104,8 @@ public final class ReadSelectionRunnable implements SelectionRunnable<IOSocketCh
                         }
 
                         direction.getProcessor().process(new Write(direction, writeBuffer));
+
+                        assert readBuffer.usedCapacity() == 0 : "The read buffer should have been completely drained";
                     }
                     else if (bytes == -1) {
                         // Close the connection
