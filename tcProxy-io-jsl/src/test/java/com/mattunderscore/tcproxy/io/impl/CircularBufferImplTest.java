@@ -525,6 +525,24 @@ public final class CircularBufferImplTest {
     }
 
     @Test
+    public void doSocketRead5() throws IOException {
+        final CircularBufferImpl buffer = (CircularBufferImpl) CircularBufferImpl.allocate(3);
+
+        buffer.put((byte) 0x0);
+        buffer.put((byte) 0x1);
+
+        assertEquals(2, buffer.usedCapacity());
+        assertEquals(1, buffer.freeCapacity());
+
+        when(socketChannel.read(isA(ByteBuffer.class))).thenReturn(-1);
+        final int read = buffer.doSocketRead(socketChannel);
+        assertEquals(-1, read);
+
+        assertEquals(2, buffer.usedCapacity());
+        assertEquals(1, buffer.freeCapacity());
+    }
+
+    @Test
     public void doSocketWrite0() throws IOException {
         when(socketChannel.write(isA(ByteBuffer.class))).then(new AssertReadFromBufferArgument(new byte[] {0x1, 0x2, 0x3}));
         final CircularBufferImpl buffer = (CircularBufferImpl) CircularBufferImpl.allocate(3);

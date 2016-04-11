@@ -137,7 +137,9 @@ public final class CircularBufferImpl extends CircularBufferView implements Circ
             read = channel.read(buffer);
             wrapWritableBufferIfNeeded();
         }
-        data = data + read;
+        if (read > 0) {
+            data = data + read;
+        }
         return read;
     }
 
