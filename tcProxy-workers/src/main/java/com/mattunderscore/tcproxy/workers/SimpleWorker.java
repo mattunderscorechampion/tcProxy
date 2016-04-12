@@ -53,15 +53,18 @@ public final class SimpleWorker implements Worker {
     public void start() {
         lifecycleState.beginStartup();
 
-        task.onStart();
+        try {
+            task.onStart();
 
-        while (lifecycleState.isRunning()) {
-            task.run();
+            while (lifecycleState.isRunning()) {
+                task.run();
+            }
+
+            task.onStop();
         }
-
-        task.onStop();
-
-        lifecycleState.endShutdown();
+        finally {
+            lifecycleState.endShutdown();
+        }
     }
 
     @Override

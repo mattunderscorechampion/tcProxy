@@ -82,8 +82,12 @@ public final class WorkerThread implements RestartableWorker {
 
         @Override
         public void run() {
-            task.start();
-            state.endShutdown();
+            try {
+                task.start();
+            }
+            finally {
+                state.endShutdown();
+            }
         }
 
         public void stop() {
