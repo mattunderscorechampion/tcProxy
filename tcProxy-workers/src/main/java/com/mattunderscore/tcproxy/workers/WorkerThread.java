@@ -36,22 +36,19 @@ public final class WorkerThread implements RestartableWorker {
     private final ThreadFactory threadFactory;
     private final InnerTask innerTask;
 
-    public WorkerThread(ThreadFactory threadFactory, Worker task) {
+    public WorkerThread(ThreadFactory threadFactory, WorkerRunnable task) {
         this.threadFactory = threadFactory;
         this.innerTask = new InnerTask(state, task);
     }
 
     @Override
     public void start() {
-        state.beginStartup();
-
         threadFactory.newThread(innerTask).start();
     }
 
     @Override
     public void stop() {
         state.beginShutdown();
-        innerTask.stop();
     }
 
     @Override
@@ -73,25 +70,29 @@ public final class WorkerThread implements RestartableWorker {
 
     private static final class InnerTask implements Runnable {
         private final LifecycleState state;
-        private final Worker task;
+        private final WorkerRunnable task;
 
-        public InnerTask(LifecycleState state, Worker task) {
+        public InnerTask(LifecycleState state, WorkerRunnable task) {
             this.state = state;
             this.task = task;
         }
 
         @Override
         public void run() {
+            state.beginStartup();
+
             try {
-                task.start();
+                task.onStart();
+
+                while (state.isRunning()) {
+                    task.run();
+                }
+
+                task.onStop();
             }
             finally {
                 state.endShutdown();
             }
-        }
-
-        public void stop() {
-            task.stop();
         }
     }
 }

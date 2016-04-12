@@ -40,14 +40,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
-import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketFactory;
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
-import com.mattunderscore.tcproxy.workers.SimpleWorker;
-import com.mattunderscore.tcproxy.workers.Worker;
 import com.mattunderscore.tcproxy.workers.WorkerRunnable;
-import com.mattunderscore.tcproxy.workers.WorkerThread;
 import com.mattunderscore.tcproxy.workers.WorkerSet;
+import com.mattunderscore.tcproxy.workers.WorkerThread;
 
 /**
  * Abstract implementation of {@link ServerStarter}. The accessor for the {@link SelectorFactory} must be implemented.
@@ -109,7 +107,7 @@ public abstract class AbstractServerStarter implements ServerStarter {
         final ThreadFactory threadFactory = getThreadFactory(server);
         final Set<WorkerThread> threads = new HashSet<>();
         for (int i = 0; i < selectorThreads; i++) {
-            threads.add(new WorkerThread(threadFactory, new SimpleWorker(selectorFactory.create())));
+            threads.add(new WorkerThread(threadFactory, selectorFactory.create()));
         }
 
         return new WorkerSet(threads);
