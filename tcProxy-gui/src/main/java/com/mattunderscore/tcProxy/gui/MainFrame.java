@@ -66,7 +66,7 @@ public final class MainFrame extends JFrame {
                     add(new ConnectionsPanel(manager));
                     validate();
                     try {
-                        final Server proxy = new ProxyServerFactory()
+                        final Server proxy = ProxyServerFactory.factory()
                             .create(
                                 ProxyServerSettings
                                     .builder()

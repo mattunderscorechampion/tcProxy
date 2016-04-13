@@ -59,7 +59,7 @@ public final class BiDirectionalExample {
 
     public static void main(String[] args) throws IOException {
         // Start the proxy
-        final Server proxyServer = new ProxyServerFactory().create(
+        final Server proxyServer = ProxyServerFactory.factory().create(
             ProxyServerSettings
                 .builder()
                 .acceptSettings(

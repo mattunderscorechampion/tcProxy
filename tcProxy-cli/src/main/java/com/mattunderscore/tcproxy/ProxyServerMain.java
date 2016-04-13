@@ -85,7 +85,7 @@ public final class ProxyServerMain {
         final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         try {
             final ConnectionManager manager = new ConnectionManager();
-            final Server server = new ProxyServerFactory().create(
+            final Server server = ProxyServerFactory.factory().create(
                 ProxyServerSettings
                     .builder()
                     .acceptSettings(

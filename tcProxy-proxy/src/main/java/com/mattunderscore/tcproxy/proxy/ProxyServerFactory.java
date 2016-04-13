@@ -40,11 +40,7 @@ import com.mattunderscore.tcproxy.selector.server.ServerImpl;
 public final class ProxyServerFactory {
     private final IOFactory ioFactory;
 
-    public ProxyServerFactory() {
-        this(new JSLIOFactory());
-    }
-
-    public ProxyServerFactory(IOFactory ioFactory) {
+    private ProxyServerFactory(IOFactory ioFactory) {
         this.ioFactory = ioFactory;
     }
 
@@ -64,5 +60,13 @@ public final class ProxyServerFactory {
 
     public Server create(ProxyServerSettings settings) {
         return create(settings, new ConnectionManager());
+    }
+
+    public static ProxyServerFactory factory() {
+        return new ProxyServerFactory(new JSLIOFactory());
+    }
+
+    public static ProxyServerFactory factory(IOFactory ioFactory) {
+        return new ProxyServerFactory(ioFactory);
     }
 }

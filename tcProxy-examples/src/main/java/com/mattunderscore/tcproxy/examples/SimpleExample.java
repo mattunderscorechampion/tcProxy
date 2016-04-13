@@ -64,7 +64,7 @@ public final class SimpleExample {
 
     public static void main(String[] args) throws IOException {
         // Start the proxy
-        final Server server = new ProxyServerFactory().create(
+        final Server server = ProxyServerFactory.factory().create(
             ProxyServerSettings
                 .builder()
                 .acceptSettings(

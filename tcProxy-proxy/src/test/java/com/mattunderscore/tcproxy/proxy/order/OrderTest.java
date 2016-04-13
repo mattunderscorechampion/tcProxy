@@ -62,7 +62,7 @@ public final class OrderTest {
 
         serverTask.awaitStart();
 
-        final Server proxy = new ProxyServerFactory()
+        final Server proxy = ProxyServerFactory.factory()
             .create(ProxyServerSettings
                 .builder()
                 .acceptSettings(AcceptSettings
