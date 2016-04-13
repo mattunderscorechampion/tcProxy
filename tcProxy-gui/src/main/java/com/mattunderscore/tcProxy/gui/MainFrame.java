@@ -31,11 +31,10 @@ import javax.swing.WindowConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mattunderscore.tcproxy.proxy.ProxyServerFactory;
+import com.mattunderscore.tcproxy.proxy.ProxyServerBuilder;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
-import com.mattunderscore.tcproxy.proxy.settings.ProxyServerSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import com.mattunderscore.tcproxy.selector.BinaryBackoff;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
@@ -66,18 +65,16 @@ public final class MainFrame extends JFrame {
                     add(new ConnectionsPanel(manager));
                     validate();
                     try {
-                        final Server proxy = ProxyServerFactory.factory()
-                            .create(
-                                ProxyServerSettings
-                                    .builder()
-                                    .acceptSettings(acceptorSettings)
-                                    .connectionSettings(connectionSettings)
-                                    .inboundSocketSettings(inboundSocketSettings)
-                                    .outboundSocketSettings(outboundSocketSettings)
-                                    .readSelectorSettings(readSelectorSettings)
-                                    .backoff(new BinaryBackoff(10L))
-                                    .build(),
-                                manager);
+                        final Server proxy = ProxyServerBuilder
+                            .builder()
+                            .acceptSettings(acceptorSettings)
+                            .connectionSettings(connectionSettings)
+                            .socketSettings(inboundSocketSettings)
+                            .outboundSocketSettings(outboundSocketSettings)
+                            .readSelectorSettings(readSelectorSettings)
+                            .backoff(new BinaryBackoff(10L))
+                            .connectionManager(manager)
+                            .build();
                         proxy.start();
                     }
                     catch (final IllegalStateException e) {

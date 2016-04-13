@@ -40,15 +40,14 @@ import com.mattunderscore.tcproxy.examples.data.ThrottledDataProducer;
 import com.mattunderscore.tcproxy.examples.workers.Acceptor;
 import com.mattunderscore.tcproxy.examples.workers.Consumer;
 import com.mattunderscore.tcproxy.examples.workers.Producer;
+import com.mattunderscore.tcproxy.io.configuration.IOServerSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
-import com.mattunderscore.tcproxy.io.configuration.IOServerSocketChannelConfiguration;
-import com.mattunderscore.tcproxy.proxy.ProxyServerFactory;
+import com.mattunderscore.tcproxy.proxy.ProxyServerBuilder;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
-import com.mattunderscore.tcproxy.proxy.settings.ProxyServerSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.Server;
@@ -64,40 +63,22 @@ public final class SimpleExample {
 
     public static void main(String[] args) throws IOException {
         // Start the proxy
-        final Server server = ProxyServerFactory.factory().create(
-            ProxyServerSettings
-                .builder()
-                .acceptSettings(
-                    AcceptSettings
-                        .builder()
-                        .listenOn(8085)
-                        .build())
-                .connectionSettings(
-                    ConnectionSettings
-                        .builder()
-                        .batchSize(1024)
-                        .writeQueueSize(1024)
-                        .build())
-                .inboundSocketSettings(
-                    SocketSettings
-                        .builder()
-                        .receiveBuffer(1024)
-                        .sendBuffer(1024)
-                        .build())
-                .outboundSocketSettings(
-                    OutboundSocketSettings
-                        .builder()
-                        .port(8080)
-                        .host("localhost")
-                        .receiveBuffer(1024)
-                        .sendBuffer(1024)
-                        .build())
-                .readSelectorSettings(
-                    ReadSelectorSettings
-                        .builder()
-                        .readBufferSize(1024)
-                        .build())
-                .build());
+        final Server server = ProxyServerBuilder
+            .builder()
+            .acceptSettings(
+                AcceptSettings
+                    .builder()
+                    .listenOn(8085)
+                    .build())
+            .outboundSocketSettings(
+                OutboundSocketSettings
+                    .builder()
+                    .port(8080)
+                    .host("localhost")
+                    .receiveBuffer(1024)
+                    .sendBuffer(1024)
+                    .build())
+            .build();
         server.start();
 
         final BlockingQueue<IOSocketChannel> channels = new ArrayBlockingQueue<>(2);

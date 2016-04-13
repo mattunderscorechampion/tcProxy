@@ -40,10 +40,9 @@ import com.mattunderscore.tcproxy.examples.workers.Consumer;
 import com.mattunderscore.tcproxy.examples.workers.Producer;
 import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
-import com.mattunderscore.tcproxy.proxy.ProxyServerFactory;
+import com.mattunderscore.tcproxy.proxy.ProxyServerBuilder;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
-import com.mattunderscore.tcproxy.proxy.settings.ProxyServerSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.Server;
@@ -59,40 +58,22 @@ public final class BiDirectionalExample {
 
     public static void main(String[] args) throws IOException {
         // Start the proxy
-        final Server proxyServer = ProxyServerFactory.factory().create(
-            ProxyServerSettings
-                .builder()
-                .acceptSettings(
-                    AcceptSettings
-                        .builder()
-                        .listenOn(8085)
-                        .build())
-                .connectionSettings(
-                    ConnectionSettings
-                        .builder()
-                        .batchSize(1024)
-                        .writeQueueSize(1024)
-                        .build())
-                .inboundSocketSettings(
-                    SocketSettings
-                        .builder()
-                        .receiveBuffer(1024)
-                        .sendBuffer(1024)
-                        .build())
-                .outboundSocketSettings(
-                    OutboundSocketSettings
-                        .builder()
-                        .port(8080)
-                        .host("localhost")
-                        .receiveBuffer(1024)
-                        .sendBuffer(1024)
-                        .build())
-                .readSelectorSettings(
-                    ReadSelectorSettings
-                        .builder()
-                        .readBufferSize(1024)
-                        .build())
-                .build());
+        final Server proxyServer = ProxyServerBuilder
+            .builder()
+            .acceptSettings(
+                AcceptSettings
+                    .builder()
+                    .listenOn(8085)
+                    .build())
+            .outboundSocketSettings(
+                OutboundSocketSettings
+                    .builder()
+                    .port(8080)
+                    .host("localhost")
+                    .receiveBuffer(1024)
+                    .sendBuffer(1024)
+                    .build())
+            .build();
         proxyServer.start();
 
         // Start the echo server

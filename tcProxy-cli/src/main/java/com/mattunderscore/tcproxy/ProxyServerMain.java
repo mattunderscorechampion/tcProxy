@@ -46,13 +46,12 @@ import com.mattunderscore.tcproxy.cli.arguments.Option;
 import com.mattunderscore.tcproxy.cli.arguments.OptionsParser;
 import com.mattunderscore.tcproxy.cli.arguments.Setting;
 import com.mattunderscore.tcproxy.cli.arguments.StringParser;
-import com.mattunderscore.tcproxy.proxy.ProxyServerFactory;
+import com.mattunderscore.tcproxy.proxy.ProxyServerBuilder;
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.direction.Direction;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
-import com.mattunderscore.tcproxy.proxy.settings.ProxyServerSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.Server;
@@ -85,41 +84,40 @@ public final class ProxyServerMain {
         final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         try {
             final ConnectionManager manager = new ConnectionManager();
-            final Server server = ProxyServerFactory.factory().create(
-                ProxyServerSettings
-                    .builder()
-                    .acceptSettings(
-                        AcceptSettings
-                            .builder()
-                            .listenOn((Integer) settings.get(INBOUND_PORT))
-                            .build())
-                    .connectionSettings(
-                        ConnectionSettings
-                            .builder()
-                            .writeQueueSize((Integer)settings.get(QUEUE_SIZE))
-                            .batchSize((Integer)settings.get(BATCH_SIZE))
-                            .build())
-                    .inboundSocketSettings(
-                        SocketSettings
-                            .builder()
-                            .receiveBuffer((Integer) settings.get(RECEIVE_BUFFER))
-                            .sendBuffer((Integer) settings.get(SEND_BUFFER))
-                            .build())
-                    .outboundSocketSettings(
-                        OutboundSocketSettings
-                            .builder()
-                            .port((Integer)settings.get(OUTBOUND_PORT))
-                            .host((String)settings.get(OUTBOUND_HOST))
-                            .receiveBuffer((Integer)settings.get(RECEIVE_BUFFER))
-                            .sendBuffer((Integer)settings.get(SEND_BUFFER))
-                            .build())
-                    .readSelectorSettings(
-                        ReadSelectorSettings
-                            .builder()
-                            .readBufferSize((Integer)settings.get(RECEIVE_BUFFER))
-                            .build())
-                    .build(),
-                manager);
+            final Server server = ProxyServerBuilder
+                .builder()
+                .acceptSettings(
+                    AcceptSettings
+                        .builder()
+                        .listenOn((Integer) settings.get(INBOUND_PORT))
+                        .build())
+                .connectionSettings(
+                    ConnectionSettings
+                        .builder()
+                        .writeQueueSize((Integer)settings.get(QUEUE_SIZE))
+                        .batchSize((Integer)settings.get(BATCH_SIZE))
+                        .build())
+                .socketSettings(
+                    SocketSettings
+                        .builder()
+                        .receiveBuffer((Integer) settings.get(RECEIVE_BUFFER))
+                        .sendBuffer((Integer) settings.get(SEND_BUFFER))
+                        .build())
+                .outboundSocketSettings(
+                    OutboundSocketSettings
+                        .builder()
+                        .port((Integer)settings.get(OUTBOUND_PORT))
+                        .host((String)settings.get(OUTBOUND_HOST))
+                        .receiveBuffer((Integer)settings.get(RECEIVE_BUFFER))
+                        .sendBuffer((Integer)settings.get(SEND_BUFFER))
+                        .build())
+                .readSelectorSettings(
+                    ReadSelectorSettings
+                        .builder()
+                        .readBufferSize((Integer)settings.get(RECEIVE_BUFFER))
+                        .build())
+                .connectionManager(manager)
+                .build();
 
             manager.addListener(new ConnectionManager.Listener() {
                 private final Map<Connection, Future<?>> tasks = new ConcurrentHashMap<>();

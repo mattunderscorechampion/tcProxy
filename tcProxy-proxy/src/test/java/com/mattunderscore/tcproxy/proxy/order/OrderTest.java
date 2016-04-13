@@ -25,10 +25,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.proxy.order;
 
-import com.mattunderscore.tcproxy.proxy.ProxyServerFactory;
+import com.mattunderscore.tcproxy.proxy.ProxyServerBuilder;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
-import com.mattunderscore.tcproxy.proxy.settings.ProxyServerSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.Server;
@@ -62,36 +61,21 @@ public final class OrderTest {
 
         serverTask.awaitStart();
 
-        final Server proxy = ProxyServerFactory.factory()
-            .create(ProxyServerSettings
+        final Server proxy = ProxyServerBuilder
+            .builder()
+            .acceptSettings(AcceptSettings
                 .builder()
-                .acceptSettings(AcceptSettings
+                .listenOn(8085)
+                .build())
+            .outboundSocketSettings(
+                OutboundSocketSettings
                     .builder()
-                    .listenOn(8085)
-                    .build())
-                .connectionSettings(ConnectionSettings
-                    .builder()
-                    .batchSize(1024)
-                    .writeQueueSize(1024)
-                    .build())
-                .inboundSocketSettings(SocketSettings
-                    .builder()
+                    .port(8080)
+                    .host("localhost")
                     .receiveBuffer(1024)
                     .sendBuffer(1024)
                     .build())
-                .outboundSocketSettings(
-                    OutboundSocketSettings
-                        .builder()
-                        .port(8080)
-                        .host("localhost")
-                        .receiveBuffer(1024)
-                        .sendBuffer(1024)
-                        .build())
-                .readSelectorSettings(ReadSelectorSettings
-                    .builder()
-                    .readBufferSize(1024)
-                    .build())
-                .build());
+            .build();
 
         proxy.start();
         proxy.waitForRunning();
