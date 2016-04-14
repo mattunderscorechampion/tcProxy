@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.proxy.selector;
 
 import java.io.IOException;
+import java.net.ConnectException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,11 +72,11 @@ import com.mattunderscore.tcproxy.selector.server.Server;
 
     @Override
     public void onConnect(final IOSocketChannel clientSide) {
-        LOG.info("{} : Accepted {}", this, clientSide);
+        LOG.info("Accepted {}", this, clientSide);
         factory.createConnection(new AsynchronousOutboundConnectionFactory.ConnectionCallback() {
             @Override
             public void onConnected(IOOutboundSocketChannel serverSide) {
-                LOG.info("{} : Opened {}", this, serverSide);
+                LOG.info("Opened {}", this, serverSide);
                 final ActionQueue actionQueue0 = new ActionQueueImpl(settings.getWriteQueueSize(), settings.getBatchSize());
                 final ActionQueue actionQueue1 = new ActionQueueImpl(settings.getWriteQueueSize(), settings.getBatchSize());
                 final Direction direction0 = new DirectionImpl(clientSide, serverSide, actionQueue0);
@@ -89,7 +90,18 @@ import com.mattunderscore.tcproxy.selector.server.Server;
 
             @Override
             public void onException(IOException e) {
-                LOG.warn("{} : There was an exception attempting to connect an outbound channel", this, e);
+                if (e instanceof ConnectException) {
+                    LOG.warn("The target server did not accept the outbound connection");
+                    try {
+                        clientSide.close();
+                    }
+                    catch (IOException e1) {
+                        LOG.warn("There was an exception attempting to close the inbound connection", e1);
+                    }
+                }
+                else {
+                    LOG.warn("There was an exception attempting to connect an outbound channel", e);
+                }
             }
         });
     }
