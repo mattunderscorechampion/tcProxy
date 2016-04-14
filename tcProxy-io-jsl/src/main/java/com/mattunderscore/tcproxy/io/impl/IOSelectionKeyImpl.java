@@ -102,7 +102,9 @@ final class IOSelectionKeyImpl implements IOSelectionKey {
 
     @Override
     public void clearInterestedOperation(Op op) {
-        keyDelegate.interestOps(keyDelegate.interestOps() & ~mapToIntFromOp(op));
+        if (keyDelegate.isValid()) {
+            keyDelegate.interestOps(keyDelegate.interestOps() & ~mapToIntFromOp(op));
+        }
     }
 
     @Override
