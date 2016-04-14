@@ -40,4 +40,10 @@ public interface IOSocketChannel extends IOMultiOpSelectableChannel, IOByteChann
      * @throws IOException
      */
     SocketAddress getRemoteAddress() throws IOException;
+
+    /**
+     * Close the socket with a reset packet.
+     * @throws IOException
+     */
+    void abort() throws IOException;
 }

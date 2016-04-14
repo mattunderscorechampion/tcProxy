@@ -27,6 +27,7 @@ package com.mattunderscore.tcproxy.io.impl;
 
 import java.io.IOException;
 import java.net.SocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
@@ -34,9 +35,9 @@ import java.nio.channels.SocketChannel;
 import java.util.Set;
 
 import com.mattunderscore.tcproxy.io.data.CircularBuffer;
-import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.selection.IOSelector;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.socket.IOSocketOption;
 
 /**
@@ -78,6 +79,13 @@ final class IOSocketChannelImpl implements IOOutboundSocketChannel {
     @Override
     public <T> T get(IOSocketOption<T> option) throws IOException {
         return IOUtils.convertSocketOption(option).lookup(channel);
+    }
+
+    @Override
+    public void abort() throws IOException {
+        // http://docs.oracle.com/javase/8/docs/technotes/guides/net/articles/connection_release.html
+        channel.setOption(StandardSocketOptions.SO_LINGER, 0);
+        channel.close();
     }
 
     @Override

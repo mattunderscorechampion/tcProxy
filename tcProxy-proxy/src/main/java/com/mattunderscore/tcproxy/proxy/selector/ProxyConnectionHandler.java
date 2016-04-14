@@ -93,7 +93,7 @@ import com.mattunderscore.tcproxy.selector.server.Server;
                 if (e instanceof ConnectException) {
                     LOG.warn("The target server did not accept the outbound connection");
                     try {
-                        clientSide.close();
+                        clientSide.abort();
                     }
                     catch (IOException e1) {
                         LOG.warn("There was an exception attempting to close the inbound connection", e1);
