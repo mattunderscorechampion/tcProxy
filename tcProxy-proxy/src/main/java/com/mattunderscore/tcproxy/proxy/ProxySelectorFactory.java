@@ -49,6 +49,7 @@ import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 
 /**
+ * {@link SelectorFactory} for a proxy server.
  * @author Matt Champion on 30/03/2016
  */
 final class ProxySelectorFactory implements SelectorFactory<SocketChannelSelector> {
@@ -81,17 +82,17 @@ final class ProxySelectorFactory implements SelectorFactory<SocketChannelSelecto
 
         final SocketChannelSelector selector = connectingSelectorFactory.create();
 
-        final ByteBuffer circularBuffer = ByteBuffer.allocateDirect(readSelectorSettings.getReadBufferSize());
+        final ByteBuffer readBuffer = ByteBuffer.allocateDirect(readSelectorSettings.getReadBufferSize());
         manager.addListener(new ConnectionManager.Listener() {
             @Override
             public void newConnection(final Connection connection) {
                 final Direction cTs = connection.clientToServer();
                 final IOSocketChannel channel0 = cTs.getFrom();
-                selector.register(channel0, IOSelectionKey.Op.READ, new ReadSelectionRunnable(cTs, connection, circularBuffer));
+                selector.register(channel0, IOSelectionKey.Op.READ, new ReadSelectionRunnable(cTs, connection, readBuffer));
 
                 final Direction sTc = connection.serverToClient();
                 final IOSocketChannel channel1 = sTc.getFrom();
-                selector.register(channel1, IOSelectionKey.Op.READ, new ReadSelectionRunnable(sTc, connection, circularBuffer));
+                selector.register(channel1, IOSelectionKey.Op.READ, new ReadSelectionRunnable(sTc, connection, readBuffer));
             }
 
             @Override
