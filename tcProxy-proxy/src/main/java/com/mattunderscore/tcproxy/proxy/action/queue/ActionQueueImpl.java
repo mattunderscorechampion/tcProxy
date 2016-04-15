@@ -52,12 +52,6 @@ public final class ActionQueueImpl implements ActionQueue {
     }
 
     @Override
-    public int actionsPending() {
-        final Action currentAction = current;
-        return actions.size() + (currentAction != null && !currentAction.writeComplete() ? 1 : 0);
-    }
-
-    @Override
     public void add(final Action action) {
         actions.add(action);
     }

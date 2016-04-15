@@ -131,9 +131,9 @@ public final class ProxyServerMain {
                                 final Direction clientToServer = connection.clientToServer();
                                 final Direction serverToClient = connection.serverToClient();
                                 LOG.info(String.format("Read %d bytes from %s", clientToServer.read(), clientToServer.getFrom()));
-                                LOG.info(String.format("Wrote %d bytes to %s %d ops queued", clientToServer.written(), clientToServer.getTo(), clientToServer.getQueue().actionsPending()));
+                                LOG.info(String.format("Wrote %d bytes to %s", clientToServer.written(), clientToServer.getTo()));
                                 LOG.info(String.format("Read %d bytes from %s", serverToClient.read(), serverToClient.getFrom()));
-                                LOG.info(String.format("Wrote %d bytes to %s %d ops queued", serverToClient.written(), serverToClient.getTo(), serverToClient.getQueue().actionsPending()));
+                                LOG.info(String.format("Wrote %d bytes to %s", serverToClient.written(), serverToClient.getTo()));
                             }
                         }, 1, 5, TimeUnit.SECONDS));
                     }

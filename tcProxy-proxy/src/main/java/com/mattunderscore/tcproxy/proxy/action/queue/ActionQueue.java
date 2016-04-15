@@ -53,9 +53,4 @@ public interface ActionQueue {
      * @return If there are any queued actions
      */
     boolean hasData();
-
-    /**
-     * @return The number of actions in the queue
-     */
-    int actionsPending();
 }
