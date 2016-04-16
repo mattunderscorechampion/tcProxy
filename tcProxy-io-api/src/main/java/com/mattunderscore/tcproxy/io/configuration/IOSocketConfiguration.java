@@ -38,5 +38,5 @@ public interface IOSocketConfiguration<T extends IOSocket> {
      * @param ioSocket The socket to apply the configuration to
      * @throws IOException If the configuration could not be applied
      */
-    void apply(T ioSocket) throws IOException;
+    T apply(T ioSocket) throws IOException;
 }

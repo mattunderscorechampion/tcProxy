@@ -33,13 +33,13 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
-import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 
 /**
  * A task that accepts and completes socket connections.
@@ -49,12 +49,15 @@ public final class AcceptingTask implements SelectionRunnable<IOServerSocketChan
     private static final Logger LOG = LoggerFactory.getLogger("accept");
     private final SocketChannelSelector selector;
     private final ConnectionHandler connectionHandler;
-    private final SocketConfigurator socketConfigurator;
+    private final IOSocketConfiguration<IOSocketChannel> socketSettings;
 
-    public AcceptingTask(SocketChannelSelector selector, ConnectionHandler connectionHandler, SocketConfigurator socketConfigurator) {
+    public AcceptingTask(
+            SocketChannelSelector selector,
+            ConnectionHandler connectionHandler,
+            IOSocketConfiguration<IOSocketChannel> socketSettings) {
         this.selector = selector;
         this.connectionHandler = connectionHandler;
-        this.socketConfigurator = socketConfigurator;
+        this.socketSettings = socketSettings;
     }
 
     @Override
@@ -72,7 +75,7 @@ public final class AcceptingTask implements SelectionRunnable<IOServerSocketChan
 
             try {
                 if (channel != null) {
-                    socketConfigurator
+                    socketSettings
                         .apply(channel)
                         .set(BLOCKING, false);
                     if (channel.finishConnect()) {

@@ -38,16 +38,14 @@ import com.mattunderscore.tcproxy.examples.data.ThrottledDataProducer;
 import com.mattunderscore.tcproxy.examples.selector.EchoServer;
 import com.mattunderscore.tcproxy.examples.workers.Consumer;
 import com.mattunderscore.tcproxy.examples.workers.Producer;
+import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.proxy.ProxyServerBuilder;
-import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
-import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.Server;
 import com.mattunderscore.tcproxy.selector.server.ServerConfig;
-import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
  * Example combining proxy and echo servers for bidirectional proxing.
@@ -87,11 +85,10 @@ public final class BiDirectionalExample {
                         .build())
                 .selectorThreads(1)
                 .inboundSocketSettings(
-                    SocketSettings
-                        .builder()
+                    IOSocketChannelConfiguration
+                        .defaultConfig()
                         .receiveBuffer(1024)
                         .sendBuffer(1024)
-                        .build()
                 )
                 .build());
         echoSever.start();

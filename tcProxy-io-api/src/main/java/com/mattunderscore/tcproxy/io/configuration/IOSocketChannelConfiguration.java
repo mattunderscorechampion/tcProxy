@@ -30,9 +30,9 @@ import static com.mattunderscore.tcproxy.io.socket.IOSocketOption.TCP_NO_DELAY;
 
 import java.io.IOException;
 
-import net.jcip.annotations.Immutable;
-
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
+
+import net.jcip.annotations.Immutable;
 
 /**
  * A configuration for {@link IOSocketChannel}s.
@@ -63,7 +63,7 @@ public final class IOSocketChannelConfiguration extends AbstractIOSocketConfigur
     }
 
     @Override
-    public void apply(IOSocketChannel ioSocketChannel) throws IOException {
+    public IOSocketChannel apply(IOSocketChannel ioSocketChannel) throws IOException {
         super.apply(ioSocketChannel);
 
         if (keepAlive != null) {
@@ -72,6 +72,8 @@ public final class IOSocketChannelConfiguration extends AbstractIOSocketConfigur
         if (noDelay != null) {
             ioSocketChannel.set(TCP_NO_DELAY, noDelay);
         }
+
+        return ioSocketChannel;
     }
 
     /**

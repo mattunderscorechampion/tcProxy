@@ -29,15 +29,16 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
 import com.mattunderscore.tcproxy.io.selection.IOSelector;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.NoBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.connecting.task.AcceptingTask;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
-import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 
 /**
  * Factory for {@link ConnectingSelector}.
@@ -47,35 +48,35 @@ public final class ConnectingSelectorFactory implements SelectorFactory<Connecti
     private final IOFactory ioFactory;
     private final Collection<IOServerSocketChannel> serverSocketChannels;
     private final ConnectionHandlerFactory connectionHandlerFactory;
-    private final SocketConfigurator socketConfigurator;
+    private final IOSocketConfiguration<IOSocketChannel> socketSettings;
     private final SelectorBackoff backoff;
 
     public ConnectingSelectorFactory(
         IOFactory ioFactory,
         IOServerSocketChannel channel,
         ConnectionHandlerFactory connectionHandlerFactory,
-        SocketConfigurator socketConfigurator) {
-        this(ioFactory, Collections.singleton(channel), connectionHandlerFactory, socketConfigurator);
+        IOSocketConfiguration<IOSocketChannel> socketSettings) {
+        this(ioFactory, Collections.singleton(channel), connectionHandlerFactory, socketSettings);
     }
 
     public ConnectingSelectorFactory(
             IOFactory ioFactory,
             Collection<IOServerSocketChannel> serverSocketChannels,
             ConnectionHandlerFactory connectionHandlerFactory,
-            SocketConfigurator socketConfigurator) {
-        this(ioFactory, serverSocketChannels, connectionHandlerFactory, socketConfigurator, new NoBackoff());
+            IOSocketConfiguration<IOSocketChannel> socketSettings) {
+        this(ioFactory, serverSocketChannels, connectionHandlerFactory, socketSettings, new NoBackoff());
     }
 
     public ConnectingSelectorFactory(
         IOFactory ioFactory,
         Collection<IOServerSocketChannel> serverSocketChannels,
         ConnectionHandlerFactory connectionHandlerFactory,
-        SocketConfigurator socketConfigurator,
+        IOSocketConfiguration<IOSocketChannel> socketSettings,
         SelectorBackoff backoff) {
         this.ioFactory = ioFactory;
         this.serverSocketChannels = serverSocketChannels;
         this.connectionHandlerFactory = connectionHandlerFactory;
-        this.socketConfigurator = socketConfigurator;
+        this.socketSettings = socketSettings;
         this.backoff = backoff;
     }
 
@@ -87,7 +88,7 @@ public final class ConnectingSelectorFactory implements SelectorFactory<Connecti
         for (final IOServerSocketChannel serverSocketChannel : serverSocketChannels) {
             generalPurposeSelector.register(
                 serverSocketChannel,
-                new AcceptingTask(selector, connectionHandlerFactory.create(selector), socketConfigurator));
+                new AcceptingTask(selector, connectionHandlerFactory.create(selector), socketSettings));
         }
         return selector;
     }

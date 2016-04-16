@@ -29,15 +29,17 @@ import static java.util.Objects.requireNonNull;
 
 import java.net.InetSocketAddress;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
 import com.mattunderscore.tcproxy.io.impl.JSLIOFactory;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.NoBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.server.AbstractServerBuilder;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.Server;
 import com.mattunderscore.tcproxy.selector.server.ServerImpl;
-import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
  * @author Matt Champion on 16/04/2016
@@ -50,7 +52,7 @@ public final class SimpleProxyBuilder extends AbstractServerBuilder<SimpleProxyB
 
     protected SimpleProxyBuilder(
             AcceptSettings acceptSettings,
-            SocketSettings socketSettings,
+            IOSocketConfiguration<IOSocketChannel> socketSettings,
             IOFactory ioFactory,
             int selectorThreads,
             SelectorBackoff selectorBackoff,
@@ -78,7 +80,7 @@ public final class SimpleProxyBuilder extends AbstractServerBuilder<SimpleProxyB
     }
 
     @Override
-    protected SimpleProxyBuilder newServerBuilder(AcceptSettings acceptSettings, SocketSettings socketSettings) {
+    protected SimpleProxyBuilder newServerBuilder(AcceptSettings acceptSettings, IOSocketConfiguration<IOSocketChannel> socketSettings) {
         return new SimpleProxyBuilder(
             acceptSettings,
             socketSettings,
@@ -94,7 +96,10 @@ public final class SimpleProxyBuilder extends AbstractServerBuilder<SimpleProxyB
     public static SimpleProxyBuilder builder() {
         return new SimpleProxyBuilder(
             null,
-            SocketSettings.builder().receiveBuffer(4096).sendBuffer(4096).build(),
+            IOSocketChannelConfiguration
+                .defaultConfig()
+                .receiveBuffer(4096)
+                .sendBuffer(4096),
             new JSLIOFactory(),
             1,
             new NoBackoff(),

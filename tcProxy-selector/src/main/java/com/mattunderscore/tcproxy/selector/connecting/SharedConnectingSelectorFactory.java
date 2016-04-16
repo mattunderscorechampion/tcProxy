@@ -30,11 +30,13 @@ import static java.util.Collections.singleton;
 import java.io.IOException;
 import java.util.Collection;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocket;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.connecting.task.AcceptingTask;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
-import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 
 /**
  * @author Matt Champion on 22/11/2015
@@ -43,27 +45,27 @@ public final class SharedConnectingSelectorFactory implements SelectorFactory<Co
     private final GeneralPurposeSelector generalPurposeSelector;
     private final Collection<IOServerSocketChannel> serverSocketChannels;
     private final ConnectionHandlerFactory connectionHandlerFactory;
-    private final SocketConfigurator socketConfigurator;
+    private final IOSocketConfiguration<IOSocketChannel> socketSettings;
 
     public SharedConnectingSelectorFactory(
         GeneralPurposeSelector generalPurposeSelector,
         IOServerSocketChannel serverSocketChannel,
         ConnectionHandlerFactory connectionHandlerFactory,
-        SocketConfigurator socketConfigurator) {
+        IOSocketConfiguration<IOSocketChannel> socketSettings) {
 
-        this(generalPurposeSelector, singleton(serverSocketChannel), connectionHandlerFactory, socketConfigurator);
+        this(generalPurposeSelector, singleton(serverSocketChannel), connectionHandlerFactory, socketSettings);
     }
 
     public SharedConnectingSelectorFactory(
         GeneralPurposeSelector generalPurposeSelector,
         Collection<IOServerSocketChannel> serverSocketChannels,
         ConnectionHandlerFactory connectionHandlerFactory,
-        SocketConfigurator socketConfigurator) {
+        IOSocketConfiguration<IOSocketChannel> socketSettings) {
 
         this.generalPurposeSelector = generalPurposeSelector;
         this.serverSocketChannels = serverSocketChannels;
         this.connectionHandlerFactory = connectionHandlerFactory;
-        this.socketConfigurator = socketConfigurator;
+        this.socketSettings = socketSettings;
     }
 
     @Override
@@ -72,7 +74,7 @@ public final class SharedConnectingSelectorFactory implements SelectorFactory<Co
         for (final IOServerSocketChannel serverSocketChannel : serverSocketChannels) {
             generalPurposeSelector.register(
                 serverSocketChannel,
-                new AcceptingTask(selector, connectionHandlerFactory.create(selector), socketConfigurator));
+                new AcceptingTask(selector, connectionHandlerFactory.create(selector), socketSettings));
         }
         return selector;
     }

@@ -62,9 +62,10 @@ public final class IOServerSocketChannelConfiguration extends AbstractIOSocketCo
     }
 
     @Override
-    public void apply(IOServerSocketChannel ioSocket) throws IOException {
+    public IOServerSocketChannel apply(IOServerSocketChannel ioSocket) throws IOException {
         super.apply(ioSocket);
         ioSocket.bind(boundSocket);
+        return ioSocket;
     }
 
     @Override

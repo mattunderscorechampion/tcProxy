@@ -35,6 +35,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
 import com.mattunderscore.tcproxy.io.impl.JSLIOFactory;
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
@@ -53,8 +55,6 @@ import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.Server;
 import com.mattunderscore.tcproxy.selector.server.ServerConfig;
 import com.mattunderscore.tcproxy.selector.server.ServerStarter;
-import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
-import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 import com.mattunderscore.tcproxy.workers.WorkerRunnable;
 
 /**
@@ -71,11 +71,10 @@ public final class DiscardServer {
                         .builder()
                         .selectorThreads(2)
                         .inboundSocketSettings(
-                                SocketSettings
-                                        .builder()
-                                        .receiveBuffer(1024)
-                                        .sendBuffer(1024)
-                                        .build())
+                                IOSocketChannelConfiguration
+                                    .defaultConfig()
+                                    .receiveBuffer(1024)
+                                    .sendBuffer(1024))
                         .acceptSettings(
                                 AcceptSettings
                                         .builder()
@@ -106,7 +105,6 @@ public final class DiscardServer {
                     if (read < 0) {
                         handle.cancel();
                         socket.close();
-                        return;
                     }
                 }
                 catch (IOException e) {
@@ -117,9 +115,13 @@ public final class DiscardServer {
     }
 
     private final static class DiscardServerStarter extends AbstractServerStarter {
-        private final SocketSettings inboundSocketSettings;
+        private final IOSocketConfiguration<IOSocketChannel> inboundSocketSettings;
 
-        protected DiscardServerStarter(IOFactory ioFactory, Iterable<Integer> portsToListenOn, int selectorThreads, SocketSettings inboundSocketSettings) {
+        protected DiscardServerStarter(
+                IOFactory ioFactory,
+                Iterable<Integer> portsToListenOn,
+                int selectorThreads,
+                IOSocketConfiguration<IOSocketChannel> inboundSocketSettings) {
             super(ioFactory, portsToListenOn, selectorThreads);
             this.inboundSocketSettings = inboundSocketSettings;
         }
@@ -142,7 +144,7 @@ public final class DiscardServer {
                             };
                         }
                     },
-                    new SocketConfigurator(inboundSocketSettings));
+                    inboundSocketSettings);
         }
     }
 

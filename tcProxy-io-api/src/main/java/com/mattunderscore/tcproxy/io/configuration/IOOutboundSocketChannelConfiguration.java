@@ -62,12 +62,14 @@ public final class IOOutboundSocketChannelConfiguration extends AbstractIOSocket
     }
 
     @Override
-    public void apply(IOOutboundSocketChannel ioSocketChannel) throws IOException {
+    public IOOutboundSocketChannel apply(IOOutboundSocketChannel ioSocketChannel) throws IOException {
         super.apply(ioSocketChannel);
 
         ioSocketChannel.set(KEEP_ALIVE, keepAlive);
         ioSocketChannel.set(TCP_NO_DELAY, noDelay);
         ioSocketChannel.bind(boundSocket);
+
+        return ioSocketChannel;
     }
 
     @Override

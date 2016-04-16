@@ -71,7 +71,7 @@ public abstract class AbstractIOSocketConfiguration<T extends IOSocket, S extend
     }
 
     @Override
-    public void apply(T ioSocket) throws IOException {
+    public T apply(T ioSocket) throws IOException {
         ioSocket.set(BLOCKING, blocking);
         ioSocket.set(REUSE_ADDRESS, reuseAddress);
         if (receiveBuffer != null) {
@@ -83,6 +83,7 @@ public abstract class AbstractIOSocketConfiguration<T extends IOSocket, S extend
         if (linger != null) {
             ioSocket.set(LINGER, linger);
         }
+        return ioSocket;
     }
 
     /**

@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
@@ -46,7 +47,6 @@ import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.selector.connecting.SharedConnectingSelectorFactory;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
-import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 
 /**
  * {@link SelectorFactory} for a proxy server.
@@ -54,15 +54,21 @@ import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
  */
 final class ProxySelectorFactory implements SelectorFactory<SocketChannelSelector> {
     private final Collection<IOServerSocketChannel> listenChannels;
-    private final SocketConfigurator socketConfigurator;
+    private final IOSocketConfiguration<IOSocketChannel> socketSettings;
     private final ConnectionHandlerFactory connectionHandlerFactory;
     private final ConnectionManager manager;
     private final ReadSelectorSettings readSelectorSettings;
     private final SelectorBackoff selectorBackoff;
 
-    public ProxySelectorFactory(ConnectionHandlerFactory connectionHandlerFactory, ConnectionManager manager, ReadSelectorSettings readSelectorSettings, SelectorBackoff selectorBackoff, Collection<IOServerSocketChannel> listenChannels, SocketConfigurator socketConfigurator) {
+    public ProxySelectorFactory(
+            ConnectionHandlerFactory connectionHandlerFactory,
+            ConnectionManager manager,
+            ReadSelectorSettings readSelectorSettings,
+            SelectorBackoff selectorBackoff,
+            Collection<IOServerSocketChannel> listenChannels,
+            IOSocketConfiguration<IOSocketChannel> socketSettings) {
         this.listenChannels = listenChannels;
-        this.socketConfigurator = socketConfigurator;
+        this.socketSettings = socketSettings;
         this.connectionHandlerFactory = connectionHandlerFactory;
         this.manager = manager;
         this.readSelectorSettings = readSelectorSettings;
@@ -78,7 +84,7 @@ final class ProxySelectorFactory implements SelectorFactory<SocketChannelSelecto
             generalPurposeSelector,
             listenChannels,
             connectionHandlerFactory,
-            socketConfigurator);
+            socketSettings);
 
         final SocketChannelSelector selector = connectingSelectorFactory.create();
 

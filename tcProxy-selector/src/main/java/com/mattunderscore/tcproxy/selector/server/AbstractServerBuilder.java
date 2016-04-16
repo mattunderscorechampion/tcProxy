@@ -27,15 +27,18 @@ package com.mattunderscore.tcproxy.selector.server;
 
 import static java.util.Objects.requireNonNull;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
+
 /**
  * An abstract builder for servers.
  * @author Matt Champion on 13/04/2016
  */
 public abstract class AbstractServerBuilder<B extends ServerBuilder<B>> implements ServerBuilder<B> {
     protected final AcceptSettings acceptSettings;
-    protected final SocketSettings socketSettings;
+    protected final IOSocketConfiguration<IOSocketChannel> socketSettings;
 
-    protected AbstractServerBuilder(AcceptSettings acceptSettings, SocketSettings socketSettings) {
+    protected AbstractServerBuilder(AcceptSettings acceptSettings, IOSocketConfiguration<IOSocketChannel> socketSettings) {
         this.acceptSettings = acceptSettings;
         this.socketSettings = socketSettings;
     }
@@ -48,7 +51,7 @@ public abstract class AbstractServerBuilder<B extends ServerBuilder<B>> implemen
     }
 
     @Override
-    public final B socketSettings(SocketSettings socketSettings) {
+    public final B socketSettings(IOSocketConfiguration<IOSocketChannel> socketSettings) {
         requireNonNull(socketSettings, "Socket settings cannot be null");
 
         return newServerBuilder(acceptSettings, socketSettings);
@@ -57,5 +60,5 @@ public abstract class AbstractServerBuilder<B extends ServerBuilder<B>> implemen
     @Override
     public abstract Server build();
 
-    protected abstract B newServerBuilder(AcceptSettings acceptSettings, SocketSettings socketSettings);
+    protected abstract B newServerBuilder(AcceptSettings acceptSettings, IOSocketConfiguration<IOSocketChannel> socketSettings);
 }

@@ -25,6 +25,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.server;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
+
 import lombok.Builder;
 import lombok.Value;
 
@@ -36,6 +39,6 @@ import lombok.Value;
 @Value
 public final class ServerConfig {
     AcceptSettings acceptSettings;
-    SocketSettings inboundSocketSettings;
+    IOSocketConfiguration<IOSocketChannel> inboundSocketSettings;
     int selectorThreads;
 }

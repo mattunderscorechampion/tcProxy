@@ -32,8 +32,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.selector.ProxyConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
@@ -45,8 +47,6 @@ import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.selector.server.AbstractServerStarter;
 import com.mattunderscore.tcproxy.selector.server.Server;
-import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
-import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
  * Starter for {@link ProxyServer}.
@@ -57,7 +57,7 @@ final class ProxyServerStarter extends AbstractServerStarter {
     private static final AtomicInteger THREAD_COUNT = new AtomicInteger(0);
     private final SelectorBackoff selectorBackoff;
     private final ConnectionManager manager;
-    private final SocketSettings inboundSocketSettings;
+    private final IOSocketConfiguration<IOSocketChannel> socketSettings;
     private final ReadSelectorSettings readSelectorSettings;
     private final ConnectionHandlerFactory connectionHandlerFactory;
 
@@ -69,12 +69,12 @@ final class ProxyServerStarter extends AbstractServerStarter {
             SelectorBackoff selectorBackoff,
             ConnectionSettings connectionSettings,
             ConnectionManager manager,
-            SocketSettings inboundSocketSettings,
+            IOSocketConfiguration<IOSocketChannel> socketSettings,
             ReadSelectorSettings readSelectorSettings) {
         super(ioFactory, portsToListenOn, selectorThreads);
         this.selectorBackoff = selectorBackoff;
         this.manager = manager;
-        this.inboundSocketSettings = inboundSocketSettings;
+        this.socketSettings = socketSettings;
         this.readSelectorSettings = readSelectorSettings;
 
         connectionHandlerFactory = new ProxyConnectionHandlerFactory(
@@ -102,8 +102,13 @@ final class ProxyServerStarter extends AbstractServerStarter {
 
     @Override
     protected SelectorFactory<SocketChannelSelector> getSelectorFactory(final Collection<IOServerSocketChannel> listenChannels) {
-        final SocketConfigurator socketConfigurator = new SocketConfigurator(inboundSocketSettings);
-        return new ProxySelectorFactory(connectionHandlerFactory, manager, readSelectorSettings, selectorBackoff, listenChannels, socketConfigurator);
+        return new ProxySelectorFactory(
+            connectionHandlerFactory,
+            manager,
+            readSelectorSettings,
+            selectorBackoff,
+            listenChannels,
+            socketSettings);
     }
 
     private final class ExceptionHandler implements Thread.UncaughtExceptionHandler {

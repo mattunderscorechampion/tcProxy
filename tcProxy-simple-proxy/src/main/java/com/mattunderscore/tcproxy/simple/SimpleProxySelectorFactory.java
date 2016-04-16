@@ -30,7 +30,9 @@ import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.openSelector;
 import java.io.IOException;
 import java.util.Collection;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
@@ -38,26 +40,25 @@ import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.selector.connecting.SharedConnectingSelectorFactory;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
-import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 
 /**
  * @author Matt Champion on 15/04/2016
  */
 /* package */ final class SimpleProxySelectorFactory implements SelectorFactory<SocketChannelSelector> {
     private final Collection<IOServerSocketChannel> listenChannels;
-    private final SocketConfigurator socketConfigurator;
+    private final IOSocketConfiguration<IOSocketChannel> socketSettings;
     private final ConnectionHandlerFactory connectionHandlerFactory;
     private final SelectorBackoff selectorBackoff;
 
     public SimpleProxySelectorFactory(
-            ConnectionHandlerFactory connectionHandlerFactory,
-            SelectorBackoff selectorBackoff,
-            Collection<IOServerSocketChannel> listenChannels,
-            SocketConfigurator socketConfigurator) {
+        ConnectionHandlerFactory connectionHandlerFactory,
+        SelectorBackoff selectorBackoff,
+        Collection<IOServerSocketChannel> listenChannels,
+        IOSocketConfiguration<IOSocketChannel> socketSettings) {
         this.connectionHandlerFactory = connectionHandlerFactory;
         this.selectorBackoff = selectorBackoff;
         this.listenChannels = listenChannels;
-        this.socketConfigurator = socketConfigurator;
+        this.socketSettings = socketSettings;
     }
 
     @Override
@@ -69,7 +70,7 @@ import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
             generalPurposeSelector,
             listenChannels,
             connectionHandlerFactory,
-            socketConfigurator);
+            socketSettings);
 
         return connectingSelectorFactory.create();
     }

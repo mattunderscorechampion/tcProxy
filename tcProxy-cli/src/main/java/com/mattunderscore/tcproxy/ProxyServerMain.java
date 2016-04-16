@@ -46,6 +46,7 @@ import com.mattunderscore.tcproxy.cli.arguments.Option;
 import com.mattunderscore.tcproxy.cli.arguments.OptionsParser;
 import com.mattunderscore.tcproxy.cli.arguments.Setting;
 import com.mattunderscore.tcproxy.cli.arguments.StringParser;
+import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.proxy.ProxyServerBuilder;
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
@@ -55,7 +56,6 @@ import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.Server;
-import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
  * @author matt on 18/02/14.
@@ -98,11 +98,10 @@ public final class ProxyServerMain {
                         .batchSize((Integer)settings.get(BATCH_SIZE))
                         .build())
                 .socketSettings(
-                    SocketSettings
-                        .builder()
+                    IOSocketChannelConfiguration
+                        .defaultConfig()
                         .receiveBuffer((Integer) settings.get(RECEIVE_BUFFER))
-                        .sendBuffer((Integer) settings.get(SEND_BUFFER))
-                        .build())
+                        .sendBuffer((Integer) settings.get(SEND_BUFFER)))
                 .outboundSocketSettings(
                     OutboundSocketSettings
                         .builder()
@@ -163,7 +162,7 @@ public final class ProxyServerMain {
         }
     }
 
-    private static final Option<?>[] getOptions() {
+    private static Option<?>[] getOptions() {
         return new Option<?>[] {
             HELP,
             INBOUND_PORT,
@@ -176,7 +175,7 @@ public final class ProxyServerMain {
         };
     }
 
-    private static final Map<Option<?>, Object> getSettings(String[] args) {
+    private static Map<Option<?>, Object> getSettings(String[] args) {
         final Map<Option<?>, Object> map = new HashMap<>();
         final Option<?>[] options = getOptions();
         final OptionsParser parser = new OptionsParser(options);

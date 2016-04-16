@@ -25,13 +25,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.server;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
+
 /**
  * @author Matt Champion on 13/04/2016
  */
 public interface ServerBuilder<B extends ServerBuilder<B>> {
     B acceptSettings(AcceptSettings acceptSettings);
 
-    B socketSettings(SocketSettings socketSettings);
+    B socketSettings(IOSocketConfiguration<IOSocketChannel> socketSettings);
 
     Server build();
 }

@@ -27,8 +27,11 @@ package com.mattunderscore.tcproxy.proxy;
 
 import static java.util.Objects.requireNonNull;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
 import com.mattunderscore.tcproxy.io.impl.JSLIOFactory;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
@@ -40,7 +43,6 @@ import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.Server;
 import com.mattunderscore.tcproxy.selector.server.ServerBuilder;
 import com.mattunderscore.tcproxy.selector.server.ServerImpl;
-import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
  * An implementation of {@link ServerBuilder} for proxy servers.
@@ -57,7 +59,7 @@ public final class ProxyServerBuilder extends AbstractServerBuilder<ProxyServerB
 
     protected ProxyServerBuilder(
             AcceptSettings acceptSettings,
-            SocketSettings socketSettings,
+            IOSocketConfiguration<IOSocketChannel> socketSettings,
             ConnectionSettings connectionSettings,
             OutboundSocketSettings outboundSocketSettings,
             ReadSelectorSettings readSelectorSettings,
@@ -200,7 +202,7 @@ public final class ProxyServerBuilder extends AbstractServerBuilder<ProxyServerB
     }
 
     @Override
-    protected ProxyServerBuilder newServerBuilder(AcceptSettings acceptSettings, SocketSettings socketSettings) {
+    protected ProxyServerBuilder newServerBuilder(AcceptSettings acceptSettings, IOSocketConfiguration<IOSocketChannel> socketSettings) {
         return new ProxyServerBuilder(
             acceptSettings,
             socketSettings,
@@ -219,11 +221,10 @@ public final class ProxyServerBuilder extends AbstractServerBuilder<ProxyServerB
     public static ProxyServerBuilder builder() {
         return new ProxyServerBuilder(
             null,
-            SocketSettings
-                .builder()
+            IOSocketChannelConfiguration
+                .defaultConfig()
                 .receiveBuffer(1024)
-                .sendBuffer(1024)
-                .build(),
+                .sendBuffer(1024),
             ConnectionSettings
                 .builder()
                 .batchSize(1024)
