@@ -51,23 +51,21 @@ import com.mattunderscore.tcproxy.selector.server.SocketSettings;
     private static final Logger LOG = LoggerFactory.getLogger("server");
     private static final AtomicInteger THREAD_COUNT = new AtomicInteger(0);
     private final SelectorBackoff selectorBackoff;
-    private final SocketSettings inboundSocketSettings;
+    private final SocketSettings socketSettings;
     private final ConnectionHandlerFactory connectionHandlerFactory;
-    private final InetSocketAddress remote;
 
     /*packaage*/ SimpleProxyServerStarter(
         IOFactory ioFactory,
         Iterable<Integer> portsToListenOn,
         int selectorThreads,
         SelectorBackoff selectorBackoff,
-        SocketSettings inboundSocketSettings,
+        SocketSettings socketSettings,
         InetSocketAddress remote) {
         super(ioFactory, portsToListenOn, selectorThreads);
         this.selectorBackoff = selectorBackoff;
-        this.inboundSocketSettings = inboundSocketSettings;
-        this.remote = remote;
+        this.socketSettings = socketSettings;
 
-        connectionHandlerFactory = new SimpleProxyConnectionHandlerFactory(this.remote);
+        connectionHandlerFactory = new SimpleProxyConnectionHandlerFactory(remote);
     }
 
     @Override
@@ -90,7 +88,7 @@ import com.mattunderscore.tcproxy.selector.server.SocketSettings;
     @Override
     protected SelectorFactory<SocketChannelSelector> getSelectorFactory(
             Collection<IOServerSocketChannel> listenChannels) {
-        final SocketConfigurator socketConfigurator = new SocketConfigurator(inboundSocketSettings);
+        final SocketConfigurator socketConfigurator = new SocketConfigurator(socketSettings);
         return new SimpleProxySelectorFactory(
             connectionHandlerFactory,
             selectorBackoff,
