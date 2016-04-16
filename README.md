@@ -57,11 +57,18 @@ tcProxy Selector
 
 Module that provides a layer over the tcProxy IO API module to provide more friendly and common selector operations.
 
-tcProxy Proxy
-=============
+tcProxy Simple Proxy
+====================
 
 Module that implements a simple reverse proxy server. It uses non-blocking I/O, selectors and a limited number of
 threads to support multiple sockets.
+
+tcProxy Proxy
+=============
+
+Module that implements a reverse proxy server. It uses non-blocking I/O, selectors and a limited number of
+threads to support multiple sockets. It allows the data read to be processed and manipulated. Data can be dropped or
+delayed.
 
 tcProxy Graphical User Interface
 ================================

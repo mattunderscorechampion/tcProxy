@@ -28,6 +28,7 @@
         <module>tcProxy-examples</module>
         <module>tcProxy-selector</module>
         <module>tcProxy-workers</module>
+        <module>tcProxy-simple-proxy</module>
     </modules>
 
     <licenses>
@@ -97,6 +98,11 @@
             <dependency>
                 <groupId>com.mattunderscore.tcproxy</groupId>
                 <artifactId>tcProxy-selector</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mattunderscore.tcproxy</groupId>
+                <artifactId>tcProxy-simple-proxy</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

@@ -2,17 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
     <parent>
-        <groupId>com.mattunderscore.tcproxy</groupId>
         <artifactId>tcProxy-parent</artifactId>
+        <groupId>com.mattunderscore.tcproxy</groupId>
         <version>0.0.0-SNAPSHOT</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>tcProxy-proxy</artifactId>
-    <name>tcProxy Proxy</name>
-    <description>The implementation of a TCP proxy. Accepts incoming connections and forwards them
+    <artifactId>tcProxy-simple-proxy</artifactId>
+    <name>tcProxy Simple Proxy</name>
+    <description>The implementation of a simple TCP proxy. Accepts incoming connections and forwards them
         on.</description>
 
     <dependencies>
@@ -49,4 +48,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
 </project>
