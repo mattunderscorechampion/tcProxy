@@ -25,8 +25,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.simple;
 
-import static java.util.Collections.singleton;
-
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.concurrent.ThreadFactory;
@@ -36,23 +34,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
-import com.mattunderscore.tcproxy.io.impl.JSLIOFactory;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.selector.NoBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
 import com.mattunderscore.tcproxy.selector.server.AbstractServerStarter;
 import com.mattunderscore.tcproxy.selector.server.Server;
-import com.mattunderscore.tcproxy.selector.server.ServerImpl;
 import com.mattunderscore.tcproxy.selector.server.SocketConfigurator;
 import com.mattunderscore.tcproxy.selector.server.SocketSettings;
 
 /**
  * @author Matt Champion on 15/04/2016
  */
-public final class SimpleProxyServerStarter extends AbstractServerStarter {
+/*package*/ final class SimpleProxyServerStarter extends AbstractServerStarter {
     private static final Logger LOG = LoggerFactory.getLogger("server");
     private static final AtomicInteger THREAD_COUNT = new AtomicInteger(0);
     private final SelectorBackoff selectorBackoff;
@@ -60,12 +55,13 @@ public final class SimpleProxyServerStarter extends AbstractServerStarter {
     private final ConnectionHandlerFactory connectionHandlerFactory;
     private final InetSocketAddress remote;
 
-    protected SimpleProxyServerStarter(
+    /*packaage*/ SimpleProxyServerStarter(
         IOFactory ioFactory,
         Iterable<Integer> portsToListenOn,
         int selectorThreads,
         SelectorBackoff selectorBackoff,
-        SocketSettings inboundSocketSettings, InetSocketAddress remote) {
+        SocketSettings inboundSocketSettings,
+        InetSocketAddress remote) {
         super(ioFactory, portsToListenOn, selectorThreads);
         this.selectorBackoff = selectorBackoff;
         this.inboundSocketSettings = inboundSocketSettings;
@@ -114,24 +110,5 @@ public final class SimpleProxyServerStarter extends AbstractServerStarter {
             LOG.error("Uncaught exception in thread '{}'", t, e);
             server.stop();
         }
-    }
-
-    public static void main(String[] args) {
-        final SimpleProxyServerStarter starter = new SimpleProxyServerStarter(
-            new JSLIOFactory(),
-            singleton(8085),
-            1,
-            new NoBackoff(),
-            SocketSettings
-                .builder()
-                .receiveBuffer(1024)
-                .sendBuffer(1024)
-                .build(),
-            new InetSocketAddress("localhost", 8080));
-
-        final Server server = new ServerImpl(starter);
-
-        server.start();
-        server.waitForStopped();
     }
 }
