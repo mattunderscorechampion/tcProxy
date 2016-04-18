@@ -31,10 +31,10 @@ import static com.mattunderscore.tcproxy.io.socket.IOSocketOption.TCP_NO_DELAY;
 import java.io.IOException;
 import java.net.SocketAddress;
 
-import net.jcip.annotations.Immutable;
-
 import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
+
+import net.jcip.annotations.Immutable;
 
 /**
  * The configuration for {@link IOServerSocketChannel}s.
@@ -105,6 +105,23 @@ public final class IOOutboundSocketChannelConfiguration extends AbstractIOSocket
      */
     public IOOutboundSocketChannelConfiguration bind(SocketAddress localAddress) {
         return new IOOutboundSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, localAddress, keepAlive, noDelay);
+    }
+
+    /**
+     * Merge in {@link IOSocketChannelConfiguration}.
+     * @param channelConfiguration The configuration
+     * @return A new configuration with the provided configuration applied
+     */
+    public IOOutboundSocketChannelConfiguration configure(IOSocketChannelConfiguration channelConfiguration) {
+        return new IOOutboundSocketChannelConfiguration(
+            channelConfiguration.receiveBuffer != null ? channelConfiguration.receiveBuffer : receiveBuffer,
+            channelConfiguration.sendBuffer != null ? channelConfiguration.sendBuffer : sendBuffer,
+            channelConfiguration.blocking != null ? channelConfiguration.blocking : blocking,
+            channelConfiguration.linger != null ? channelConfiguration.linger : linger,
+            channelConfiguration.reuseAddress != null ? channelConfiguration.reuseAddress : reuseAddress,
+            boundSocket,
+            channelConfiguration.keepAlive != null ? channelConfiguration.keepAlive : keepAlive,
+            channelConfiguration.noDelay != null ? channelConfiguration.noDelay : noDelay);
     }
 
     @Override

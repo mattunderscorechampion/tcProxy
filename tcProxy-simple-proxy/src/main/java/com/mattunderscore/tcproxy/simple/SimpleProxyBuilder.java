@@ -52,7 +52,7 @@ public final class SimpleProxyBuilder extends AbstractServerBuilder<SimpleProxyB
 
     protected SimpleProxyBuilder(
             AcceptSettings acceptSettings,
-            IOSocketConfiguration<IOSocketChannel> socketSettings,
+            IOSocketChannelConfiguration socketSettings,
             IOFactory ioFactory,
             int selectorThreads,
             SelectorBackoff selectorBackoff,
@@ -80,7 +80,7 @@ public final class SimpleProxyBuilder extends AbstractServerBuilder<SimpleProxyB
     }
 
     @Override
-    protected SimpleProxyBuilder newServerBuilder(AcceptSettings acceptSettings, IOSocketConfiguration<IOSocketChannel> socketSettings) {
+    protected SimpleProxyBuilder newServerBuilder(AcceptSettings acceptSettings, IOSocketChannelConfiguration socketSettings) {
         return new SimpleProxyBuilder(
             acceptSettings,
             socketSettings,

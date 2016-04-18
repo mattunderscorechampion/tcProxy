@@ -164,7 +164,7 @@ public final class SettingsPanel extends JPanel {
             .build();
     }
 
-    public IOSocketConfiguration<IOSocketChannel> getInboundSocketSettings() {
+    public IOSocketChannelConfiguration getInboundSocketSettings() {
         return IOSocketChannelConfiguration
             .defaultConfig()
             .receiveBuffer(parseInt(inboundReceiveBufferSize.getText()))

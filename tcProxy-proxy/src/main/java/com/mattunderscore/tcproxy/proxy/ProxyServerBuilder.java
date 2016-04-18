@@ -59,7 +59,7 @@ public final class ProxyServerBuilder extends AbstractServerBuilder<ProxyServerB
 
     protected ProxyServerBuilder(
             AcceptSettings acceptSettings,
-            IOSocketConfiguration<IOSocketChannel> socketSettings,
+            IOSocketChannelConfiguration socketSettings,
             ConnectionSettings connectionSettings,
             OutboundSocketSettings outboundSocketSettings,
             ReadSelectorSettings readSelectorSettings,
@@ -202,7 +202,7 @@ public final class ProxyServerBuilder extends AbstractServerBuilder<ProxyServerB
     }
 
     @Override
-    protected ProxyServerBuilder newServerBuilder(AcceptSettings acceptSettings, IOSocketConfiguration<IOSocketChannel> socketSettings) {
+    protected ProxyServerBuilder newServerBuilder(AcceptSettings acceptSettings, IOSocketChannelConfiguration socketSettings) {
         return new ProxyServerBuilder(
             acceptSettings,
             socketSettings,

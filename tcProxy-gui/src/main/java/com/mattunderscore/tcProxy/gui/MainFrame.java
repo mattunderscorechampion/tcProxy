@@ -31,6 +31,7 @@ import javax.swing.WindowConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.ProxyServerBuilder;
@@ -59,7 +60,7 @@ public final class MainFrame extends JFrame {
                 try {
                     final AcceptSettings acceptorSettings = settingsPanel.getAcceptorSettings();
                     final ConnectionSettings connectionSettings = settingsPanel.getConnectionSettings();
-                    final IOSocketConfiguration<IOSocketChannel> inboundSocketSettings = settingsPanel
+                    final IOSocketChannelConfiguration inboundSocketSettings = settingsPanel
                         .getInboundSocketSettings();
                     final OutboundSocketSettings outboundSocketSettings = settingsPanel.getOutboundSocketSettings();
                     final ReadSelectorSettings readSelectorSettings = settingsPanel.getReadSelectorSettings();

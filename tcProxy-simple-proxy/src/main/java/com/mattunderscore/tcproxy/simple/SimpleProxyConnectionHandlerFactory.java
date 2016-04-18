@@ -27,6 +27,7 @@ package com.mattunderscore.tcproxy.simple;
 
 import java.net.InetSocketAddress;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
@@ -37,13 +38,18 @@ import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
 /* package */ final class SimpleProxyConnectionHandlerFactory implements ConnectionHandlerFactory {
 
     private final InetSocketAddress remote;
+    private final IOSocketChannelConfiguration socketSettings;
 
-    public SimpleProxyConnectionHandlerFactory(InetSocketAddress remote) {
+    public SimpleProxyConnectionHandlerFactory(
+            InetSocketAddress remote,
+            IOSocketChannelConfiguration socketSettings) {
         this.remote = remote;
+        this.socketSettings = socketSettings;
     }
 
     @Override
     public ConnectionHandler create(final SocketChannelSelector selector) {
-        return new SimpleProxyConnectionHandler(new AsynchronousOutboundConnectionFactory(remote, selector), selector);
+        return new SimpleProxyConnectionHandler(
+            new AsynchronousOutboundConnectionFactory(remote, selector, socketSettings), selector);
     }
 }

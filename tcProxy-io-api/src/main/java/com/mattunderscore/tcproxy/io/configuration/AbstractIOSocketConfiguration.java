@@ -42,9 +42,9 @@ import com.mattunderscore.tcproxy.io.socket.IOSocket;
 public abstract class AbstractIOSocketConfiguration<T extends IOSocket, S extends IOSocketConfiguration<T>> implements IOSocketConfiguration<T> {
     protected final Integer receiveBuffer;
     protected final Integer sendBuffer;
-    protected final boolean blocking;
+    protected final Boolean blocking;
     protected final Integer linger;
-    protected final boolean reuseAddress;
+    protected final Boolean reuseAddress;
 
     protected AbstractIOSocketConfiguration() {
         receiveBuffer = null;
@@ -62,7 +62,7 @@ public abstract class AbstractIOSocketConfiguration<T extends IOSocket, S extend
      * @param linger The linger time
      * @param reuseAddress If the address can be reused without waiting
      */
-    protected AbstractIOSocketConfiguration(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress) {
+    protected AbstractIOSocketConfiguration(Integer receiveBuffer, Integer sendBuffer, Boolean blocking, Integer linger, Boolean reuseAddress) {
         this.receiveBuffer = receiveBuffer;
         this.sendBuffer = sendBuffer;
         this.blocking = blocking;
@@ -72,8 +72,8 @@ public abstract class AbstractIOSocketConfiguration<T extends IOSocket, S extend
 
     @Override
     public T apply(T ioSocket) throws IOException {
-        ioSocket.set(BLOCKING, blocking);
-        ioSocket.set(REUSE_ADDRESS, reuseAddress);
+        ioSocket.set(BLOCKING, blocking != null ? blocking : false);
+        ioSocket.set(REUSE_ADDRESS, reuseAddress != null ? reuseAddress : false);
         if (receiveBuffer != null) {
             ioSocket.set(RECEIVE_BUFFER, receiveBuffer);
         }
