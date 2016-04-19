@@ -64,6 +64,10 @@ public final class SimpleProxyBuilder extends AbstractServerBuilder<SimpleProxyB
         this.remote = remote;
     }
 
+    public SimpleProxyBuilder remote(InetSocketAddress remote) {
+        return new SimpleProxyBuilder(acceptSettings, socketSettings, ioFactory, selectorThreads, selectorBackoff, remote);
+    }
+
     @Override
     public Server build() {
         requireNonNull(acceptSettings, "The accept settings have not been provided");
@@ -104,5 +108,20 @@ public final class SimpleProxyBuilder extends AbstractServerBuilder<SimpleProxyB
             1,
             new NoBackoff(),
             null);
+    }
+
+    public static void main(String[] args) {
+        final Server server = SimpleProxyBuilder
+            .builder()
+            .remote(new InetSocketAddress("localhost", 8080))
+            .acceptSettings(
+                AcceptSettings
+                    .builder()
+                    .listenOn(8085)
+                    .build())
+            .build();
+
+        server.start();
+        server.waitForStopped();
     }
 }

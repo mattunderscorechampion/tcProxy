@@ -63,7 +63,7 @@ import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
             .socketFactory(IOOutboundSocketChannelConfiguration
                 .defaultConfig()
                 .configure(socketSettings)
-                .blocking(true));
+                .blocking(false));
     }
 
     /**

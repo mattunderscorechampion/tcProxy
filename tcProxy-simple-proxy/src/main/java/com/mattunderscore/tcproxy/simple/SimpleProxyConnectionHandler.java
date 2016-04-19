@@ -64,8 +64,20 @@ import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
                 final CircularBuffer clientToServerBuffer = CircularBufferImpl.allocateDirect(4096);
                 final CircularBuffer serverToClientBuffer = CircularBufferImpl.allocateDirect(4096);
 
-                final Direction clientToServer = new Direction(selector, clientToServerBuffer, clientSide, serverSide);
-                final Direction serverToClient = new Direction(selector, serverToClientBuffer, serverSide, clientSide);
+                final Connection connection = new Connection(clientSide, serverSide);
+
+                final Direction clientToServer = new Direction(
+                    selector,
+                    clientToServerBuffer,
+                    clientSide,
+                    serverSide,
+                    connection);
+                final Direction serverToClient = new Direction(
+                    selector,
+                    serverToClientBuffer,
+                    serverSide,
+                    clientSide,
+                    connection);
 
                 clientToServer.registerForRead();
                 serverToClient.registerForRead();

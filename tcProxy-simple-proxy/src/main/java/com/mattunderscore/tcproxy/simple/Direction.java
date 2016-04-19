@@ -42,16 +42,19 @@ import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
     private final CircularBuffer buffer;
     private final IOSocketChannel source;
     private final IOSocketChannel destination;
+    private final Connection connection;
 
     public Direction(
-            SocketChannelSelector selector,
-            CircularBuffer buffer,
-            IOSocketChannel source,
-            IOSocketChannel destination) {
+        SocketChannelSelector selector,
+        CircularBuffer buffer,
+        IOSocketChannel source,
+        IOSocketChannel destination,
+        Connection connection) {
         this.selector = selector;
         this.buffer = buffer;
         this.source = source;
         this.destination = destination;
+        this.connection = connection;
     }
 
     public void registerForRead() {
@@ -64,12 +67,13 @@ import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
                     read = socket.read(buffer);
                 }
                 catch (IOException e) {
-                    // Perform close
+                    connection.close();
                     return;
                 }
 
                 if (read < 0) {
-                    // Handle close
+                    connection.close();
+                    return;
                 }
                 else {
                     if (buffer.usedCapacity() > 0) {
@@ -93,7 +97,8 @@ import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
                     socket.write(buffer);
                 }
                 catch (IOException e) {
-                    // Perform close
+                    connection.close();
+                    return;
                 }
             }
         });
