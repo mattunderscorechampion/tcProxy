@@ -73,7 +73,6 @@ import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
 
                 if (read < 0) {
                     connection.close();
-                    return;
                 }
                 else {
                     if (buffer.usedCapacity() > 0) {
@@ -98,7 +97,6 @@ import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
                 }
                 catch (IOException e) {
                     connection.close();
-                    return;
                 }
             }
         });

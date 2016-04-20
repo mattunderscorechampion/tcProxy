@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
-import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 
 /**
  * @author Matt Champion on 19/04/2016

@@ -30,10 +30,8 @@ import static java.util.Objects.requireNonNull;
 import java.net.InetSocketAddress;
 
 import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
-import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
 import com.mattunderscore.tcproxy.io.impl.JSLIOFactory;
-import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.NoBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.server.AbstractServerBuilder;
