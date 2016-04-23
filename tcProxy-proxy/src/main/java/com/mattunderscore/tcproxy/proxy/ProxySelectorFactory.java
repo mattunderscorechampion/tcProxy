@@ -43,9 +43,8 @@ import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
 import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
-import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
-import com.mattunderscore.tcproxy.selector.connecting.SharedConnectingSelectorFactory;
+import com.mattunderscore.tcproxy.selector.connecting.task.AcceptingTask;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 
 /**
@@ -77,16 +76,14 @@ final class ProxySelectorFactory implements SelectorFactory<SocketChannelSelecto
 
     @Override
     public SocketChannelSelector create() throws IOException {
-        final GeneralPurposeSelector generalPurposeSelector =
+        final GeneralPurposeSelector selector =
             new GeneralPurposeSelector(openSelector(), selectorBackoff);
 
-        final SelectorFactory<ConnectingSelector> connectingSelectorFactory = new SharedConnectingSelectorFactory(
-            generalPurposeSelector,
-            listenChannels,
-            connectionHandlerFactory,
-            socketSettings);
-
-        final SocketChannelSelector selector = connectingSelectorFactory.create();
+        for (final IOServerSocketChannel serverSocketChannel : listenChannels) {
+            selector.register(
+                serverSocketChannel,
+                new AcceptingTask(selector, connectionHandlerFactory.create(selector), socketSettings));
+        }
 
         final ByteBuffer readBuffer = ByteBuffer.allocateDirect(readSelectorSettings.getReadBufferSize());
         manager.addListener(new ConnectionManager.Listener() {

@@ -49,7 +49,7 @@ import com.mattunderscore.tcproxy.selector.server.AbstractServerStarter;
 import com.mattunderscore.tcproxy.selector.server.Server;
 
 /**
- * Starter for {@link ProxyServer}.
+ * Starter for a proxy server.
  * @author Matt Champion on 26/11/2015
  */
 final class ProxyServerStarter extends AbstractServerStarter {

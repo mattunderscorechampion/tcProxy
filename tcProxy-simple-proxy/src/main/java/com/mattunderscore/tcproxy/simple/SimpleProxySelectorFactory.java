@@ -36,9 +36,8 @@ import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
-import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
-import com.mattunderscore.tcproxy.selector.connecting.SharedConnectingSelectorFactory;
+import com.mattunderscore.tcproxy.selector.connecting.task.AcceptingTask;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 
 /**
@@ -63,15 +62,15 @@ import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 
     @Override
     public SocketChannelSelector create() throws IOException {
-        final GeneralPurposeSelector generalPurposeSelector =
+        final GeneralPurposeSelector selector =
             new GeneralPurposeSelector(openSelector(), selectorBackoff);
 
-        final SelectorFactory<ConnectingSelector> connectingSelectorFactory = new SharedConnectingSelectorFactory(
-            generalPurposeSelector,
-            listenChannels,
-            connectionHandlerFactory,
-            socketSettings);
+        for (final IOServerSocketChannel serverSocketChannel : listenChannels) {
+            selector.register(
+                serverSocketChannel,
+                new AcceptingTask(selector, connectionHandlerFactory.create(selector), socketSettings));
+        }
 
-        return connectingSelectorFactory.create();
+        return selector;
     }
 }

@@ -42,12 +42,13 @@ import com.mattunderscore.tcproxy.io.impl.JSLIOFactory;
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
+import com.mattunderscore.tcproxy.selector.NoBackoff;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
-import com.mattunderscore.tcproxy.selector.connecting.ConnectingSelectorFactory;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
-import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
+import com.mattunderscore.tcproxy.selector.connecting.task.AcceptingTask;
+import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
 import com.mattunderscore.tcproxy.selector.server.AbstractServerFactory;
 import com.mattunderscore.tcproxy.selector.server.AbstractServerStarter;
@@ -127,24 +128,32 @@ public final class DiscardServer {
         }
 
         @Override
-        protected SelectorFactory<? extends WorkerRunnable> getSelectorFactory(Collection<IOServerSocketChannel> listenChannels) {
-            return new ConnectingSelectorFactory(
-                    ioFactory,
-                    listenChannels,
-                    new ConnectionHandlerFactory() {
-                        @Override
-                        public ConnectionHandler create(final SocketChannelSelector selector) {
-                            return new ConnectionHandler() {
-                                private final DiscardTask discard = new DiscardTask();
+        protected SelectorFactory<? extends WorkerRunnable> getSelectorFactory(final Collection<IOServerSocketChannel> listenChannels) {
+            return new SelectorFactory<SocketChannelSelector>() {
+                @Override
+                public SocketChannelSelector create() throws IOException {
+                    final GeneralPurposeSelector selector =
+                        new GeneralPurposeSelector(ioFactory.openSelector(), new NoBackoff());
 
-                                @Override
-                                public void onConnect(IOSocketChannel socket) {
-                                    selector.register(socket, READ, discard);
-                                }
-                            };
-                        }
-                    },
-                    inboundSocketSettings);
+                    for (final IOServerSocketChannel serverSocketChannel : listenChannels) {
+                        selector.register(
+                            serverSocketChannel,
+                            new AcceptingTask(
+                                selector,
+                                new ConnectionHandler() {
+                                    private final DiscardTask discard = new DiscardTask();
+
+                                    @Override
+                                    public void onConnect(IOSocketChannel socket) {
+                                        selector.register(socket, READ, discard);
+                                    }
+                                },
+                                inboundSocketSettings));
+                    }
+
+                    return selector;
+                }
+            };
         }
     }
 
