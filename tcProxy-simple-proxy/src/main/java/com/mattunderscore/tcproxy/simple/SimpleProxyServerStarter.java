@@ -25,6 +25,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.simple;
 
+import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.openSelector;
+
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.concurrent.ThreadFactory;
@@ -39,7 +42,8 @@ import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
-import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
+import com.mattunderscore.tcproxy.selector.connecting.task.AcceptingTask;
+import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.server.AbstractServerStarter;
 import com.mattunderscore.tcproxy.selector.server.Server;
 
@@ -51,7 +55,7 @@ import com.mattunderscore.tcproxy.selector.server.Server;
     private static final AtomicInteger THREAD_COUNT = new AtomicInteger(0);
     private final SelectorBackoff selectorBackoff;
     private final IOSocketChannelConfiguration socketSettings;
-    private final ConnectionHandlerFactory connectionHandlerFactory;
+    private final InetSocketAddress remote;
 
     /*packaage*/ SimpleProxyServerStarter(
         IOFactory ioFactory,
@@ -63,8 +67,7 @@ import com.mattunderscore.tcproxy.selector.server.Server;
         super(ioFactory, portsToListenOn, selectorThreads);
         this.selectorBackoff = selectorBackoff;
         this.socketSettings = socketSettings;
-
-        connectionHandlerFactory = new SimpleProxyConnectionHandlerFactory(remote, socketSettings);
+        this.remote = remote;
     }
 
     @Override
@@ -86,15 +89,30 @@ import com.mattunderscore.tcproxy.selector.server.Server;
 
     @Override
     protected SelectorFactory<SocketChannelSelector> getSelectorFactory(
-            Collection<IOServerSocketChannel> listenChannels) {
-        return new SimpleProxySelectorFactory(
-            connectionHandlerFactory,
-            selectorBackoff,
-            listenChannels,
-            socketSettings);
+            final Collection<IOServerSocketChannel> listenChannels) {
+        return new SelectorFactory<SocketChannelSelector>() {
+            @Override
+            public SocketChannelSelector create() throws IOException {
+                final GeneralPurposeSelector selector =
+                    new GeneralPurposeSelector(openSelector(), selectorBackoff);
+
+                for (final IOServerSocketChannel serverSocketChannel : listenChannels) {
+                    selector.register(
+                        serverSocketChannel,
+                        new AcceptingTask(
+                            selector,
+                            new SimpleProxyConnectionHandler(
+                                new AsynchronousOutboundConnectionFactory(remote, selector, socketSettings),
+                                selector),
+                            socketSettings));
+                }
+
+                return selector;
+            }
+        };
     }
 
-    private final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
+    private static final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
         private final Server server;
 
         public ExceptionHandler(Server server) {
