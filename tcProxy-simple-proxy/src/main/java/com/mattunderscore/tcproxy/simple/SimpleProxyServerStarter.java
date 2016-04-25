@@ -25,8 +25,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.simple;
 
-import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.openSelector;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Collection;
@@ -94,7 +92,7 @@ import com.mattunderscore.tcproxy.selector.server.Server;
             @Override
             public SocketChannelSelector create() throws IOException {
                 final GeneralPurposeSelector selector =
-                    new GeneralPurposeSelector(openSelector(), selectorBackoff);
+                    new GeneralPurposeSelector(ioFactory.openSelector(), selectorBackoff);
 
                 for (final IOServerSocketChannel serverSocketChannel : listenChannels) {
                     selector.register(
@@ -102,7 +100,11 @@ import com.mattunderscore.tcproxy.selector.server.Server;
                         new AcceptingTask(
                             selector,
                             new SimpleProxyConnectionHandler(
-                                new AsynchronousOutboundConnectionFactory(remote, selector, socketSettings),
+                                new AsynchronousOutboundConnectionFactory(
+                                    ioFactory,
+                                    remote,
+                                    selector,
+                                    socketSettings),
                                 selector),
                             socketSettings));
                 }
