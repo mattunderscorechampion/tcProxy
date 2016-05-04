@@ -86,7 +86,7 @@ public final class GeneralPurposeSelectorTest {
         selectionKeySet.add(key);
         when(ioSelector.selectedKeys()).thenReturn(selectionKeySet);
 
-        final GeneralPurposeSelector selector = new GeneralPurposeSelector(ioSelector, new NoBackoff());
+        final GeneralPurposeSelector selector = new GeneralPurposeSelector(ioSelector, NoBackoff.get());
         selector.register(channel, READ, runnable);
 
         selector.run();

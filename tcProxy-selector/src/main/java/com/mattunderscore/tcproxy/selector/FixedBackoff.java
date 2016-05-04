@@ -28,8 +28,6 @@ package com.mattunderscore.tcproxy.selector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mattunderscore.tcproxy.selector.SelectorBackoff;
-
 /**
  * @author Matt Champion on 24/09/14.
  */
@@ -37,7 +35,7 @@ public final class FixedBackoff implements SelectorBackoff {
     private static final Logger LOG = LoggerFactory.getLogger("backoff");
     private final long backoff;
 
-    public FixedBackoff(long backoff) {
+    private FixedBackoff(long backoff) {
         this.backoff = backoff;
     }
 
@@ -49,5 +47,9 @@ public final class FixedBackoff implements SelectorBackoff {
         catch (InterruptedException e) {
             LOG.debug("Interrupted while backing");
         }
+    }
+
+    public static FixedBackoff get(long backoff) {
+        return new FixedBackoff(backoff);
     }
 }

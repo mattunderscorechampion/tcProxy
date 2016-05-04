@@ -158,7 +158,7 @@ public final class EchoServer {
                 @Override
                 public SocketChannelSelector create() throws IOException {
                     final GeneralPurposeSelector selector =
-                        new GeneralPurposeSelector(ioFactory.openSelector(), new NoBackoff());
+                        new GeneralPurposeSelector(ioFactory.openSelector(), NoBackoff.get());
 
                     for (final IOServerSocketChannel serverSocketChannel : listenChannels) {
                         selector.register(

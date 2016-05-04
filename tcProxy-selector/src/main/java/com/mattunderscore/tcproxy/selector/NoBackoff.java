@@ -30,7 +30,16 @@ package com.mattunderscore.tcproxy.selector;
  * @author Matt Champion on 23/11/2015
  */
 public final class NoBackoff implements SelectorBackoff {
+    private static final NoBackoff INSTNACE = new NoBackoff();
+
+    private NoBackoff() {
+    }
+
     @Override
     public void backoff(int selected) {
+    }
+
+    public static NoBackoff get() {
+        return INSTNACE;
     }
 }

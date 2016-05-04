@@ -235,7 +235,7 @@ public final class ProxyServerBuilder extends AbstractServerBuilder<ProxyServerB
                 .builder()
                 .readBufferSize(1024)
                 .build(),
-            new NoBackoff(),
+            NoBackoff.get(),
             new JSLIOFactory(),
             1,
             null);

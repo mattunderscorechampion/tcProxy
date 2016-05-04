@@ -36,7 +36,7 @@ public final class BinaryBackoff implements SelectorBackoff {
     private static final Logger LOG = LoggerFactory.getLogger("backoff");
     private final long backoff;
 
-    public BinaryBackoff(long backoff) {
+    private BinaryBackoff(long backoff) {
         this.backoff = backoff;
     }
 
@@ -50,5 +50,9 @@ public final class BinaryBackoff implements SelectorBackoff {
                 LOG.debug("Interrupted while backing");
             }
         }
+    }
+
+    public static BinaryBackoff get(long backoff) {
+        return new BinaryBackoff(backoff);
     }
 }

@@ -104,7 +104,7 @@ public final class SimpleProxyBuilder extends AbstractServerBuilder<SimpleProxyB
                 .sendBuffer(4096),
             new JSLIOFactory(),
             1,
-            new NoBackoff(),
+            NoBackoff.get(),
             null);
     }
 

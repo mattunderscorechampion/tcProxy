@@ -75,7 +75,7 @@ public final class MainFrame extends JFrame {
                             .socketSettings(inboundSocketSettings)
                             .outboundSocketSettings(outboundSocketSettings)
                             .readSelectorSettings(readSelectorSettings)
-                            .backoff(new BinaryBackoff(10L))
+                            .backoff(BinaryBackoff.get(10L))
                             .connectionManager(manager)
                             .build();
                         proxy.start();
