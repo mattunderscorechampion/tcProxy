@@ -55,12 +55,9 @@ import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.connecting.task.AcceptingTask;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
-import com.mattunderscore.tcproxy.selector.server.AbstractServerFactory;
 import com.mattunderscore.tcproxy.selector.server.AbstractServerStarter;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.Server;
-import com.mattunderscore.tcproxy.selector.server.ServerConfig;
-import com.mattunderscore.tcproxy.selector.server.ServerStarter;
 import com.mattunderscore.tcproxy.workers.WorkerRunnable;
 
 /**
