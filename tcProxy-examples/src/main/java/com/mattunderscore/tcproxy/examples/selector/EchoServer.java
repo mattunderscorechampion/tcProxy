@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 
+import com.mattunderscore.tcproxy.selector.server.AbstractServerBuilder;
+import com.mattunderscore.tcproxy.selector.server.ServerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,22 +72,18 @@ public final class EchoServer {
     private static final Logger LOG = LoggerFactory.getLogger("selector");
 
     public static void main(String[] args) throws IOException {
-        final EchoServerFactory serverFactory = new EchoServerFactory();
-        final Server server = serverFactory.build(
-            ServerConfig
+        final Server server = EchoServer
+            .builder()
+            .selectorThreads(2)
+            .socketSettings(IOSocketChannelConfiguration
+                .defaultConfig()
+                .receiveBuffer(1024)
+                .sendBuffer(1024))
+            .acceptSettings(AcceptSettings
                 .builder()
-                .selectorThreads(2)
-                .inboundSocketSettings(
-                    IOSocketChannelConfiguration
-                        .defaultConfig()
-                        .receiveBuffer(1024)
-                        .sendBuffer(1024))
-                .acceptSettings(
-                    AcceptSettings
-                        .builder()
-                        .listenOn(34534)
-                        .build())
-                .build());
+                .listenOn(34534)
+                .build())
+            .build();
 
         server.start();
         server.waitForStopped();
@@ -180,23 +178,38 @@ public final class EchoServer {
         }
     }
 
-    private final static class EchoServerFactory extends AbstractServerFactory {
-        public EchoServerFactory() {
-            super(new JSLIOFactory());
+    public final static class EchoServerBuilder extends AbstractServerBuilder<EchoServerBuilder> {
+        private final int selectorThreads;
+
+        private EchoServerBuilder(AcceptSettings acceptSettings, IOSocketChannelConfiguration socketSettings, int selectorThreads) {
+            super(acceptSettings, socketSettings);
+            this.selectorThreads = selectorThreads;
         }
 
         @Override
-        protected ServerStarter getServerStarter(ServerConfig serverConfig) {
-            return new EchoServerStarter(
-                ioFactory,
-                serverConfig.getAcceptSettings().getListenOn(),
-                serverConfig.getSelectorThreads(),
-                serverConfig.getInboundSocketSettings());
+        public Server build() {
+            return new ServerImpl(
+                    new EchoServerStarter(
+                            new JSLIOFactory(),
+                            acceptSettings.getListenOn(),
+                            1,
+                            socketSettings));
+        }
+
+        public EchoServerBuilder selectorThreads(int selectorThreads) {
+            return new EchoServerBuilder(acceptSettings, socketSettings, selectorThreads);
+        }
+
+        @Override
+        protected EchoServerBuilder newServerBuilder(AcceptSettings acceptSettings, IOSocketChannelConfiguration socketSettings) {
+            return new EchoServerBuilder(acceptSettings, socketSettings, selectorThreads);
         }
     }
 
-    public static Server create(ServerConfig serverConfig) {
-        final EchoServerFactory serverFactory = new EchoServerFactory();
-        return serverFactory.build(serverConfig);
+    public static final EchoServerBuilder builder() {
+        return new EchoServerBuilder(
+            AcceptSettings.builder().build(),
+            IOSocketChannelConfiguration.defaultConfig(),
+            1);
     }
 }

@@ -75,22 +75,19 @@ public final class BiDirectionalExample {
         proxyServer.start();
 
         // Start the echo server
-        final Server echoSever = EchoServer.create(
-            ServerConfig
-                .builder()
-                .acceptSettings(
-                    AcceptSettings
-                        .builder()
-                        .listenOn(8080)
-                        .build())
-                .selectorThreads(1)
-                .inboundSocketSettings(
-                    IOSocketChannelConfiguration
-                        .defaultConfig()
-                        .receiveBuffer(1024)
-                        .sendBuffer(1024)
-                )
-                .build());
+        final Server echoSever = EchoServer.builder()
+            .acceptSettings(
+                AcceptSettings
+                    .builder()
+                    .listenOn(8080)
+                    .build())
+            .selectorThreads(1)
+            .socketSettings(
+                IOSocketChannelConfiguration
+                    .defaultConfig()
+                    .receiveBuffer(1024)
+                    .sendBuffer(1024))
+            .build();
         echoSever.start();
 
         proxyServer.waitForRunning();

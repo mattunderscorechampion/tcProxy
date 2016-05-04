@@ -25,16 +25,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.examples.selector;
 
-import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.READ;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Collection;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
@@ -50,13 +40,21 @@ import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.connecting.task.AcceptingTask;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
-import com.mattunderscore.tcproxy.selector.server.AbstractServerFactory;
+import com.mattunderscore.tcproxy.selector.server.AbstractServerBuilder;
 import com.mattunderscore.tcproxy.selector.server.AbstractServerStarter;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.Server;
-import com.mattunderscore.tcproxy.selector.server.ServerConfig;
-import com.mattunderscore.tcproxy.selector.server.ServerStarter;
+import com.mattunderscore.tcproxy.selector.server.ServerImpl;
 import com.mattunderscore.tcproxy.workers.WorkerRunnable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Collection;
+import java.util.Set;
+
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.READ;
 
 /**
  * Discard server. Reads and then discards all bytes sent to it.
@@ -66,22 +64,17 @@ public final class DiscardServer {
     private static final Logger LOG = LoggerFactory.getLogger("selector");
 
     public static void main(String[] args) throws IOException {
-        final DiscardServerFactory serverFactory = new DiscardServerFactory();
-        final Server server = serverFactory.build(
-                ServerConfig
-                        .builder()
-                        .selectorThreads(2)
-                        .inboundSocketSettings(
-                                IOSocketChannelConfiguration
-                                    .defaultConfig()
-                                    .receiveBuffer(1024)
-                                    .sendBuffer(1024))
-                        .acceptSettings(
-                                AcceptSettings
-                                        .builder()
-                                        .listenOn(34534)
-                                        .build())
-                        .build());
+        final Server server = builder()
+            .selectorThreads(2)
+            .acceptSettings(AcceptSettings
+                .builder()
+                .listenOn(34534)
+                .build())
+            .socketSettings(IOSocketChannelConfiguration
+                .defaultConfig()
+                .receiveBuffer(1024)
+                .sendBuffer(1024))
+            .build();
 
         server.start();
         server.waitForStopped();
@@ -157,23 +150,38 @@ public final class DiscardServer {
         }
     }
 
-    private final static class DiscardServerFactory extends AbstractServerFactory {
-        public DiscardServerFactory() {
-            super(new JSLIOFactory());
+    private final static class DiscardServerBuilder extends AbstractServerBuilder<DiscardServerBuilder> {
+        private final int selectorThreads;
+
+        private DiscardServerBuilder(AcceptSettings acceptSettings, IOSocketChannelConfiguration socketSettings, int selectorThreads) {
+            super(acceptSettings, socketSettings);
+            this.selectorThreads = selectorThreads;
         }
 
         @Override
-        protected ServerStarter getServerStarter(ServerConfig serverConfig) {
-            return new DiscardServerStarter(
-                    ioFactory,
-                    serverConfig.getAcceptSettings().getListenOn(),
-                    serverConfig.getSelectorThreads(),
-                    serverConfig.getInboundSocketSettings());
+        public Server build() {
+            return new ServerImpl(
+                    new DiscardServerStarter(
+                            new JSLIOFactory(),
+                            acceptSettings.getListenOn(),
+                            1,
+                            socketSettings));
+        }
+
+        public DiscardServerBuilder selectorThreads(int selectorThreads) {
+            return new DiscardServerBuilder(acceptSettings, socketSettings, selectorThreads);
+        }
+
+        @Override
+        protected DiscardServerBuilder newServerBuilder(AcceptSettings acceptSettings, IOSocketChannelConfiguration socketSettings) {
+            return new DiscardServerBuilder(acceptSettings, socketSettings, selectorThreads);
         }
     }
 
-    public static Server create(ServerConfig serverConfig) {
-        final DiscardServerFactory serverFactory = new DiscardServerFactory();
-        return serverFactory.build(serverConfig);
+    public static final DiscardServerBuilder builder() {
+        return new DiscardServerBuilder(
+            AcceptSettings.builder().build(),
+            IOSocketChannelConfiguration.defaultConfig(),
+            1);
     }
 }
