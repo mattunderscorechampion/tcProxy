@@ -31,6 +31,9 @@ package com.mattunderscore.tcproxy.cli.arguments;
 public final class StringParser implements SettingParser<String> {
     public static final StringParser PARSER = new StringParser();
 
+    private StringParser() {
+    }
+
     @Override
     public String parse(String setting) throws NotParsableException {
         return setting;
