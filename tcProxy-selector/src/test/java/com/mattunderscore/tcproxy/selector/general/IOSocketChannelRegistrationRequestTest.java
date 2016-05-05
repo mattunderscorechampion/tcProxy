@@ -26,8 +26,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.selector.general;
 
 import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.READ;
+import static java.util.EnumSet.of;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -42,11 +43,11 @@ import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 
 /**
- * Unit tests for {@link IOSocketChannelSingleRegistrationRequest}.
+ * Unit tests for {@link IOSocketChannelRegistrationRequest}.
  *
  * @author Matt Champion on 14/11/2015
  */
-public final class IOSocketChannelSingleRegistrationRequestTest {
+public final class IOSocketChannelRegistrationRequestTest {
     @Mock
     private IOSelector selector;
     @Mock
@@ -63,10 +64,10 @@ public final class IOSocketChannelSingleRegistrationRequestTest {
     @Test
     public void register() throws ClosedChannelException {
         final RegistrationRequest registrationRequest =
-            new IOSocketChannelSingleRegistrationRequest(channel, READ, task);
+            new IOSocketChannelRegistrationRequest(channel, of(READ), task);
 
         registrationRequest.register(selector);
 
-        verify(channel).register(eq(selector), eq(READ), isA(RegistrationSet.class));
+        verify(channel).register(eq(selector), eq(of(READ)), isA(RegistrationSet.class));
     }
 }

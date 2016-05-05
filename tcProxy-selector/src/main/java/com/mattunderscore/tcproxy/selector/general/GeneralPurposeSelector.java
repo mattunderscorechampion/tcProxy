@@ -28,6 +28,7 @@ package com.mattunderscore.tcproxy.selector.general;
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -45,7 +46,6 @@ import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.ServerSocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
-import com.mattunderscore.tcproxy.workers.LifecycleState;
 
 /**
  * A general purpose selector. {@link SelectionRunnable}s can be registered against it for both
@@ -110,12 +110,12 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
 
     @Override
     public void register(IOSocketChannel channel, IOSelectionKey.Op op, SelectionRunnable<IOSocketChannel> runnable) {
-        registrations.add(new IOSocketChannelSingleRegistrationRequest(channel, op, runnable));
+        registrations.add(new IOSocketChannelRegistrationRequest(channel, Collections.singleton(op), runnable));
     }
 
     @Override
     public void register(IOSocketChannel channel, Set<IOSelectionKey.Op> ops, SelectionRunnable<IOSocketChannel> runnable) {
-        registrations.add(new IOSocketChannelSetRegistrationRequest(channel, ops, runnable));
+        registrations.add(new IOSocketChannelRegistrationRequest(channel, ops, runnable));
     }
 
     @Override

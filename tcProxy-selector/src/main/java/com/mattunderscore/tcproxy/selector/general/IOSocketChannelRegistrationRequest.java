@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.selector.general;
 
 import java.nio.channels.ClosedChannelException;
+import java.util.Set;
 
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op;
@@ -34,20 +35,20 @@ import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 
 /**
- * {@link Registration} of a server runnable for an {@link IOSocketChannel} against a single operation.
+ * {@link Registration} of a server runnable for an {@link IOSocketChannel} against multiple operations.
  * @author Matt Champion on 26/10/2015
  */
-/*package*/ final class IOSocketChannelSingleRegistrationRequest implements RegistrationRequest {
+/*package*/ final class IOSocketChannelRegistrationRequest implements RegistrationRequest {
     private final IOSocketChannel channel;
-    private final Op op;
+    private final Set<Op> ops;
     private final Registration registration;
 
-    IOSocketChannelSingleRegistrationRequest(
+    IOSocketChannelRegistrationRequest(
             IOSocketChannel channel,
-            Op op,
+            Set<Op> ops,
             SelectionRunnable<IOSocketChannel> runnable) {
         this.channel = channel;
-        this.op = op;
+        this.ops = ops;
         this.registration = new IOSocketChannelRegistration(channel, runnable);
     }
 
@@ -56,13 +57,17 @@ import com.mattunderscore.tcproxy.selector.SelectionRunnable;
         final IOSelectionKey key = channel.keyFor(selector);
         if (key != null) {
             final RegistrationSet registrationSet = (RegistrationSet) key.attachment();
-            registrationSet.addRegistration(op, registration);
-            key.setInterestedOperation(op);
+            for (Op op : ops) {
+                registrationSet.addRegistration(op, registration);
+                key.setInterestedOperation(op);
+            }
         }
         else {
             final RegistrationSet registrationSet = new RegistrationSet();
-            registrationSet.addRegistration(op, registration);
-            channel.register(selector, op, registrationSet);
+            for (Op op : ops) {
+                registrationSet.addRegistration(op, registration);
+            }
+            channel.register(selector, ops, registrationSet);
         }
     }
 }

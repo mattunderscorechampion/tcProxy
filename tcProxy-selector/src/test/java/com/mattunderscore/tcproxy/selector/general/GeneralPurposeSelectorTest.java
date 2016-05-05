@@ -34,6 +34,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.nio.channels.ClosedChannelException;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -74,7 +75,7 @@ public final class GeneralPurposeSelectorTest {
 
     @Test
     public void startAndStop() throws ClosedChannelException {
-        when(channel.register(eq(ioSelector), eq(READ), any())).thenAnswer(new Answer<IOSelectionKey>() {
+        when(channel.register(eq(ioSelector), eq(Collections.singleton(READ)), any())).thenAnswer(new Answer<IOSelectionKey>() {
             @Override
             public IOSelectionKey answer(InvocationOnMock invocationOnMock) throws Throwable {
                 // Return the attachment registered
