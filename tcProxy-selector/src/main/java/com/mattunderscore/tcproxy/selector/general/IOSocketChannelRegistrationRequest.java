@@ -63,7 +63,7 @@ import com.mattunderscore.tcproxy.selector.SelectionRunnable;
             }
         }
         else {
-            final Registration<IOSocketChannel> registration = new Registration<>(channel);
+            final Registration<IOSocketChannel> registration = new Registration<>();
             for (Op op : ops) {
                 registration.addRegistration(op, runnable);
             }

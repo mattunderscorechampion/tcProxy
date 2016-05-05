@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import com.mattunderscore.tcproxy.io.socket.IOSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,9 +97,10 @@ public final class GeneralPurposeSelector implements SocketChannelSelector, Serv
         final Iterator<IOSelectionKey> selectedKeys = selectedKeySet.iterator();
         while (selectedKeys.hasNext()) {
             final IOSelectionKey key = selectedKeys.next();
+            final IOSocket socket = key.socket();
             selectedKeys.remove();
             final Registration registration = (Registration) key.attachment();
-            registration.run(key);
+            registration.run(socket, key);
         }
 
         backoff.backoff(selectedSize);

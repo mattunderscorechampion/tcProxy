@@ -46,15 +46,10 @@ import com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op;
  */
 @NotThreadSafe
 /*package*/ final class Registration<T extends IOSocket> {
-    private final T socket;
     private SelectionRunnable<T> acceptOperation;
     private SelectionRunnable<T> connectOperation;
     private SelectionRunnable<T> readOperation;
     private SelectionRunnable<T> writeOperation;
-
-    Registration(T socket) {
-        this.socket = socket;
-    }
 
     public void addRegistration(Op op, SelectionRunnable<T> registration) {
         switch (op) {
@@ -73,7 +68,7 @@ import com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op;
         }
     }
 
-    public void run(IOSelectionKey key) {
+    public void run(T socket, IOSelectionKey key) {
         if (!key.isValid()) {
             return;
         }

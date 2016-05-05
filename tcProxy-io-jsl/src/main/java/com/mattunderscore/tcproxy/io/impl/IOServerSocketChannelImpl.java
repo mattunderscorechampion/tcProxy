@@ -106,4 +106,19 @@ final class IOServerSocketChannelImpl implements IOServerSocketChannel {
             return new IOSelectionKeyImpl(keyDelegate);
         }
     }
+
+    @Override
+    public int hashCode() {
+        return socketDelegate.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof IOServerSocketChannelImpl)) {
+            return false;
+        }
+        else {
+            return socketDelegate.equals(((IOServerSocketChannelImpl) obj).socketDelegate);
+        }
+    }
 }

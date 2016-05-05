@@ -56,7 +56,7 @@ import com.mattunderscore.tcproxy.selector.SelectionRunnable;
             key.setInterestedOperation(ACCEPT);
         }
         else {
-            final Registration<IOServerSocketChannel> registration = new Registration<>(channel);
+            final Registration<IOServerSocketChannel> registration = new Registration<>();
             registration.addRegistration(ACCEPT, runnable);
             channel.register(selector, registration);
         }

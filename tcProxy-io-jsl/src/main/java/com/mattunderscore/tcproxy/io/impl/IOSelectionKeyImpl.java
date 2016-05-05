@@ -29,10 +29,14 @@ import static com.mattunderscore.tcproxy.io.impl.IOUtils.mapToIntFromOp;
 import static com.mattunderscore.tcproxy.io.impl.IOUtils.mapToIntFromOps;
 import static com.mattunderscore.tcproxy.io.impl.IOUtils.mapToOpsFromInt;
 
+import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.util.Set;
 
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.socket.IOSocket;
 
 /**
  * Implementation of {@link IOSelectionKey}. Delegates to {@link SelectionKey}.
@@ -104,6 +108,20 @@ final class IOSelectionKeyImpl implements IOSelectionKey {
     public void clearInterestedOperation(Op op) {
         if (keyDelegate.isValid()) {
             keyDelegate.interestOps(keyDelegate.interestOps() & ~mapToIntFromOp(op));
+        }
+    }
+
+    @Override
+    public IOSocket socket() {
+        final SelectableChannel channel = keyDelegate.channel();
+        if (channel instanceof ServerSocketChannel) {
+            return new IOServerSocketChannelImpl((ServerSocketChannel) channel);
+        }
+        else if (channel instanceof SocketChannel) {
+            return new IOSocketChannelImpl((SocketChannel) channel);
+        }
+        else {
+            throw new IllegalStateException("Unsupported channel type");
         }
     }
 

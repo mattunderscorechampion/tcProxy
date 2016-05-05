@@ -25,6 +25,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.impl;
 
+import com.mattunderscore.tcproxy.io.data.CircularBuffer;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.selection.IOSelector;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocketOption;
+
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.net.StandardSocketOptions;
@@ -33,12 +39,6 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Set;
-
-import com.mattunderscore.tcproxy.io.data.CircularBuffer;
-import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
-import com.mattunderscore.tcproxy.io.selection.IOSelector;
-import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
-import com.mattunderscore.tcproxy.io.socket.IOSocketOption;
 
 /**
  * Delegates to {@link SocketChannel}.
@@ -166,5 +166,20 @@ final class IOSocketChannelImpl implements IOOutboundSocketChannel {
             remoteAddress = "unknown removeAddress";
         }
         return String.format("IOSocketChannel %s|%s", localAddress, remoteAddress);
+    }
+
+    @Override
+    public int hashCode() {
+        return channel.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof IOSocketChannelImpl)) {
+            return false;
+        }
+        else {
+            return channel.equals(((IOSocketChannelImpl) obj).channel);
+        }
     }
 }

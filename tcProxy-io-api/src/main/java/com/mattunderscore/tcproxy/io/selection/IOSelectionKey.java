@@ -25,6 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.selection;
 
+import com.mattunderscore.tcproxy.io.socket.IOSocket;
+
 import java.nio.channels.SelectionKey;
 import java.util.Set;
 
@@ -97,6 +99,11 @@ public interface IOSelectionKey {
      * @param op The uninterested operation.
      */
     void clearInterestedOperation(Op op);
+
+    /**
+     * @return The socket the selection key is for
+     */
+    IOSocket socket();
 
     /**
      * The available operations that a selection key may be interested in.

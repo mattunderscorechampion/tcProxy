@@ -71,6 +71,7 @@ public final class GeneralPurposeSelectorTest {
         when(key.isValid()).thenReturn(true);
         when(key.isReadable()).thenReturn(true);
         when(key.interestedOperations()).thenReturn(EnumSet.allOf(IOSelectionKey.Op.class));
+        when(key.socket()).thenReturn(channel);
     }
 
     @Test
