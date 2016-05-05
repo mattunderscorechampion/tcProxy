@@ -25,13 +25,135 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.general;
 
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.ACCEPT;
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.CONNECT;
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.READ;
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.WRITE;
+
+import java.util.Set;
+
+import com.mattunderscore.tcproxy.io.socket.IOSocket;
+import com.mattunderscore.tcproxy.selector.SelectionRunnable;
+import net.jcip.annotations.NotThreadSafe;
+
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
+import com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op;
+
 /**
- * The representation of the registration of a selector runnable against a socket for an interest set.
+ * Attachment for sockets that links the {@link SelectionRunnable} to an operation for a socket.
+ *
+ * @author Matt Champion on 29/11/2015
  */
-interface Registration {
-    /**
-     * Run the selector runnable.
-     * @param handle The registration handle
-     */
-    void run(RegistrationHandle handle);
+@NotThreadSafe
+/*package*/ final class Registration<T extends IOSocket> {
+    private final T socket;
+    private SelectionRunnable<T> acceptOperation;
+    private SelectionRunnable<T> connectOperation;
+    private SelectionRunnable<T> readOperation;
+    private SelectionRunnable<T> writeOperation;
+
+    Registration(T socket) {
+        this.socket = socket;
+    }
+
+    public void addRegistration(Op op, SelectionRunnable<T> registration) {
+        switch (op) {
+            case ACCEPT:
+                acceptOperation = registration;
+                break;
+            case CONNECT:
+                connectOperation = registration;
+                break;
+            case READ:
+                readOperation = registration;
+                break;
+            case WRITE:
+                writeOperation = registration;
+                break;
+        }
+    }
+
+    public void run(IOSelectionKey key) {
+        if (!key.isValid()) {
+            return;
+        }
+
+        final Set<Op> interestedOperations = key.interestedOperations();
+
+        if (key.isAcceptable() && interestedOperations.contains(ACCEPT)) {
+            acceptOperation.run(socket, new RegistrationHandleImpl(key, ACCEPT));
+        }
+        else if (key.isConnectable() && interestedOperations.contains(CONNECT)) {
+            connectOperation.run(socket, new RegistrationHandleImpl(key, CONNECT));
+        }
+        else if (key.isReadable() && interestedOperations.contains(READ)) {
+            readOperation.run(socket, new RegistrationHandleImpl(key, READ));
+        }
+        else if (key.isWritable() && interestedOperations.contains(WRITE)) {
+            writeOperation.run(socket, new RegistrationHandleImpl(key, WRITE));
+        }
+    }
+
+    public final class RegistrationHandleImpl implements RegistrationHandle {
+        private final IOSelectionKey key;
+        private final Op op;
+
+        public RegistrationHandleImpl(IOSelectionKey key, Op op) {
+            this.key = key;
+            this.op = op;
+        }
+
+        @Override
+        public boolean isValid() {
+            return key.isValid();
+        }
+
+        @Override
+        public boolean isAcceptable() {
+            return key.isAcceptable();
+        }
+
+        @Override
+        public boolean isConnectable() {
+            return key.isConnectable();
+        }
+
+        @Override
+        public boolean isReadable() {
+            return key.isReadable();
+        }
+
+        @Override
+        public boolean isWritable() {
+            return key.isWritable();
+        }
+
+        @Override
+        public void cancel() {
+            key.clearInterestedOperation(op);
+            switch (op) {
+                case ACCEPT:
+                    acceptOperation = null;
+                    break;
+                case CONNECT:
+                    connectOperation = null;
+                    break;
+                case READ:
+                    readOperation = null;
+                    break;
+                case WRITE:
+                    writeOperation = null;
+                    break;
+            }
+
+            if (acceptOperation == null && connectOperation == null && readOperation == null && writeOperation == null) {
+                key.cancel();
+            }
+        }
+
+        @Override
+        public Set<Op> readyOperations() {
+            return key.readyOperations();
+        }
+    }
 }

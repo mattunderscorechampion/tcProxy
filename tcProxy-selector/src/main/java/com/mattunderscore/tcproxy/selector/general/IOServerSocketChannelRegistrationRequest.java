@@ -35,10 +35,10 @@ import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 
 /**
- * {@link Registration} of a server runnable for an {@link IOServerSocketChannel}.
+ * {@link RegistrationRequest} of a server runnable for an {@link IOServerSocketChannel}.
  * @author Matt Champion on 26/10/2015
  */
-/*package*/ final class IOServerSocketChannelRegistrationRequest implements RegistrationRequest, Registration {
+/*package*/ final class IOServerSocketChannelRegistrationRequest implements RegistrationRequest {
     private final IOServerSocketChannel channel;
     private final SelectionRunnable<IOServerSocketChannel> runnable;
 
@@ -51,19 +51,14 @@ import com.mattunderscore.tcproxy.selector.SelectionRunnable;
     public void register(IOSelector selector) throws ClosedChannelException {
         final IOSelectionKey key = channel.keyFor(selector);
         if (key != null) {
-            final RegistrationSet registrationSet = (RegistrationSet) key.attachment();
-            registrationSet.addRegistration(ACCEPT, this);
+            final Registration<IOServerSocketChannel> registration = (Registration<IOServerSocketChannel>) key.attachment();
+            registration.addRegistration(ACCEPT, runnable);
             key.setInterestedOperation(ACCEPT);
         }
         else {
-            final RegistrationSet registrationSet = new RegistrationSet();
-            registrationSet.addRegistration(ACCEPT, this);
-            channel.register(selector, registrationSet);
+            final Registration<IOServerSocketChannel> registration = new Registration<>(channel);
+            registration.addRegistration(ACCEPT, runnable);
+            channel.register(selector, registration);
         }
-    }
-
-    @Override
-    public void run(RegistrationHandle handle) {
-        runnable.run(channel, handle);
     }
 }

@@ -68,6 +68,6 @@ public final class IOSocketChannelRegistrationRequestTest {
 
         registrationRequest.register(selector);
 
-        verify(channel).register(eq(selector), eq(of(READ)), isA(RegistrationSet.class));
+        verify(channel).register(eq(selector), eq(of(READ)), isA(Registration.class));
     }
 }

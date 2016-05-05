@@ -35,13 +35,13 @@ import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
 
 /**
- * {@link Registration} of a server runnable for an {@link IOSocketChannel} against multiple operations.
+ * {@link RegistrationRequest} of a server runnable for an {@link IOSocketChannel} against multiple operations.
  * @author Matt Champion on 26/10/2015
  */
 /*package*/ final class IOSocketChannelRegistrationRequest implements RegistrationRequest {
     private final IOSocketChannel channel;
     private final Set<Op> ops;
-    private final Registration registration;
+    private final SelectionRunnable<IOSocketChannel> runnable;
 
     IOSocketChannelRegistrationRequest(
             IOSocketChannel channel,
@@ -49,25 +49,25 @@ import com.mattunderscore.tcproxy.selector.SelectionRunnable;
             SelectionRunnable<IOSocketChannel> runnable) {
         this.channel = channel;
         this.ops = ops;
-        this.registration = new IOSocketChannelRegistration(channel, runnable);
+        this.runnable = runnable;
     }
 
     @Override
     public void register(IOSelector selector) throws ClosedChannelException {
         final IOSelectionKey key = channel.keyFor(selector);
         if (key != null) {
-            final RegistrationSet registrationSet = (RegistrationSet) key.attachment();
+            final Registration<IOSocketChannel> registration = (Registration<IOSocketChannel>) key.attachment();
             for (Op op : ops) {
-                registrationSet.addRegistration(op, registration);
+                registration.addRegistration(op, runnable);
                 key.setInterestedOperation(op);
             }
         }
         else {
-            final RegistrationSet registrationSet = new RegistrationSet();
+            final Registration<IOSocketChannel> registration = new Registration<>(channel);
             for (Op op : ops) {
-                registrationSet.addRegistration(op, registration);
+                registration.addRegistration(op, runnable);
             }
-            channel.register(selector, ops, registrationSet);
+            channel.register(selector, ops, registration);
         }
     }
 }
