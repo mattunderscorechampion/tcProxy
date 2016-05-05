@@ -32,7 +32,7 @@ import com.mattunderscore.tcproxy.selector.SelectionRunnable;
  * Registration for {@link SelectionRunnable}s against an {@link IOSocketChannel}.
  * @author Matt Champion on 31/10/2015
  */
-public final class IOSocketChannelRegistration implements Registration {
+/*package*/ final class IOSocketChannelRegistration implements Registration {
     private final IOSocketChannel channel;
     private final SelectionRunnable<IOSocketChannel> runnable;
 

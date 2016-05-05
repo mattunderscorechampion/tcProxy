@@ -37,7 +37,7 @@ import com.mattunderscore.tcproxy.selector.SelectionRunnable;
  * {@link Registration} of a server runnable for an {@link IOSocketChannel} against a single operation.
  * @author Matt Champion on 26/10/2015
  */
-final class IOSocketChannelSingleRegistrationRequest implements RegistrationRequest {
+/*package*/ final class IOSocketChannelSingleRegistrationRequest implements RegistrationRequest {
     private final IOSocketChannel channel;
     private final Op op;
     private final Registration registration;

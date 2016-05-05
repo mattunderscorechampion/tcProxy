@@ -38,10 +38,12 @@ import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op;
 
 /**
+ * Attachment for sockets that holds the {@link Registration}.
+ *
  * @author Matt Champion on 29/11/2015
  */
 @NotThreadSafe
-public final class RegistrationSet {
+/*package*/ final class RegistrationSet {
     private Registration acceptOperation;
     private Registration connectOperation;
     private Registration readOperation;

@@ -38,7 +38,7 @@ import com.mattunderscore.tcproxy.selector.SelectionRunnable;
  * {@link Registration} of a server runnable for an {@link IOServerSocketChannel}.
  * @author Matt Champion on 26/10/2015
  */
-final class IOServerSocketChannelRegistrationRequest implements RegistrationRequest, Registration {
+/*package*/ final class IOServerSocketChannelRegistrationRequest implements RegistrationRequest, Registration {
     private final IOServerSocketChannel channel;
     private final SelectionRunnable<IOServerSocketChannel> runnable;
 
