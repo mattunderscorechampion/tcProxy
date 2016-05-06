@@ -1,4 +1,4 @@
-/* Copyright © 2015 Matthew Champion
+/* Copyright © 2015, 2016 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -25,14 +25,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.general;
 
-import java.nio.channels.ClosedChannelException;
-import java.util.Set;
-
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op;
 import com.mattunderscore.tcproxy.io.selection.IOSelector;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
+
+import java.nio.channels.ClosedChannelException;
+import java.util.Set;
 
 /**
  * {@link RegistrationRequest} of a server runnable for an {@link IOSocketChannel} against multiple operations.
@@ -56,14 +56,14 @@ import com.mattunderscore.tcproxy.selector.SelectionRunnable;
     public void register(IOSelector selector) throws ClosedChannelException {
         final IOSelectionKey key = channel.keyFor(selector);
         if (key != null) {
-            final Registration<IOSocketChannel> registration = (Registration<IOSocketChannel>) key.attachment();
+            final IOSocketChannelRegistration registration = (IOSocketChannelRegistration) key.attachment();
             for (Op op : ops) {
                 registration.addRegistration(op, runnable);
                 key.setInterestedOperation(op);
             }
         }
         else {
-            final Registration<IOSocketChannel> registration = new Registration<>();
+            final IOSocketChannelRegistration registration = new IOSocketChannelRegistration();
             for (Op op : ops) {
                 registration.addRegistration(op, runnable);
             }

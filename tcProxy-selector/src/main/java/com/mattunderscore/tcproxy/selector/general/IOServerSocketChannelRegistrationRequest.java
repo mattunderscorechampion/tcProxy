@@ -25,14 +25,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.general;
 
-import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.ACCEPT;
-
-import java.nio.channels.ClosedChannelException;
-
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
 import com.mattunderscore.tcproxy.io.selection.IOSelector;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectionRunnable;
+
+import java.nio.channels.ClosedChannelException;
+
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.ACCEPT;
 
 /**
  * {@link RegistrationRequest} of a server runnable for an {@link IOServerSocketChannel}.
@@ -51,12 +51,12 @@ import com.mattunderscore.tcproxy.selector.SelectionRunnable;
     public void register(IOSelector selector) throws ClosedChannelException {
         final IOSelectionKey key = channel.keyFor(selector);
         if (key != null) {
-            final Registration<IOServerSocketChannel> registration = (Registration<IOServerSocketChannel>) key.attachment();
+            final IOServerSocketChannelRegistration registration = (IOServerSocketChannelRegistration) key.attachment();
             registration.addRegistration(ACCEPT, runnable);
             key.setInterestedOperation(ACCEPT);
         }
         else {
-            final Registration<IOServerSocketChannel> registration = new Registration<>();
+            final IOServerSocketChannelRegistration registration = new IOServerSocketChannelRegistration();
             registration.addRegistration(ACCEPT, runnable);
             channel.register(selector, registration);
         }

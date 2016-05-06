@@ -65,6 +65,6 @@ public final class IOServerSocketChannelRegistrationRequestTest {
 
         registrationRequest.register(selector);
 
-        verify(channel).register(eq(selector), isA(Registration.class));
+        verify(channel).register(eq(selector), isA(IOServerSocketChannelRegistration.class));
     }
 }
