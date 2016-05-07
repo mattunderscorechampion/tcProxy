@@ -36,7 +36,7 @@ import com.mattunderscore.tcproxy.io.selection.IOSingleOpSelectableChannel;
 public interface IOServerSocketChannel extends IOSingleOpSelectableChannel, IOOutboundSocket {
     /**
      * @return An inbound IOSocketChannel attempting to connect to the server.
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     IOSocketChannel accept() throws IOException;
 }

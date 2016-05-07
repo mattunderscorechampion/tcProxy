@@ -36,7 +36,7 @@ public interface IOOutboundSocket extends IOSocket {
     /**
      * Bind the socket to a local address.
      * @param localAddress The local address
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     void bind(SocketAddress localAddress) throws IOException;
 }

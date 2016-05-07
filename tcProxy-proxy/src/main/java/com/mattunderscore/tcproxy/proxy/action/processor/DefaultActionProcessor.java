@@ -42,7 +42,8 @@ public final class DefaultActionProcessor implements ActionProcessor {
 
     /**
      * Constructor for the default behaviour.
-     * @param direction The direction the processor is for.
+     * @param direction The direction the processor is for
+     * @param connection The connection the processor is for
      */
     public DefaultActionProcessor(Direction direction, Connection connection) {
         this.direction = direction;

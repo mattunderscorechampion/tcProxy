@@ -82,7 +82,7 @@ public final class LifecycleState {
 
     /**
      * Wait until running.
-     * @throws UncheckedInterruptedException
+     * @throws UncheckedInterruptedException If interrupted while waiting
      */
     public void waitForRunning() {
         try {
@@ -95,7 +95,7 @@ public final class LifecycleState {
 
     /**
      * Wait until stopped.
-     * @throws UncheckedInterruptedException
+     * @throws UncheckedInterruptedException If interrupted while waiting
      */
     public void waitForStopped() {
         final CountDownLatch latch = this.stoppedLatch;

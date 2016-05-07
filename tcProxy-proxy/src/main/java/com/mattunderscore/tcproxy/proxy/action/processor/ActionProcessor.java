@@ -41,6 +41,7 @@ public interface ActionProcessor {
 
     /**
      * Block until the processor is finished
+     * @throws InterruptedException If interrupted while flushing
      */
     void flush() throws InterruptedException;
 }

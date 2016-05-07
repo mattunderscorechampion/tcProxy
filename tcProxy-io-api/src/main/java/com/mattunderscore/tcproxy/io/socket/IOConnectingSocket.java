@@ -35,7 +35,7 @@ public interface IOConnectingSocket extends IOSocket {
     /**
      * Finish the connection.
      * @return If the connect was completed
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     boolean finishConnect() throws IOException;
 }

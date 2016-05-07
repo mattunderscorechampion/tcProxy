@@ -38,7 +38,7 @@ public interface IOSingleOpSelectableChannel extends IOSelectableChannel {
      * @param selector The selector
      * @param att A attachment
      * @return The selection key
-     * @throws ClosedChannelException
+     * @throws ClosedChannelException If the channel is closed
      */
     IOSelectionKey register(IOSelector selector, Object att) throws ClosedChannelException;
 }

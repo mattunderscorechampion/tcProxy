@@ -36,7 +36,7 @@ public interface IOSelector extends AutoCloseable {
 
     /**
      * Non-blocking selection operation. Updates the set of selected keys.
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     void selectNow() throws IOException;
 
@@ -53,6 +53,7 @@ public interface IOSelector extends AutoCloseable {
     /**
      * Close the selector. Any selection keys that have not been cancelled will be invalidated and their channels
      * deregistered.
+     * @throws IOException If the selector could not be closed
      */
     void close() throws IOException;
 }

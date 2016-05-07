@@ -37,7 +37,7 @@ public interface IOConnectableSocket extends IOConnectingSocket, IOOutboundSocke
      * Connect the socket to a remote address.
      * @param remoteAddress The remote address to connect to
      * @return If the connect has been established
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     boolean connect(SocketAddress remoteAddress) throws IOException;
 }

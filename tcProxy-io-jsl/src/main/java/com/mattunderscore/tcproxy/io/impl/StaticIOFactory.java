@@ -46,7 +46,7 @@ public final class StaticIOFactory {
 
     /**
      * @return A new selector.
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     public static IOSelector openSelector() throws IOException {
         return FACTORY.openSelector();
@@ -54,7 +54,7 @@ public final class StaticIOFactory {
 
     /**
      * @return A new unbound socket.
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     public static IOOutboundSocketChannel openSocket() throws IOException {
         return FACTORY.openSocket();
@@ -62,7 +62,7 @@ public final class StaticIOFactory {
 
     /**
      * @return A new server socket.
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     public static IOServerSocketChannel openServerSocket() throws IOException {
         return FACTORY.openServerSocket();

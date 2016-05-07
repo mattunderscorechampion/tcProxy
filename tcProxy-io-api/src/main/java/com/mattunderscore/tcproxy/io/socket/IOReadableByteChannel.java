@@ -40,7 +40,7 @@ public interface IOReadableByteChannel extends ReadableByteChannel {
      * Reads data from the socket into a circular buffer
      * @param dst The buffer
      * @return The number of bytes read
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     int read(CircularBuffer dst) throws IOException;
 }

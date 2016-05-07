@@ -37,13 +37,13 @@ import com.mattunderscore.tcproxy.io.selection.IOMultiOpSelectableChannel;
 public interface IOSocketChannel extends IOMultiOpSelectableChannel, IOByteChannel, IOSocket, IOConnectingSocket {
     /**
      * @return The address of the remote socket.
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     SocketAddress getRemoteAddress() throws IOException;
 
     /**
      * Close the socket with a reset packet.
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     void abort() throws IOException;
 }

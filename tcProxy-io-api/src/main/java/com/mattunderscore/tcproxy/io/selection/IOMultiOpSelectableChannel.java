@@ -40,7 +40,7 @@ public interface IOMultiOpSelectableChannel extends IOSelectableChannel {
      * @param op The operation
      * @param att A attachment
      * @return The selection key
-     * @throws ClosedChannelException
+     * @throws ClosedChannelException If the channel is closed
      */
     IOSelectionKey register(IOSelector selector, IOSelectionKey.Op op, Object att) throws ClosedChannelException;
 
@@ -50,7 +50,7 @@ public interface IOMultiOpSelectableChannel extends IOSelectableChannel {
      * @param ops The operations
      * @param att A attachment
      * @return The selection key
-     * @throws ClosedChannelException
+     * @throws ClosedChannelException If the channel is closed
      */
     IOSelectionKey register(IOSelector selector, Set<IOSelectionKey.Op> ops, Object att) throws ClosedChannelException;
 }

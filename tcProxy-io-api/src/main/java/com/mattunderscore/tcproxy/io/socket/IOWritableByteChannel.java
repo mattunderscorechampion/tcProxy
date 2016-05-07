@@ -40,7 +40,7 @@ public interface IOWritableByteChannel extends WritableByteChannel {
      * Writes data from the circular buffer to the socket.
      * @param src The buffer
      * @return The number of bytes written
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     int write(CircularBuffer src) throws IOException;
 }

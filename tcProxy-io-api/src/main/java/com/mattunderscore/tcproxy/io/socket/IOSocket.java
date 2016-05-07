@@ -36,8 +36,8 @@ import java.nio.channels.Channel;
 public interface IOSocket extends AutoCloseable, Channel {
 
     /**
-     * @return The address of the lcoal socket.
-     * @throws IOException
+     * @return The address of the local socket.
+     * @throws IOException If an I/O error occurs
      */
     SocketAddress getLocalAddress() throws IOException;
 
@@ -46,7 +46,7 @@ public interface IOSocket extends AutoCloseable, Channel {
      * @param option The option.
      * @param value The value of the option.
      * @param <T> The type of the value.
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     <T> void set(IOSocketOption<T> option, T value) throws IOException;
 
@@ -55,7 +55,7 @@ public interface IOSocket extends AutoCloseable, Channel {
      * @param option The option.
      * @param <T> The type of the value.
      * @return The value of the option.
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     <T> T get(IOSocketOption<T> option) throws IOException;
 }

@@ -46,7 +46,7 @@ public interface Connection {
 
     /**
      * Close the connection.
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     void close() throws IOException;
 

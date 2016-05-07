@@ -32,6 +32,7 @@ import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandlerFactory;
+import com.mattunderscore.tcproxy.selector.server.Server;
 
 /**
  * Implementation of {@link ConnectionHandlerFactory} for the proxy {@link Server}.

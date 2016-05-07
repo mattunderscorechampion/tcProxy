@@ -30,12 +30,14 @@ import java.io.IOException;
 import com.mattunderscore.tcproxy.io.socket.IOSocket;
 
 /**
+ * Represents configuration for a socket.
  * @author Matt Champion on 05/12/2015
  */
 public interface IOSocketConfiguration<T extends IOSocket> {
     /**
      * Apply the configuration to a socket.
      * @param ioSocket The socket to apply the configuration to
+     * @return The socket with the configuration applied
      * @throws IOException If the configuration could not be applied
      */
     T apply(T ioSocket) throws IOException;

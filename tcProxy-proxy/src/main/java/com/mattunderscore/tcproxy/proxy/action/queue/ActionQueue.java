@@ -40,7 +40,7 @@ public interface ActionQueue {
 
     /**
      * Queue a new action
-     * @param action
+     * @param action The action
      */
     void add(final Action action);
 

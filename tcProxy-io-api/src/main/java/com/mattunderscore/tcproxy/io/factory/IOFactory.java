@@ -40,19 +40,19 @@ public interface IOFactory {
 
     /**
      * @return A new selector.
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     IOSelector openSelector() throws IOException;
 
     /**
      * @return A new unbound, outbound socket.
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     IOOutboundSocketChannel openSocket() throws IOException;
 
     /**
      * @return A new server socket.
-     * @throws IOException
+     * @throws IOException If an I/O error occurs
      */
     IOServerSocketChannel openServerSocket() throws IOException;
 

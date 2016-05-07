@@ -36,6 +36,7 @@ import com.mattunderscore.tcproxy.workers.WorkerRunnable;
 public interface SelectorFactory<T extends WorkerRunnable> {
     /**
      * @return Create a new selector
+     * @throws IOException If an I/O error occurs
      */
     T create() throws IOException;
 }
