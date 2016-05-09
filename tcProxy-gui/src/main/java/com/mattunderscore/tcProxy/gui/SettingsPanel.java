@@ -42,8 +42,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
-import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
-import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
+import com.mattunderscore.tcproxy.io.configuration.OpenIOSocketChannelConfiguration;
+import com.mattunderscore.tcproxy.io.configuration.SocketConfiguration;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.proxy.settings.ReadSelectorSettings;
@@ -165,8 +165,7 @@ public final class SettingsPanel extends JPanel {
     }
 
     public IOSocketChannelConfiguration getInboundSocketSettings() {
-        return IOSocketChannelConfiguration
-            .defaultConfig()
+        return SocketConfiguration.socketChannel()
             .receiveBuffer(parseInt(inboundReceiveBufferSize.getText()))
             .sendBuffer(parseInt(inboundSendBufferSize.getText()));
     }

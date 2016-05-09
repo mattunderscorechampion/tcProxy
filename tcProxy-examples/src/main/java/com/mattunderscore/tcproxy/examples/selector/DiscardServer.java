@@ -25,6 +25,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.examples.selector;
 
+import static com.mattunderscore.tcproxy.io.configuration.SocketConfiguration.socketChannel;
+import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.READ;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Collection;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
@@ -46,15 +57,6 @@ import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.Server;
 import com.mattunderscore.tcproxy.selector.server.ServerImpl;
 import com.mattunderscore.tcproxy.workers.WorkerRunnable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Collection;
-import java.util.Set;
-
-import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.READ;
 
 /**
  * Discard server. Reads and then discards all bytes sent to it.
@@ -70,8 +72,7 @@ public final class DiscardServer {
                 .builder()
                 .listenOn(34534)
                 .build())
-            .socketSettings(IOSocketChannelConfiguration
-                .defaultConfig()
+            .socketSettings(socketChannel()
                 .receiveBuffer(1024)
                 .sendBuffer(1024))
             .build();
@@ -109,13 +110,13 @@ public final class DiscardServer {
     }
 
     private final static class DiscardServerStarter extends AbstractServerStarter {
-        private final IOSocketConfiguration<IOSocketChannel> inboundSocketSettings;
+        private final IOSocketConfiguration<IOSocketChannel, ?> inboundSocketSettings;
 
         protected DiscardServerStarter(
                 IOFactory ioFactory,
                 Iterable<Integer> portsToListenOn,
                 int selectorThreads,
-                IOSocketConfiguration<IOSocketChannel> inboundSocketSettings) {
+                IOSocketConfiguration<IOSocketChannel, ?> inboundSocketSettings) {
             super(ioFactory, portsToListenOn, selectorThreads);
             this.inboundSocketSettings = inboundSocketSettings;
         }
@@ -181,7 +182,7 @@ public final class DiscardServer {
     public static final DiscardServerBuilder builder() {
         return new DiscardServerBuilder(
             AcceptSettings.builder().build(),
-            IOSocketChannelConfiguration.defaultConfig(),
+            socketChannel(),
             1);
     }
 }

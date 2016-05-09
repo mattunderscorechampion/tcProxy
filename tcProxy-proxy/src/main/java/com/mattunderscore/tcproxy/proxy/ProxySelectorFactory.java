@@ -53,7 +53,7 @@ import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
  */
 final class ProxySelectorFactory implements SelectorFactory<SocketChannelSelector> {
     private final Collection<IOServerSocketChannel> listenChannels;
-    private final IOSocketConfiguration<IOSocketChannel> socketSettings;
+    private final IOSocketConfiguration<IOSocketChannel, ?> socketSettings;
     private final ConnectionHandlerFactory connectionHandlerFactory;
     private final ConnectionManager manager;
     private final ReadSelectorSettings readSelectorSettings;
@@ -65,7 +65,7 @@ final class ProxySelectorFactory implements SelectorFactory<SocketChannelSelecto
             ReadSelectorSettings readSelectorSettings,
             SelectorBackoff selectorBackoff,
             Collection<IOServerSocketChannel> listenChannels,
-            IOSocketConfiguration<IOSocketChannel> socketSettings) {
+            IOSocketConfiguration<IOSocketChannel, ?> socketSettings) {
         this.listenChannels = listenChannels;
         this.socketSettings = socketSettings;
         this.connectionHandlerFactory = connectionHandlerFactory;

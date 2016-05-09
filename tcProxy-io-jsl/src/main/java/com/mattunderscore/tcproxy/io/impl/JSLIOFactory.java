@@ -30,6 +30,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
+import com.mattunderscore.tcproxy.io.configuration.SocketConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
 import com.mattunderscore.tcproxy.io.socket.IOOutboundSocket;
 import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
@@ -41,6 +42,7 @@ import com.mattunderscore.tcproxy.io.factory.IOServerSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.configuration.IOOutboundSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.io.configuration.IOServerSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
+import com.mattunderscore.tcproxy.io.socket.IOSocket;
 
 /**
  * Factory implementation for sockets and selectors that uses the Java Standard Libary.
@@ -66,10 +68,10 @@ public final class JSLIOFactory implements IOFactory {
     @SuppressWarnings("unchecked")
     public <T extends IOOutboundSocketFactory<?>> T socketFactory(Class<T> type) {
         if (IOServerSocketChannelFactory.class.equals(type)) {
-            return (T) new IOServerSocketChannelFactoryImpl(this, IOServerSocketChannelConfiguration.defaultConfig());
+            return (T) new IOServerSocketChannelFactoryImpl(this, SocketConfiguration.serverSocketChannel());
         }
         else if (IOOutboundSocketChannelFactory.class.equals(type)) {
-            return (T) new IOOutboundSocketChannelFactoryImpl(this, IOOutboundSocketChannelConfiguration.defaultConfig());
+            return (T) new IOOutboundSocketChannelFactoryImpl(this, SocketConfiguration.outboundSocketChannel());
         }
         else {
             throw new IllegalArgumentException("No factory available for " + type.getCanonicalName());
@@ -78,7 +80,7 @@ public final class JSLIOFactory implements IOFactory {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends IOOutboundSocket, S extends IOOutboundSocketFactory<T>> S socketFactory(IOSocketConfiguration<T> configuration) {
+    public <T extends IOSocket, S extends IOOutboundSocketFactory<? extends T>> S socketFactory(IOSocketConfiguration<T, ?> configuration) {
         if (IOServerSocketChannelConfiguration.class.equals(configuration.getClass())) {
             return (S) new IOServerSocketChannelFactoryImpl(this, (IOServerSocketChannelConfiguration) configuration);
         }

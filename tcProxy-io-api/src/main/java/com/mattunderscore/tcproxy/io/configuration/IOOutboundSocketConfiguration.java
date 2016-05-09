@@ -23,17 +23,22 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.selector.server;
+package com.mattunderscore.tcproxy.io.configuration;
 
-import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
+import java.net.SocketAddress;
+
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocket;
 
 /**
- * @author Matt Champion on 13/04/2016
+ * The configuration for {@link IOOutboundSocket}s.
+ * @author Matt Champion on 09/05/2016
  */
-public interface ServerBuilder<B extends ServerBuilder<B>> {
-    B acceptSettings(AcceptSettings acceptSettings);
-
-    B socketSettings(IOSocketChannelConfiguration socketSettings);
-
-    Server build();
+public interface IOOutboundSocketConfiguration<T extends IOOutboundSocket, S extends IOOutboundSocketConfiguration<T, S>> extends IOSocketConfiguration<T, S> {
+    /**
+     * Binds the socket to a local address.
+     *
+     * @param localAddress The local address
+     * @return A new factory with the option set
+     */
+    S bind(SocketAddress localAddress);
 }

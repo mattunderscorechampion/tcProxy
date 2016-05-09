@@ -27,8 +27,8 @@ package com.mattunderscore.tcproxy.io.impl;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.isA;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.IOException;
@@ -37,9 +37,7 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayDeque;
-import java.util.List;
 import java.util.Queue;
-import java.util.Stack;
 
 import org.junit.Assert;
 import org.junit.Before;

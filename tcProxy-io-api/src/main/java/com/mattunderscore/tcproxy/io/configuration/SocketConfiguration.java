@@ -23,17 +23,38 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.selector.server;
+package com.mattunderscore.tcproxy.io.configuration;
 
-import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 
 /**
- * @author Matt Champion on 13/04/2016
+ * Utility class for obtaining default configuration.
+ * @author Matt Champion on 09/05/2016
  */
-public interface ServerBuilder<B extends ServerBuilder<B>> {
-    B acceptSettings(AcceptSettings acceptSettings);
+public final class SocketConfiguration {
+    private SocketConfiguration() {
+    }
 
-    B socketSettings(IOSocketChannelConfiguration socketSettings);
+    /**
+     * @return Default configuration for {@link IOOutboundSocketChannel}s
+     */
+    public static IOOutboundSocketChannelConfiguration outboundSocketChannel() {
+        return IOOutboundSocketChannelConfigurationImpl.defaultConfig();
+    }
 
-    Server build();
+    /**
+     * @return Default configuration for {@link IOServerSocketChannel}s
+     */
+    public static IOServerSocketChannelConfiguration serverSocketChannel() {
+        return IOServerSocketChannelConfigurationImpl.defaultConfig();
+    }
+
+    /**
+     * @return Default configuration for {@link IOSocketChannel}s
+     */
+    public static IOSocketChannelConfiguration socketChannel() {
+        return IOSocketChannelConfigurationImpl.defaultConfig();
+    }
 }

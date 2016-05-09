@@ -23,17 +23,29 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.selector.server;
+package com.mattunderscore.tcproxy.io.configuration;
 
-import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 
 /**
- * @author Matt Champion on 13/04/2016
+ * The configuration for {@link IOOutboundSocketChannel}s and {@link IOSocketChannel}s.
+ * @author Matt Champion on 09/05/2016
  */
-public interface ServerBuilder<B extends ServerBuilder<B>> {
-    B acceptSettings(AcceptSettings acceptSettings);
+public interface OpenIOSocketChannelConfiguration<T extends IOSocketChannel, S extends OpenIOSocketChannelConfiguration<T, S>> extends IOSocketConfiguration<T, S> {
+    /**
+     * Set the socket option for TCP_NODELAY. Defaults to false.
+     *
+     * @param enabled Enable the option
+     * @return A new factory with the option set
+     */
+    S noDelay(boolean enabled);
 
-    B socketSettings(IOSocketChannelConfiguration socketSettings);
-
-    Server build();
+    /**
+     * Set the socket option for SO_KEEP_ALIVE. Defaults to false.
+     *
+     * @param enabled Enable the option
+     * @return A new factory with the option set
+     */
+    S keepAlive(boolean enabled);
 }

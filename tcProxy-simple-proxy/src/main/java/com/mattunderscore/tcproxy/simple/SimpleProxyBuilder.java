@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.simple;
 
+import static com.mattunderscore.tcproxy.io.configuration.SocketConfiguration.socketChannel;
 import static java.util.Objects.requireNonNull;
 
 import java.net.InetSocketAddress;
@@ -98,8 +99,7 @@ public final class SimpleProxyBuilder extends AbstractServerBuilder<SimpleProxyB
     public static SimpleProxyBuilder builder() {
         return new SimpleProxyBuilder(
             null,
-            IOSocketChannelConfiguration
-                .defaultConfig()
+            socketChannel()
                 .receiveBuffer(4096)
                 .sendBuffer(4096),
             new JSLIOFactory(),

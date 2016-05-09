@@ -39,7 +39,7 @@ import com.mattunderscore.tcproxy.io.socket.IOSocket;
  * Abstract implementation of socket configuration that contains the common properties of all sockets.
  * @author Matt Champion on 02/12/2015
  */
-public abstract class AbstractIOSocketConfiguration<T extends IOSocket, S extends IOSocketConfiguration<T>> implements IOSocketConfiguration<T> {
+public abstract class AbstractIOSocketConfiguration<T extends IOSocket, S extends IOSocketConfiguration<T, S>> implements IOSocketConfiguration<T, S> {
     protected final Integer receiveBuffer;
     protected final Integer sendBuffer;
     protected final Boolean blocking;
@@ -86,52 +86,27 @@ public abstract class AbstractIOSocketConfiguration<T extends IOSocket, S extend
         return ioSocket;
     }
 
-    /**
-     * Set the socket option for SO_RCVBUF. Defaults to null.
-     *
-     * @param size The size of the buffer or null to use the system default
-     * @return A new factory with the option set
-     */
+    @Override
     public final S receiveBuffer(Integer size) {
         return newConfiguration(size, sendBuffer, blocking, linger, reuseAddress);
     }
 
-    /**
-     * Set the socket option for SO_SNDBUF. Defaults to null.
-     *
-     * @param size The size of the buffer or null to use the system default
-     * @return A new factory with the option set
-     */
+    @Override
     public final S sendBuffer(Integer size) {
         return newConfiguration(receiveBuffer, size, blocking, linger, reuseAddress);
     }
 
-    /**
-     * Set the socket to blocking mode. Defaults to false.
-     *
-     * @param enabled Enable the option
-     * @return A new factory with the option set
-     */
+    @Override
     public final S blocking(boolean enabled) {
         return newConfiguration(receiveBuffer, sendBuffer, enabled, linger, reuseAddress);
     }
 
-    /**
-     * Set the socket option for SO_LINGER. Defaults to null.
-     *
-     * @param time The linger time or null to use the system default
-     * @return A new factory with the option set
-     */
+    @Override
     public final S linger(Integer time) {
         return newConfiguration(receiveBuffer, sendBuffer, blocking, time, reuseAddress);
     }
 
-    /**
-     * Set the socket option for SO_REUSEADDR. Defaults to false.
-     *
-     * @param enabled Enable the option
-     * @return A new factory with the option set
-     */
+    @Override
     public final S reuseAddress(boolean enabled) {
         return newConfiguration(receiveBuffer, sendBuffer, blocking, linger, enabled);
     }

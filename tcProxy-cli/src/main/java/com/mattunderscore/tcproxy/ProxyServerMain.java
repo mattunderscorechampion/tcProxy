@@ -25,6 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy;
 
+import static com.mattunderscore.tcproxy.io.configuration.SocketConfiguration.socketChannel;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +48,6 @@ import com.mattunderscore.tcproxy.cli.arguments.Option;
 import com.mattunderscore.tcproxy.cli.arguments.OptionsParser;
 import com.mattunderscore.tcproxy.cli.arguments.Setting;
 import com.mattunderscore.tcproxy.cli.arguments.StringParser;
-import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.proxy.ProxyServerBuilder;
 import com.mattunderscore.tcproxy.proxy.connection.Connection;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
@@ -98,8 +99,7 @@ public final class ProxyServerMain {
                         .batchSize((Integer)settings.get(BATCH_SIZE))
                         .build())
                 .socketSettings(
-                    IOSocketChannelConfiguration
-                        .defaultConfig()
+                    socketChannel()
                         .receiveBuffer((Integer) settings.get(RECEIVE_BUFFER))
                         .sendBuffer((Integer) settings.get(SEND_BUFFER)))
                 .outboundSocketSettings(

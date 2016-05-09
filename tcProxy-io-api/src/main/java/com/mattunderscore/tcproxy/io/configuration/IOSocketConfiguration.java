@@ -33,7 +33,7 @@ import com.mattunderscore.tcproxy.io.socket.IOSocket;
  * Represents configuration for a socket.
  * @author Matt Champion on 05/12/2015
  */
-public interface IOSocketConfiguration<T extends IOSocket> {
+public interface IOSocketConfiguration<T extends IOSocket, S extends IOSocketConfiguration<T, S>> {
     /**
      * Apply the configuration to a socket.
      * @param ioSocket The socket to apply the configuration to
@@ -41,4 +41,44 @@ public interface IOSocketConfiguration<T extends IOSocket> {
      * @throws IOException If the configuration could not be applied
      */
     T apply(T ioSocket) throws IOException;
+
+    /**
+     * Set the socket option for SO_RCVBUF. Defaults to null.
+     *
+     * @param size The size of the buffer or null to use the system default
+     * @return A new factory with the option set
+     */
+    S receiveBuffer(Integer size);
+
+    /**
+     * Set the socket option for SO_SNDBUF. Defaults to null.
+     *
+     * @param size The size of the buffer or null to use the system default
+     * @return A new factory with the option set
+     */
+    S sendBuffer(Integer size);
+
+    /**
+     * Set the socket to blocking mode. Defaults to false.
+     *
+     * @param enabled Enable the option
+     * @return A new factory with the option set
+     */
+    S blocking(boolean enabled);
+
+    /**
+     * Set the socket option for SO_LINGER. Defaults to null.
+     *
+     * @param time The linger time or null to use the system default
+     * @return A new factory with the option set
+     */
+    S linger(Integer time);
+
+    /**
+     * Set the socket option for SO_REUSEADDR. Defaults to false.
+     *
+     * @param enabled Enable the option
+     * @return A new factory with the option set
+     */
+    S reuseAddress(boolean enabled);
 }

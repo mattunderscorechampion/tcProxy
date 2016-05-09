@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.examples.selector;
 
+import static com.mattunderscore.tcproxy.io.configuration.SocketConfiguration.socketChannel;
 import static com.mattunderscore.tcproxy.io.impl.CircularBufferImpl.allocateDirect;
 import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.READ;
 import static com.mattunderscore.tcproxy.io.selection.IOSelectionKey.Op.WRITE;
@@ -34,8 +35,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 
-import com.mattunderscore.tcproxy.selector.server.AbstractServerBuilder;
-import com.mattunderscore.tcproxy.selector.server.ServerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,9 +54,11 @@ import com.mattunderscore.tcproxy.selector.connecting.ConnectionHandler;
 import com.mattunderscore.tcproxy.selector.connecting.task.AcceptingTask;
 import com.mattunderscore.tcproxy.selector.general.GeneralPurposeSelector;
 import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
+import com.mattunderscore.tcproxy.selector.server.AbstractServerBuilder;
 import com.mattunderscore.tcproxy.selector.server.AbstractServerStarter;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.Server;
+import com.mattunderscore.tcproxy.selector.server.ServerImpl;
 import com.mattunderscore.tcproxy.workers.WorkerRunnable;
 
 /**
@@ -72,8 +73,7 @@ public final class EchoServer {
         final Server server = EchoServer
             .builder()
             .selectorThreads(2)
-            .socketSettings(IOSocketChannelConfiguration
-                .defaultConfig()
+            .socketSettings(socketChannel()
                 .receiveBuffer(1024)
                 .sendBuffer(1024))
             .acceptSettings(AcceptSettings
@@ -136,13 +136,13 @@ public final class EchoServer {
     }
 
     private final static class EchoServerStarter extends AbstractServerStarter {
-        private final IOSocketConfiguration<IOSocketChannel> inboundSocketSettings;
+        private final IOSocketConfiguration<IOSocketChannel, ?> inboundSocketSettings;
 
         protected EchoServerStarter(
                 IOFactory ioFactory,
                 Iterable<Integer> portsToListenOn,
                 int selectorThreads,
-                IOSocketConfiguration<IOSocketChannel> inboundSocketSettings) {
+                IOSocketConfiguration<IOSocketChannel, ?> inboundSocketSettings) {
             super(ioFactory, portsToListenOn, selectorThreads);
             this.inboundSocketSettings = inboundSocketSettings;
         }
@@ -206,7 +206,7 @@ public final class EchoServer {
     public static final EchoServerBuilder builder() {
         return new EchoServerBuilder(
             AcceptSettings.builder().build(),
-            IOSocketChannelConfiguration.defaultConfig(),
+            socketChannel(),
             1);
     }
 }

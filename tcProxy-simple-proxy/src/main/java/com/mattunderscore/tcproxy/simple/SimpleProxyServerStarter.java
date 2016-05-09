@@ -34,9 +34,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocket;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.selector.SelectorBackoff;
 import com.mattunderscore.tcproxy.selector.SelectorFactory;
 import com.mattunderscore.tcproxy.selector.SocketChannelSelector;
@@ -52,7 +54,7 @@ import com.mattunderscore.tcproxy.selector.server.Server;
     private static final Logger LOG = LoggerFactory.getLogger("server");
     private static final AtomicInteger THREAD_COUNT = new AtomicInteger(0);
     private final SelectorBackoff selectorBackoff;
-    private final IOSocketChannelConfiguration socketSettings;
+    private final IOSocketConfiguration<IOSocketChannel, ?> socketSettings;
     private final InetSocketAddress remote;
 
     /*packaage*/ SimpleProxyServerStarter(
@@ -60,7 +62,7 @@ import com.mattunderscore.tcproxy.selector.server.Server;
         Iterable<Integer> portsToListenOn,
         int selectorThreads,
         SelectorBackoff selectorBackoff,
-        IOSocketChannelConfiguration socketSettings,
+        IOSocketConfiguration<IOSocketChannel, ?> socketSettings,
         InetSocketAddress remote) {
         super(ioFactory, portsToListenOn, selectorThreads);
         this.selectorBackoff = selectorBackoff;

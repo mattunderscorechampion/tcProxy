@@ -1,4 +1,4 @@
-/* Copyright © 2015 Matthew Champion
+/* Copyright © 2016 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -25,113 +25,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.configuration;
 
-import static com.mattunderscore.tcproxy.io.socket.IOSocketOption.KEEP_ALIVE;
-import static com.mattunderscore.tcproxy.io.socket.IOSocketOption.TCP_NO_DELAY;
-
-import java.io.IOException;
-
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 
-import net.jcip.annotations.Immutable;
-
 /**
- * A configuration for {@link IOSocketChannel}s.
- * @author Matt Champion on 02/12/2015
+ * The configuration for {@link IOSocketChannel}s.
+ * @author Matt Champion on 09/05/2016
  */
-@Immutable
-public final class IOSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOSocketChannel, IOSocketChannelConfiguration> {
-    protected final Boolean keepAlive;
-    protected final Boolean noDelay;
-
-    IOSocketChannelConfiguration() {
-        super();
-        keepAlive = null;
-        noDelay = null;
-    }
-
-    /*package*/ IOSocketChannelConfiguration(
-            Integer receiveBuffer,
-            Integer sendBuffer,
-            boolean blocking,
-            Integer linger,
-            boolean reuseAddress,
-            Boolean keepAlive,
-            Boolean noDelay) {
-        super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress);
-        this.keepAlive = keepAlive;
-        this.noDelay = noDelay;
-    }
-
-    @Override
-    public IOSocketChannel apply(IOSocketChannel ioSocketChannel) throws IOException {
-        super.apply(ioSocketChannel);
-
-        if (keepAlive != null) {
-            ioSocketChannel.set(KEEP_ALIVE, keepAlive);
-        }
-        if (noDelay != null) {
-            ioSocketChannel.set(TCP_NO_DELAY, noDelay);
-        }
-
-        return ioSocketChannel;
-    }
-
-    /**
-     * Set the socket option for TCP_NODELAY. Defaults to false.
-     *
-     * @param enabled Enable the option
-     * @return A new factory with the option set
-     */
-    public IOSocketChannelConfiguration noDelay(boolean enabled) {
-        return new IOSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, keepAlive, enabled);
-    }
-
-    /**
-     * Set the socket option for SO_KEEP_ALIVE. Defaults to false.
-     *
-     * @param enabled Enable the option
-     * @return A new factory with the option set
-     */
-    public IOSocketChannelConfiguration keepAlive(boolean enabled) {
-        return new IOSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, enabled, noDelay);
-    }
-
-    @Override
-    protected IOSocketChannelConfiguration newConfiguration(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress) {
-        return new IOSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, keepAlive, noDelay);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-
-        final IOSocketChannelConfiguration that = (IOSocketChannelConfiguration) o;
-
-        return !(keepAlive != null ? !keepAlive.equals(that.keepAlive) : that.keepAlive != null) &&
-            !(noDelay != null ? !noDelay.equals(that.noDelay) : that.noDelay != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (keepAlive != null ? keepAlive.hashCode() : 0);
-        result = 31 * result + (noDelay != null ? noDelay.hashCode() : 0);
-        return result;
-    }
-
-    /**
-     * @return The default configuration
-     */
-    public static IOSocketChannelConfiguration defaultConfig() {
-        return new IOSocketChannelConfiguration();
-    }
+public interface IOSocketChannelConfiguration extends OpenIOSocketChannelConfiguration<IOSocketChannel, IOSocketChannelConfiguration> {
 }

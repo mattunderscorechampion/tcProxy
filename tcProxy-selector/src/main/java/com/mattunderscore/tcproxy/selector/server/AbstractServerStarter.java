@@ -25,7 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.selector.server;
 
-import static com.mattunderscore.tcproxy.io.configuration.IOServerSocketChannelConfiguration.defaultConfig;
+import static com.mattunderscore.tcproxy.io.configuration.SocketConfiguration.serverSocketChannel;
 import static java.lang.String.format;
 
 import java.io.IOException;
@@ -68,7 +68,7 @@ public abstract class AbstractServerStarter implements ServerStarter {
     public final Collection<IOServerSocketChannel> bindServerSockets() throws IOException {
         final IOOutboundSocketFactory<IOServerSocketChannel> factory = ioFactory
             .socketFactory(
-                defaultConfig()
+                serverSocketChannel()
                     .blocking(false)
                     .reuseAddress(true));
 

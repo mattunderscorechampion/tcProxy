@@ -25,6 +25,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.examples;
 
+import static com.mattunderscore.tcproxy.io.configuration.SocketConfiguration.serverSocketChannel;
 import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.socketFactory;
 
 import java.io.IOException;
@@ -40,7 +41,6 @@ import com.mattunderscore.tcproxy.examples.data.ThrottledDataProducer;
 import com.mattunderscore.tcproxy.examples.workers.Acceptor;
 import com.mattunderscore.tcproxy.examples.workers.Consumer;
 import com.mattunderscore.tcproxy.examples.workers.Producer;
-import com.mattunderscore.tcproxy.io.configuration.IOServerSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
@@ -83,7 +83,7 @@ public final class SimpleExample {
         try {
             // Start an acceptor
             final IOServerSocketChannel acceptorChannel =
-                socketFactory(IOServerSocketChannelConfiguration.defaultConfig()
+                socketFactory(serverSocketChannel()
                     .reuseAddress(true)
                     .bind(new InetSocketAddress("localhost", 8080)))
                 .create();

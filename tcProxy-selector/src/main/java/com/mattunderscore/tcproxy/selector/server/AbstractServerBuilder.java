@@ -28,8 +28,6 @@ package com.mattunderscore.tcproxy.selector.server;
 import static java.util.Objects.requireNonNull;
 
 import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
-import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
-import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 
 /**
  * An abstract builder for servers.

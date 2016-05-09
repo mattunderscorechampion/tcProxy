@@ -57,7 +57,7 @@ final class ProxyServerStarter extends AbstractServerStarter {
     private static final AtomicInteger THREAD_COUNT = new AtomicInteger(0);
     private final SelectorBackoff selectorBackoff;
     private final ConnectionManager manager;
-    private final IOSocketConfiguration<IOSocketChannel> socketSettings;
+    private final IOSocketConfiguration<IOSocketChannel, ?> socketSettings;
     private final ReadSelectorSettings readSelectorSettings;
     private final ConnectionHandlerFactory connectionHandlerFactory;
 
@@ -69,7 +69,7 @@ final class ProxyServerStarter extends AbstractServerStarter {
             SelectorBackoff selectorBackoff,
             ConnectionSettings connectionSettings,
             ConnectionManager manager,
-            IOSocketConfiguration<IOSocketChannel> socketSettings,
+            IOSocketConfiguration<IOSocketChannel, ?> socketSettings,
             ReadSelectorSettings readSelectorSettings) {
         super(ioFactory, portsToListenOn, selectorThreads);
         this.selectorBackoff = selectorBackoff;

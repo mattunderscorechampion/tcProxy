@@ -32,6 +32,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
 
 import com.mattunderscore.tcproxy.io.configuration.IOServerSocketChannelConfiguration;
+import com.mattunderscore.tcproxy.io.configuration.SocketConfiguration;
 import com.mattunderscore.tcproxy.io.data.CircularBuffer;
 import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
@@ -52,8 +53,7 @@ public final class OrderServer implements Runnable {
         try {
             final IOServerSocketChannel serverSocketChannel =
                 socketFactory(
-                    IOServerSocketChannelConfiguration
-                        .defaultConfig()
+                    SocketConfiguration.serverSocketChannel()
                         .reuseAddress(true)
                         .bind(new InetSocketAddress("localhost", 8080))).create();
 

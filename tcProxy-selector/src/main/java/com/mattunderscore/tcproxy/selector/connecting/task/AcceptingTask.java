@@ -49,12 +49,12 @@ public final class AcceptingTask implements SelectionRunnable<IOServerSocketChan
     private static final Logger LOG = LoggerFactory.getLogger("accept");
     private final SocketChannelSelector selector;
     private final ConnectionHandler connectionHandler;
-    private final IOSocketConfiguration<IOSocketChannel> socketSettings;
+    private final IOSocketConfiguration<IOSocketChannel, ?> socketSettings;
 
     public AcceptingTask(
             SocketChannelSelector selector,
             ConnectionHandler connectionHandler,
-            IOSocketConfiguration<IOSocketChannel> socketSettings) {
+            IOSocketConfiguration<IOSocketChannel, ?> socketSettings) {
         this.selector = selector;
         this.connectionHandler = connectionHandler;
         this.socketSettings = socketSettings;

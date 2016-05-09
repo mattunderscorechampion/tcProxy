@@ -28,10 +28,10 @@ package com.mattunderscore.tcproxy.proxy;
 import static java.util.Objects.requireNonNull;
 
 import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
-import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
+import com.mattunderscore.tcproxy.io.configuration.OpenIOSocketChannelConfiguration;
+import com.mattunderscore.tcproxy.io.configuration.SocketConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
 import com.mattunderscore.tcproxy.io.impl.JSLIOFactory;
-import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.proxy.connection.ConnectionManager;
 import com.mattunderscore.tcproxy.proxy.settings.ConnectionSettings;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
@@ -221,8 +221,7 @@ public final class ProxyServerBuilder extends AbstractServerBuilder<ProxyServerB
     public static ProxyServerBuilder builder() {
         return new ProxyServerBuilder(
             null,
-            IOSocketChannelConfiguration
-                .defaultConfig()
+            SocketConfiguration.socketChannel()
                 .receiveBuffer(1024)
                 .sendBuffer(1024),
             ConnectionSettings

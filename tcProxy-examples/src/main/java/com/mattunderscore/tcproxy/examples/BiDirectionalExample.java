@@ -25,25 +25,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.examples;
 
+import static com.mattunderscore.tcproxy.io.configuration.SocketConfiguration.socketChannel;
+import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.socketFactory;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mattunderscore.tcproxy.examples.data.RandomDataProducer;
 import com.mattunderscore.tcproxy.examples.data.ThrottledDataProducer;
 import com.mattunderscore.tcproxy.examples.selector.EchoServer;
 import com.mattunderscore.tcproxy.examples.workers.Consumer;
 import com.mattunderscore.tcproxy.examples.workers.Producer;
-import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.proxy.ProxyServerBuilder;
 import com.mattunderscore.tcproxy.proxy.settings.OutboundSocketSettings;
 import com.mattunderscore.tcproxy.selector.server.AcceptSettings;
 import com.mattunderscore.tcproxy.selector.server.Server;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.InetSocketAddress;
-
-import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.socketFactory;
 
 /**
  * Example combining proxy and echo servers for bidirectional proxing.
@@ -81,8 +82,7 @@ public final class BiDirectionalExample {
                     .build())
             .selectorThreads(1)
             .socketSettings(
-                IOSocketChannelConfiguration
-                    .defaultConfig()
+                socketChannel()
                     .receiveBuffer(1024)
                     .sendBuffer(1024))
             .build();

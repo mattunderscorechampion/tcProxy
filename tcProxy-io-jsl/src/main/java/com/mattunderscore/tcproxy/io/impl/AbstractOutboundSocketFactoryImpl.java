@@ -27,16 +27,16 @@ package com.mattunderscore.tcproxy.io.impl;
 
 import java.io.IOException;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
-import com.mattunderscore.tcproxy.io.socket.IOOutboundSocket;
 import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketFactory;
-import com.mattunderscore.tcproxy.io.configuration.AbstractIOSocketConfiguration;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocket;
 
 /**
  * Abstract implementation of {@link IOOutboundSocketFactory}.
  * @author Matt Champion on 17/10/2015
  */
-abstract class AbstractOutboundSocketFactoryImpl<T extends IOOutboundSocket, S extends AbstractIOSocketConfiguration<T, S>> implements IOOutboundSocketFactory<T> {
+abstract class AbstractOutboundSocketFactoryImpl<T extends IOOutboundSocket, S extends IOSocketConfiguration<T, S>> implements IOOutboundSocketFactory<T> {
     protected final IOFactory ioFactory;
     protected final S configuration;
 

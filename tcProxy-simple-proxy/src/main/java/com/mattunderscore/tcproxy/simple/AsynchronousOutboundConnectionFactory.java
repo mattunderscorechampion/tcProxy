@@ -28,8 +28,7 @@ package com.mattunderscore.tcproxy.simple;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import com.mattunderscore.tcproxy.io.configuration.IOOutboundSocketChannelConfiguration;
-import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.factory.IOFactory;
 import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketFactory;
 import com.mattunderscore.tcproxy.io.selection.IOSelectionKey;
@@ -58,13 +57,11 @@ import com.mattunderscore.tcproxy.selector.general.RegistrationHandle;
             IOFactory ioFactory,
             InetSocketAddress remote,
             SocketChannelSelector selector,
-            IOSocketChannelConfiguration socketSettings) {
+            IOSocketConfiguration<IOSocketChannel, ?> socketSettings) {
         this.remote = remote;
         this.selector = selector;
         factory = ioFactory.socketFactory(
-            IOOutboundSocketChannelConfiguration
-                .defaultConfig()
-                .configure(socketSettings)
+            socketSettings
                 .blocking(false));
     }
 

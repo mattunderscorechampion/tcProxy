@@ -25,6 +25,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.examples.sockets;
 
+import static com.mattunderscore.tcproxy.io.configuration.SocketConfiguration.serverSocketChannel;
+import static com.mattunderscore.tcproxy.io.configuration.SocketConfiguration.socketChannel;
 import static com.mattunderscore.tcproxy.io.impl.StaticIOFactory.socketFactory;
 
 import java.io.IOException;
@@ -32,14 +34,12 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
 import com.mattunderscore.tcproxy.io.data.CircularBuffer;
-import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
 import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketFactory;
-import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 import com.mattunderscore.tcproxy.io.factory.IOSocketChannelAcceptor;
-import com.mattunderscore.tcproxy.io.configuration.IOServerSocketChannelConfiguration;
-import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
 
 /**
  * Example repeatedly connects a socket to a server. The string "hello" is sent back to the client and the connection is
@@ -52,12 +52,11 @@ public final class HelloExample {
             new AcceptingTask(
                 new IOSocketChannelAcceptor(
                     socketFactory(
-                        IOServerSocketChannelConfiguration
-                            .defaultConfig()
+                        serverSocketChannel()
                             .reuseAddress(true)
                             .bind(new InetSocketAddress(8080)))
                         .create(),
-                    IOSocketChannelConfiguration.defaultConfig())));
+                    socketChannel())));
         final Thread connectingThread = new Thread(
             new ConnectingTask(socketFactory(IOOutboundSocketChannelFactory.class)));
         acceptingThread.start();

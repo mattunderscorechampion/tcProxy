@@ -85,7 +85,7 @@ public final class StaticIOFactory {
      * @return A socket factory
      * @throws IllegalArgumentException If no builder is available for the socket type
      */
-    public static  <T extends IOOutboundSocket, S extends IOOutboundSocketFactory<T>> S socketFactory(IOSocketConfiguration<T> configuration) {
+    public static  <T extends IOOutboundSocket, S extends IOOutboundSocketFactory<T>> S socketFactory(IOSocketConfiguration<T, ?> configuration) {
         return FACTORY.socketFactory(configuration);
     }
 }

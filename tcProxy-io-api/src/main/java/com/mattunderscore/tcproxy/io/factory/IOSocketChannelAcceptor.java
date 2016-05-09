@@ -27,23 +27,25 @@ package com.mattunderscore.tcproxy.io.factory;
 
 import java.io.IOException;
 
+import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
+import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.socket.IOSocketChannel;
-import com.mattunderscore.tcproxy.io.configuration.IOSocketChannelConfiguration;
+import com.mattunderscore.tcproxy.io.configuration.OpenIOSocketChannelConfiguration;
 
 /**
  * @author Matt Champion on 05/12/2015
  */
 public final class IOSocketChannelAcceptor {
     private final IOServerSocketChannel serverSocketChannel;
-    private final IOSocketChannelConfiguration socketChannelConfiguration;
+    private final IOSocketConfiguration<IOSocketChannel, ?> socketChannelConfiguration;
 
     /**
      * Constructor.
      * @param serverSocketChannel The {@link IOServerSocketChannel} to accept from
      * @param socketChannelConfiguration The configuration for the accepted socket
      */
-    public IOSocketChannelAcceptor(IOServerSocketChannel serverSocketChannel, IOSocketChannelConfiguration socketChannelConfiguration) {
+    public IOSocketChannelAcceptor(IOServerSocketChannel serverSocketChannel, OpenIOSocketChannelConfiguration socketChannelConfiguration) {
         this.serverSocketChannel = serverSocketChannel;
         this.socketChannelConfiguration = socketChannelConfiguration;
     }

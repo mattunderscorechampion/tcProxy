@@ -1,4 +1,4 @@
-/* Copyright © 2015 Matthew Champion
+/* Copyright © 2016 Matthew Champion
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -25,83 +25,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.configuration;
 
-import java.io.IOException;
-import java.net.SocketAddress;
-
-import net.jcip.annotations.Immutable;
-
 import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 
 /**
  * The configuration for {@link IOServerSocketChannel}s.
- * @author Matt Champion on 02/12/2015
+ * @author Matt Champion on 09/05/2016
  */
-@Immutable
-public final class IOServerSocketChannelConfiguration extends AbstractIOSocketConfiguration<IOServerSocketChannel, IOServerSocketChannelConfiguration> {
-    protected final SocketAddress boundSocket;
-
-    /*package*/ IOServerSocketChannelConfiguration() {
-        super();
-        boundSocket = null;
-    }
-
-    /*package*/ IOServerSocketChannelConfiguration(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress, SocketAddress boundSocket) {
-        super(receiveBuffer, sendBuffer, blocking, linger, reuseAddress);
-
-        this.boundSocket = boundSocket;
-    }
-
-    /**
-     * Binds the socket to a local address.
-     *
-     * @param localAddress The local address
-     * @return A new factory with the option set
-     */
-    public final IOServerSocketChannelConfiguration bind(SocketAddress localAddress) {
-        return new IOServerSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, localAddress);
-    }
-
-    @Override
-    public IOServerSocketChannel apply(IOServerSocketChannel ioSocket) throws IOException {
-        super.apply(ioSocket);
-        ioSocket.bind(boundSocket);
-        return ioSocket;
-    }
-
-    @Override
-    protected IOServerSocketChannelConfiguration newConfiguration(Integer receiveBuffer, Integer sendBuffer, boolean blocking, Integer linger, boolean reuseAddress) {
-        return new IOServerSocketChannelConfiguration(receiveBuffer, sendBuffer, blocking, linger, reuseAddress, boundSocket);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-
-        final IOServerSocketChannelConfiguration that = (IOServerSocketChannelConfiguration) o;
-
-        return !(boundSocket != null ? !boundSocket.equals(that.boundSocket) : that.boundSocket != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (boundSocket != null ? boundSocket.hashCode() : 0);
-        return result;
-    }
-
-    /**
-     * @return The default configuration
-     */
-    public static IOServerSocketChannelConfiguration defaultConfig() {
-        return new IOServerSocketChannelConfiguration();
-    }
+public interface IOServerSocketChannelConfiguration extends IOOutboundSocketConfiguration<IOServerSocketChannel, IOServerSocketChannelConfiguration> {
 }
