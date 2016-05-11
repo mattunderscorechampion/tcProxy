@@ -30,18 +30,17 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-import com.mattunderscore.tcproxy.io.configuration.SocketConfiguration;
-import com.mattunderscore.tcproxy.io.factory.IOFactory;
-import com.mattunderscore.tcproxy.io.socket.IOOutboundSocket;
-import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
-import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketChannelFactory;
-import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketFactory;
-import com.mattunderscore.tcproxy.io.selection.IOSelector;
-import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
-import com.mattunderscore.tcproxy.io.factory.IOServerSocketChannelFactory;
 import com.mattunderscore.tcproxy.io.configuration.IOOutboundSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.io.configuration.IOServerSocketChannelConfiguration;
 import com.mattunderscore.tcproxy.io.configuration.IOSocketConfiguration;
+import com.mattunderscore.tcproxy.io.configuration.SocketConfiguration;
+import com.mattunderscore.tcproxy.io.factory.IOFactory;
+import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketChannelFactory;
+import com.mattunderscore.tcproxy.io.factory.IOOutboundSocketFactory;
+import com.mattunderscore.tcproxy.io.factory.IOServerSocketChannelFactory;
+import com.mattunderscore.tcproxy.io.selection.IOSelector;
+import com.mattunderscore.tcproxy.io.socket.IOOutboundSocketChannel;
+import com.mattunderscore.tcproxy.io.socket.IOServerSocketChannel;
 import com.mattunderscore.tcproxy.io.socket.IOSocket;
 
 /**
@@ -81,10 +80,10 @@ public final class JSLIOFactory implements IOFactory {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends IOSocket, S extends IOOutboundSocketFactory<? extends T>> S socketFactory(IOSocketConfiguration<T, ?> configuration) {
-        if (IOServerSocketChannelConfiguration.class.equals(configuration.getClass())) {
+        if (IOServerSocketChannelConfiguration.class.isAssignableFrom(configuration.getClass())) {
             return (S) new IOServerSocketChannelFactoryImpl(this, (IOServerSocketChannelConfiguration) configuration);
         }
-        else if (IOOutboundSocketChannelConfiguration.class.equals(configuration.getClass())) {
+        else if (IOOutboundSocketChannelConfiguration.class.isAssignableFrom(configuration.getClass())) {
             return (S) new IOOutboundSocketChannelFactoryImpl(this, (IOOutboundSocketChannelConfiguration) configuration);
         }
         else {
