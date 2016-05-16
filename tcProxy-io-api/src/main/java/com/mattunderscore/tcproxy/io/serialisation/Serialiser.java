@@ -1,22 +1,21 @@
 package com.mattunderscore.tcproxy.io.serialisation;
 
-import com.mattunderscore.tcproxy.io.data.CircularBuffer;
-
 import java.nio.BufferOverflowException;
 
 /**
  * A serialiser capable of writing objects to a circular buffer.
  * @param <T> The type of object to serialise.
+ * @param <U> The type of buffer to serialise to.
  * @author Matt Champion on 11/01/16
  */
-public interface Serialiser<T> {
+public interface Serialiser<T, U> {
     /**
      * Check if a buffer has enough capacity to an object write to.
      * @param object The object
      * @param buffer The buffer
      * @return Value indicating the available capacity
      */
-    HasCapacity hasCapacity(T object, CircularBuffer buffer);
+    HasCapacity hasCapacity(T object, U buffer);
 
     /**
      * Write an object to a circular buffer.
@@ -24,7 +23,7 @@ public interface Serialiser<T> {
      * @param buffer The buffer to write to
      * @throws BufferOverflowException If there is not enough free capacity in the buffer to write the object
      */
-    void write(T object, CircularBuffer buffer) throws BufferOverflowException;
+    void write(T object, U buffer) throws BufferOverflowException;
 
     enum HasCapacity {
         /**

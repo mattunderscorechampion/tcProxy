@@ -4,16 +4,17 @@ import com.mattunderscore.tcproxy.io.data.CircularBuffer;
 
 /**
  * A deserialiser capable of reading objects from a circular buffer.
- * @param <T> The type of object to serialise.
+ * @param <T> The type of object to deserialise.
+ * @param <U> The type of buffer to deserialise from.
  * @author Matt Champion on 11/01/16
  */
-public interface Deserialiser<T> {
+public interface Deserialiser<T, U> {
     /**
      * Attempt to read an object from the buffer.
      * @param buffer The buffer to read from
      * @return The result of reading
      */
-    Result<T> read(CircularBuffer buffer);
+    Result<T> read(U buffer);
 
     /**
      * The result of reading an object.
