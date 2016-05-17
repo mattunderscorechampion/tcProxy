@@ -38,7 +38,7 @@ import java.nio.ByteBuffer;
 public abstract class AbstractByteBufferSerialiser<T> implements Serialiser<T, ByteBuffer> {
     @Override
     public final HasCapacity hasCapacity(T object, ByteBuffer buffer) {
-        final int requiredCapacity = calculateRequiredCapacity(object);
+        final int requiredCapacity = calculateMaximumRequiredCapacity(object);
         if (requiredCapacity <= buffer.remaining()) {
             return HasCapacity.HAS_CAPACITY;
         }
@@ -60,7 +60,16 @@ public abstract class AbstractByteBufferSerialiser<T> implements Serialiser<T, B
         }
     }
 
+    /**
+     * Perform the write to the buffer after size checks have validated free capacity
+     * @param object The object being serialised
+     * @param buffer The buffer to write to
+     */
     protected abstract void doWrite(T object, ByteBuffer buffer);
 
-    protected abstract int calculateRequiredCapacity(T object);
+    /**
+     * @param object The object being serialised
+     * @return The maximum required capacity to serialise the object, may be greater than the actual required capacity
+     */
+    protected abstract int calculateMaximumRequiredCapacity(T object);
 }

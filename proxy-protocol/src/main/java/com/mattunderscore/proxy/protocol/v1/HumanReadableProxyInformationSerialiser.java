@@ -77,7 +77,7 @@ public final class HumanReadableProxyInformationSerialiser extends AbstractByteB
     }
 
     @Override
-    protected int calculateRequiredCapacity(ProxyInformation protocol) {
+    protected int calculateMaximumRequiredCapacity(ProxyInformation protocol) {
         final InternetAddressFamily addressFamily = protocol.getAddressFamily();
         if (addressFamily == InternetAddressFamily.IPV4) {
             return 56;

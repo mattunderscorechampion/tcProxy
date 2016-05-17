@@ -37,7 +37,7 @@ import java.nio.BufferOverflowException;
 public abstract class AbstractCircularBufferSerialiser<T> implements Serialiser<T, CircularBuffer> {
     @Override
     public final HasCapacity hasCapacity(T object, CircularBuffer buffer) {
-        final int requiredCapacity = calculateRequiredCapacity(object);
+        final int requiredCapacity = calculateMaximumRequiredCapacity(object);
         final int freeCapacity = buffer.freeCapacity();
         if (requiredCapacity <= freeCapacity) {
             return HasCapacity.HAS_CAPACITY;
@@ -60,7 +60,16 @@ public abstract class AbstractCircularBufferSerialiser<T> implements Serialiser<
         }
     }
 
+    /**
+     * Perform the write to the buffer after size checks have validated free capacity
+     * @param object The object being serialised
+     * @param buffer The buffer to write to
+     */
     protected abstract void doWrite(T object, CircularBuffer buffer);
 
-    protected abstract int calculateRequiredCapacity(T object);
+    /**
+     * @param object The object being serialised
+     * @return The maximum required capacity to serialise the object, may be greater than the actual required capacity
+     */
+    protected abstract int calculateMaximumRequiredCapacity(T object);
 }
