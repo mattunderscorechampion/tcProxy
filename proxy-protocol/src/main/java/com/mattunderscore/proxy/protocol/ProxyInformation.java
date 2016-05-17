@@ -23,44 +23,26 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package com.mattunderscore.tcproxy.io.serialisation;
+package com.mattunderscore.proxy.protocol;
 
-import com.mattunderscore.tcproxy.io.data.CircularBuffer;
+import lombok.Builder;
+import lombok.Value;
 
-import java.nio.BufferOverflowException;
-import java.nio.ByteBuffer;
+import java.net.InetAddress;
 
 /**
- * An abstract implementation of {@link Serialiser} for a {@link CircularBuffer}.
+ * Value object containing the information passed by the PROXY protocol.
  *
- * @author Matt Champion on 16/05/16
+ * http://www.haproxy.org/download/1.7/doc/proxy-protocol.txt
+ *
+ * @author Matt Champion on 17/05/16
  */
-public abstract class AbstractByteBufferSerialiser<T> implements Serialiser<T, ByteBuffer> {
-    @Override
-    public final HasCapacity hasCapacity(T object, ByteBuffer buffer) {
-        final int requiredCapacity = calculateRequiredCapacity(object);
-        if (requiredCapacity <= buffer.remaining()) {
-            return HasCapacity.HAS_CAPACITY;
-        }
-        else if (requiredCapacity <= buffer.capacity()) {
-            return HasCapacity.LACKS_FREE_CAPACITY;
-        }
-        else {
-            return HasCapacity.LACKS_TOTAL_CAPACITY;
-        }
-    }
-
-    @Override
-    public final void write(T object, ByteBuffer buffer) throws BufferOverflowException {
-        if (hasCapacity(object, buffer) == HasCapacity.HAS_CAPACITY) {
-            doWrite(object, buffer);
-        }
-        else {
-            throw new BufferOverflowException();
-        }
-    }
-
-    protected abstract void doWrite(T object, ByteBuffer buffer);
-
-    protected abstract int calculateRequiredCapacity(T object);
+@Value
+@Builder
+public class ProxyInformation {
+    InternetAddressFamily addressFamily;
+    InetAddress sourceAddress;
+    InetAddress destinationAddress;
+    int sourcePort;
+    int destinationPort;
 }
