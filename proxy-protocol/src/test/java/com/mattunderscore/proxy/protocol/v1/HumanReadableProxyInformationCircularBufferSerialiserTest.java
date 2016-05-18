@@ -1,32 +1,9 @@
-/* Copyright © 2016 Matthew Champion
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
- * Neither the name of mattunderscore.com nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL MATTHEW CHAMPION BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
-
 package com.mattunderscore.proxy.protocol.v1;
 
 import com.mattunderscore.proxy.protocol.InternetAddressFamily;
 import com.mattunderscore.proxy.protocol.ProxyInformation;
+import com.mattunderscore.tcproxy.io.data.CircularBuffer;
+import com.mattunderscore.tcproxy.io.impl.CircularBufferImpl;
 import com.mattunderscore.tcproxy.io.serialisation.Serialiser;
 import com.mattunderscore.tcproxy.io.serialisation.Serialiser.HasCapacity;
 import org.junit.Test;
@@ -39,14 +16,14 @@ import java.nio.charset.Charset;
 import static org.junit.Assert.*;
 
 /**
- * Unit tests for {@link HumanReadableProxyInformationSerialiser}.
- * @author Matt Champion on 17/05/16
+ * Unit tests for {@link HumanReadableProxyInformationCircularBufferSerialiser}.
+ * @author Matt Champion on 18/05/16
  */
-public final class HumanReadableProxyInformationSerialiserTest {
+public final class HumanReadableProxyInformationCircularBufferSerialiserTest {
 
     @Test
     public void testIPV4() throws UnknownHostException {
-        final Serialiser<ProxyInformation, ByteBuffer> serialiser = HumanReadableProxyInformationSerialiser.INSTANCE;
+        final Serialiser<ProxyInformation, CircularBuffer> serialiser = HumanReadableProxyInformationCircularBufferSerialiser.INSTANCE;
         final ProxyInformation proxyInformation = ProxyInformation
                 .builder()
                 .addressFamily(InternetAddressFamily.IPV4)
@@ -57,19 +34,21 @@ public final class HumanReadableProxyInformationSerialiserTest {
                 .build();
 
         final byte[] bytes = new byte[56];
-        final ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(56);
         assertEquals(HasCapacity.HAS_CAPACITY, serialiser.hasCapacity(proxyInformation, buffer));
 
         serialiser.write(proxyInformation, buffer);
+        buffer.get(byteBuffer);
 
         assertEquals(
-            "PROXY TCP4 255.255.255.255 255.255.255.255 65535 65535\r\n",
-            new String(bytes, Charset.forName("ASCII")));
+                "PROXY TCP4 255.255.255.255 255.255.255.255 65535 65535\r\n",
+                new String(bytes, Charset.forName("ASCII")));
     }
 
     @Test
     public void testIPV6() throws UnknownHostException {
-        final Serialiser<ProxyInformation, ByteBuffer> serialiser = HumanReadableProxyInformationSerialiser.INSTANCE;
+        final Serialiser<ProxyInformation, CircularBuffer> serialiser = HumanReadableProxyInformationCircularBufferSerialiser.INSTANCE;
         final ProxyInformation proxyInformation = ProxyInformation
                 .builder()
                 .addressFamily(InternetAddressFamily.IPV6)
@@ -80,19 +59,21 @@ public final class HumanReadableProxyInformationSerialiserTest {
                 .build();
 
         final byte[] bytes = new byte[104];
-        final ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(104);
         assertEquals(HasCapacity.HAS_CAPACITY, serialiser.hasCapacity(proxyInformation, buffer));
 
         serialiser.write(proxyInformation, buffer);
+        buffer.get(byteBuffer);
 
         assertEquals(
-            "PROXY TCP6 ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff 65535 65535\r\n",
-            new String(bytes, Charset.forName("ASCII")));
+                "PROXY TCP6 ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff 65535 65535\r\n",
+                new String(bytes, Charset.forName("ASCII")));
     }
 
     @Test
     public void testLacksTotalCapacity() throws UnknownHostException {
-        final Serialiser<ProxyInformation, ByteBuffer> serialiser = HumanReadableProxyInformationSerialiser.INSTANCE;
+        final Serialiser<ProxyInformation, CircularBuffer> serialiser = HumanReadableProxyInformationCircularBufferSerialiser.INSTANCE;
         final ProxyInformation proxyInformation = ProxyInformation
                 .builder()
                 .addressFamily(InternetAddressFamily.IPV4)
@@ -102,14 +83,13 @@ public final class HumanReadableProxyInformationSerialiserTest {
                 .destinationPort(65535)
                 .build();
 
-        final byte[] bytes = new byte[30];
-        final ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(30);
         assertEquals(HasCapacity.LACKS_TOTAL_CAPACITY, serialiser.hasCapacity(proxyInformation, buffer));
     }
 
     @Test
     public void testLacksFreeCapacity() throws UnknownHostException {
-        final Serialiser<ProxyInformation, ByteBuffer> serialiser = HumanReadableProxyInformationSerialiser.INSTANCE;
+        final Serialiser<ProxyInformation, CircularBuffer> serialiser = HumanReadableProxyInformationCircularBufferSerialiser.INSTANCE;
         final ProxyInformation proxyInformation = ProxyInformation
                 .builder()
                 .addressFamily(InternetAddressFamily.IPV4)
@@ -119,9 +99,8 @@ public final class HumanReadableProxyInformationSerialiserTest {
                 .destinationPort(65535)
                 .build();
 
-        final byte[] bytes = new byte[56];
-        final ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        buffer.putInt(10);
+        final CircularBuffer buffer = CircularBufferImpl.allocate(56);
+        buffer.put((byte) 10);
         assertEquals(HasCapacity.LACKS_FREE_CAPACITY, serialiser.hasCapacity(proxyInformation, buffer));
     }
 }

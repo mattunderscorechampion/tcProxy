@@ -19,6 +19,11 @@
             <artifactId>tcProxy-io-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.mattunderscore.tcproxy</groupId>
+            <artifactId>tcProxy-io-jsl</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>

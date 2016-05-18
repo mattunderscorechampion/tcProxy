@@ -27,18 +27,18 @@ package com.mattunderscore.proxy.protocol.v1;
 
 import com.mattunderscore.proxy.protocol.InternetAddressFamily;
 import com.mattunderscore.proxy.protocol.ProxyInformation;
-import com.mattunderscore.tcproxy.io.serialisation.AbstractByteBufferSerialiser;
+import com.mattunderscore.tcproxy.io.data.CircularBuffer;
+import com.mattunderscore.tcproxy.io.serialisation.AbstractCircularBufferSerialiser;
 import com.mattunderscore.tcproxy.io.serialisation.Serialiser;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 /**
- * Implementation of a {@link Serialiser} for the PROXY protocol and {@link ByteBuffer}s.
- * @author Matt Champion on 17/05/16
+ * Implementation of a {@link Serialiser} for the PROXY protocol and {@link CircularBuffer}s.
+ * @author Matt Champion on 18/05/16
  */
-public final class HumanReadableProxyInformationSerialiser extends AbstractByteBufferSerialiser<ProxyInformation> {
-    public static final Serialiser<ProxyInformation, ByteBuffer> INSTANCE = new HumanReadableProxyInformationSerialiser();
+public final class HumanReadableProxyInformationCircularBufferSerialiser extends AbstractCircularBufferSerialiser<ProxyInformation> {
+    public static final Serialiser<ProxyInformation, CircularBuffer> INSTANCE = new HumanReadableProxyInformationCircularBufferSerialiser();
 
     private static final byte SPACE = (byte) 0x20;
     private static final byte[] PROXY_HEADER = new byte[] { 0x50, 0x52, 0x4F, 0x58, 0x59, SPACE };
@@ -48,11 +48,11 @@ public final class HumanReadableProxyInformationSerialiser extends AbstractByteB
     private static final byte[] CRLF = new byte[] { 0x0D, 0x0A };
     private static final Charset ASCII = Charset.forName("ASCII");
 
-    private HumanReadableProxyInformationSerialiser() {
+    private HumanReadableProxyInformationCircularBufferSerialiser() {
     }
 
     @Override
-    protected void doWrite(ProxyInformation protocol, ByteBuffer buffer) {
+    protected void doWrite(ProxyInformation protocol, CircularBuffer buffer) {
         buffer.put(PROXY_HEADER);
         final InternetAddressFamily addressFamily = protocol.getAddressFamily();
         if (addressFamily == InternetAddressFamily.IPV4) {
