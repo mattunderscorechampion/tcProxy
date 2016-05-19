@@ -30,10 +30,12 @@ package com.mattunderscore.tcproxy.io.serialisation;
  */
 public final class DeserialisationResult<T> implements Deserialiser.Result<T> {
     private final T result;
+    private final int bytesProcessed;
     private final boolean moreData;
 
-    private DeserialisationResult(T result, boolean moreData) {
+    private DeserialisationResult(T result, int bytesProcessed, boolean moreData) {
         this.result = result;
+        this.bytesProcessed = bytesProcessed;
         this.moreData = moreData;
     }
 
@@ -53,8 +55,18 @@ public final class DeserialisationResult<T> implements Deserialiser.Result<T> {
     }
 
     @Override
+    public boolean hasResult() {
+        return true;
+    }
+
+    @Override
     public T result() {
         return result;
+    }
+
+    @Override
+    public int bytesProcessed() {
+        return bytesProcessed;
     }
 
     /**
@@ -64,7 +76,7 @@ public final class DeserialisationResult<T> implements Deserialiser.Result<T> {
      * @param <T> The type of result
      * @return The result
      */
-    public static final <T> Deserialiser.Result<T> create(T result, boolean moreData) {
-        return new DeserialisationResult<>(result, moreData);
+    public static final <T> Deserialiser.Result<T> create(T result, int bytesProcessed, boolean moreData) {
+        return new DeserialisationResult<>(result, bytesProcessed, moreData);
     }
 }

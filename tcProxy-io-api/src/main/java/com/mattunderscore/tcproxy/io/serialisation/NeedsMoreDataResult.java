@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.tcproxy.io.serialisation;
 
 /**
+ * Indicates that more data needs to made available.
  * @author Matt Champion on 13/01/16
  */
 public final class NeedsMoreDataResult<T> implements Deserialiser.Result<T> {
@@ -50,8 +51,18 @@ public final class NeedsMoreDataResult<T> implements Deserialiser.Result<T> {
     }
 
     @Override
+    public boolean hasResult() {
+        return false;
+    }
+
+    @Override
     public T result() {
         throw new IllegalStateException("No result");
+    }
+
+    @Override
+    public int bytesProcessed() {
+        return 0;
     }
 
     /**

@@ -1,7 +1,5 @@
 package com.mattunderscore.tcproxy.io.serialisation;
 
-import com.mattunderscore.tcproxy.io.data.CircularBuffer;
-
 /**
  * A deserialiser capable of reading objects from a circular buffer.
  * @param <T> The type of object to deserialise.
@@ -10,7 +8,7 @@ import com.mattunderscore.tcproxy.io.data.CircularBuffer;
  */
 public interface Deserialiser<T, U> {
     /**
-     * Attempt to read an object from the buffer.
+     * Attempt to read an object from the buffer. Only consumes from the buffer if value is deserialised.
      * @param buffer The buffer to read from
      * @return The result of reading
      */
@@ -37,9 +35,19 @@ public interface Deserialiser<T, U> {
         boolean notDeserialisable();
 
         /**
+         * @return {@code true} if the deserialiser parsed a value
+         */
+        boolean hasResult();
+
+        /**
          * @return A deserialised object
          * @throws IllegalStateException If no object has been read
          */
         T result();
+
+        /**
+         * @return The number of bytes processed
+         */
+        int bytesProcessed();
     }
 }

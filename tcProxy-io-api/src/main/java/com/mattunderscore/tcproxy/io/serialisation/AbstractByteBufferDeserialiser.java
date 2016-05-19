@@ -25,53 +25,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.mattunderscore.tcproxy.io.serialisation;
 
+import java.nio.ByteBuffer;
+
 /**
- * A result indicating that no value can be deserialised.
- * @author Matt Champion on 13/01/16
+ * Abstract implementation of {@link Deserialiser}.
+ * @author Matt Champion on 19/05/16
  */
-public final class NotDeserialisableResult<T> implements Deserialiser.Result<T> {
-    private final int bytesProcessed;
-
-    private NotDeserialisableResult(int bytesProcessed) {
-        this.bytesProcessed = bytesProcessed;
-    }
-
+public abstract class AbstractByteBufferDeserialiser<T> implements Deserialiser<T, ByteBuffer> {
     @Override
-    public boolean needsMoreData() {
-        return false;
-    }
-
-    @Override
-    public boolean hasMoreData() {
-        return true;
-    }
-
-    @Override
-    public boolean notDeserialisable() {
-        return true;
-    }
-
-    @Override
-    public boolean hasResult() {
-        return false;
-    }
-
-    @Override
-    public T result() {
-        throw new IllegalStateException("No result");
-    }
-
-    @Override
-    public int bytesProcessed() {
-        return bytesProcessed;
+    public final Result<T> read(ByteBuffer buffer) {
+        final ByteBuffer readOnlyBuffer = buffer.asReadOnlyBuffer();
+        final Result<T> result = doRead(readOnlyBuffer);
+        if (result.hasResult()) {
+            buffer.position(buffer.position() + result.bytesProcessed());
+        }
+        return result;
     }
 
     /**
-     * Create result.
-     * @param <T> The type of result
+     * Perform the read. Read performed from read only buffer wrapper. Consuming from the actual buffer is performed by the {@link #read(ByteBuffer)}.
+     * @param buffer A read only buffer.
      * @return The result
      */
-    public static final <T> Deserialiser.Result<T> create(int bytesProcessed) {
-        return new NotDeserialisableResult<>(bytesProcessed);
-    }
+    protected abstract Result<T> doRead(ByteBuffer buffer);
 }
