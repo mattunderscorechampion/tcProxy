@@ -75,6 +75,12 @@
                         <goals>deploy</goals>
                     </configuration>
                 </plugin>
+
+                <plugin>
+                    <groupId>com.theoryinpractise</groupId>
+                    <artifactId>clojure-maven-plugin</artifactId>
+                    <version>1.7.1</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -216,6 +222,11 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-nop</artifactId>
                 <version>1.7.12</version>
+            </dependency>
+            <dependency>
+                <groupId>org.clojure</groupId>
+                <artifactId>clojure</artifactId>
+                <version>1.8.0</version>
             </dependency>
 
             <dependency>

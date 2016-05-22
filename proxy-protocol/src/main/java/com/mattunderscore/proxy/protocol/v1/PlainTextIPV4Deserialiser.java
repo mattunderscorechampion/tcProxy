@@ -26,7 +26,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.mattunderscore.proxy.protocol.v1;
 
 import com.mattunderscore.tcproxy.io.serialisation.AbstractByteBufferDeserialiser;
-import com.mattunderscore.tcproxy.io.serialisation.AbstractByteBufferSerialiser;
 import com.mattunderscore.tcproxy.io.serialisation.DeserialisationResult;
 import com.mattunderscore.tcproxy.io.serialisation.Deserialiser;
 import com.mattunderscore.tcproxy.io.serialisation.NotDeserialisableResult;
