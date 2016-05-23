@@ -57,8 +57,8 @@ public final class Plaintextipv4deserialiserTest {
         final ByteBuffer buffer = ByteBuffer.wrap("127.0.0".getBytes());
         final Result<InetAddress> address = new Plaintextipv4deserialiser().read(buffer);
         assertFalse(address.hasResult());
-        assertTrue(address.hasMoreData());
-        assertThat(address.bytesProcessed(), greaterThan(1));
+        assertFalse(address.hasMoreData());
+        assertTrue(address.needsMoreData());
         assertTrue(buffer.hasRemaining());
     }
 }

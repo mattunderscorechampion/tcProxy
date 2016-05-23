@@ -30,7 +30,7 @@ package com.mattunderscore.tcproxy.io.serialisation;
  * @author Matt Champion on 13/01/16
  */
 public final class NeedsMoreDataResult<T> implements Deserialiser.Result<T> {
-    private static final NeedsMoreDataResult INSTANCE = new NeedsMoreDataResult();
+    public static final NeedsMoreDataResult INSTANCE = new NeedsMoreDataResult();
 
     private NeedsMoreDataResult() {
     }
