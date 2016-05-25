@@ -61,9 +61,7 @@
     ; No more data
     (if (has-potential-address context)
       ; Create the address
-      (create-address-result-from-context (-> context
-                                              (update-in [:groups] conj (:pending context))
-                                              (assoc :pending [])) (rest seq))
+      (create-address-result-from-context (append-pending-to-groups context) (rest seq))
       ; Ended early
       (NeedsMoreDataResult/INSTANCE))))
 
