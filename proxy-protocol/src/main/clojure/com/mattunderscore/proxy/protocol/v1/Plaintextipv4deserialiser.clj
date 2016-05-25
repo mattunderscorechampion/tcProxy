@@ -36,28 +36,34 @@
     (update-in [:groups] conj (:pending context))
     (assoc :pending [])))
 
+(declare process-next-byte)
+
+(defn- process-byte [context byte remaining]
+  (if (is-valid-byte byte)
+    (if (is-grouping-invalid byte context)
+      ; Group separator without pending group or too many groups
+      (NotDeserialisableResult/create (+ (:processed context) 1))
+      ; Accumulate the byte
+      (if (is-group-separator byte)
+        ; Pack new group and continue
+        (process-next-byte remaining (-> context
+                                       (update-in [:processed] + 1)
+                                       (append-pending-to-groups)))
+        ; Add to pending group and continue
+        (process-next-byte remaining (-> context
+                                       (update-in [:processed] + 1)
+                                       (update-in [:pending] conj byte)))))
+
+    ; Has reached a byte that is not a part of the address
+    (if (has-potential-address context)
+      ; Create the address
+      (create-address-result-from-context (append-pending-to-groups context) remaining)
+      ; Cannot be an address
+      (NotDeserialisableResult/create (+ (:processed context) 1)))))
+
 (defn- process-next-byte [seq context]
   (if-let [byte (first seq)]
-    (if (is-valid-byte byte)
-      (if (is-grouping-invalid byte context)
-        ; Group separator without pending group or too many groups
-        (NotDeserialisableResult/create (+ (:processed context) 1))
-        ; Accumulate the byte
-        (if (is-group-separator byte)
-          ; Pack new group
-          (process-next-byte (rest seq) (-> context
-                                          (update-in [:processed] + 1)
-                                          (append-pending-to-groups)))
-          ; Add to pending group
-          (process-next-byte (rest seq) (-> context
-                                            (update-in [:processed] + 1)
-                                            (update-in [:pending] conj byte)))))
-
-      (if (has-potential-address context)
-        ; Create the address
-        (create-address-result-from-context (append-pending-to-groups context) (rest seq))
-        ; Ended early
-        (NotDeserialisableResult/create (+ (:processed context) 1))))
+    (process-byte context byte (rest seq))
     ; No more data
     (if (has-potential-address context)
       ; Create the address
