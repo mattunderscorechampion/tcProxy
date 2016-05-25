@@ -16,6 +16,11 @@
   (let [bytes (into-array Byte/TYPE (map (fn [group] (Integer/parseInt (clojure.string/join (map char group)))) (:groups context)))]
     (DeserialisationResult/create (java.net.Inet4Address/getByAddress bytes) (:processed context) (nil? (first remaining)))))
 
+(defn- has-potential-address [context]
+  (and
+    (= 3 (count (:groups context)))
+    (> (count (:pending context)) 0)))
+
 (defn- is-grouping-invalid [byte context]
   (if (is-group-separator byte)
     (or
@@ -44,8 +49,7 @@
                                             (update-in [:processed] + 1)
                                             (update-in [:pending] conj byte)))))
 
-      (if (and (= 3 (count (:groups context)))
-               (> (count (:pending context)) 0))
+      (if (has-potential-address context)
         ; Create the address
         (create-address-result-from-context (-> context
                                                 (update-in [:groups] conj (:pending context))
@@ -53,14 +57,13 @@
         ; Ended early
         (NotDeserialisableResult/create (+ (:processed context) 1))))
     ; No more data
-    (if (and (= 3 (count (:groups context)))
-             (> (count (:pending context)) 0))
-            ; Create the address
-            (create-address-result-from-context (-> context
-                                                    (update-in [:groups] conj (:pending context))
-                                                    (assoc :pending [])) (rest seq))
-            ; Ended early
-            (NeedsMoreDataResult/INSTANCE))))
+    (if (has-potential-address context)
+      ; Create the address
+      (create-address-result-from-context (-> context
+                                              (update-in [:groups] conj (:pending context))
+                                              (assoc :pending [])) (rest seq))
+      ; Ended early
+      (NeedsMoreDataResult/INSTANCE))))
 
 (defn- read-ip-from-sequence [seq]
   (process-next-byte seq {:processed 0 :groups [] :pending []}))
