@@ -16,28 +16,34 @@
   (let [bytes (into-array Byte/TYPE (map (fn [group] (Integer/parseInt (clojure.string/join (map char group)))) (:groups context)))]
     (DeserialisationResult/create (java.net.Inet4Address/getByAddress bytes) (:processed context) (nil? (first remaining)))))
 
+(defn- is-grouping-invalid [byte context]
+  (if (is-group-separator byte)
+    (or
+      ; Empty group
+      (= 0 (count (:pending context)))
+      ; Too many groups
+      (= 4 (count (:groups context))))
+    ; Too many characters in group
+    (= 3 (count (:pending context)))))
+
 (defn- process-next-byte [seq context]
   (if-let [byte (first seq)]
     (if (is-valid-byte byte)
-      (if (or (and (is-group-separator byte)
-                   (= 0 (count (:pending context))))
-              (and (is-group-separator byte)
-                   (= 4 (count (:groups context)))))
+      (if (is-grouping-invalid byte context)
         ; Group separator without pending group or too many groups
         (NotDeserialisableResult/create (+ (:processed context) 1))
-        (if (= (count (:pending context)) 4)
-          ; Group too long
-          (NotDeserialisableResult/create (+ (:processed context) 1))
-          (if (is-group-separator byte)
-            ; Pack new group
-            (process-next-byte (rest seq) (-> context
-                                              (update-in [:processed] + 1)
-                                              (update-in [:groups] conj (:pending context))
-                                              (assoc :pending [])))
-            ; Add to pending group
-            (process-next-byte (rest seq) (-> context
-                                              (update-in [:processed] + 1)
-                                              (update-in [:pending] conj byte))))))
+        ; Accumulate the byte
+        (if (is-group-separator byte)
+          ; Pack new group
+          (process-next-byte (rest seq) (-> context
+                                            (update-in [:processed] + 1)
+                                            (update-in [:groups] conj (:pending context))
+                                            (assoc :pending [])))
+          ; Add to pending group
+          (process-next-byte (rest seq) (-> context
+                                            (update-in [:processed] + 1)
+                                            (update-in [:pending] conj byte)))))
+
       (if (and (= 3 (count (:groups context)))
                (> (count (:pending context)) 0))
         ; Create the address
