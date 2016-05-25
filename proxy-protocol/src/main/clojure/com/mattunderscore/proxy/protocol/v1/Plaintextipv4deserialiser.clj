@@ -31,6 +31,11 @@
     ; Too many characters in group
     (= 3 (count (:pending context)))))
 
+(defn- append-pending-to-groups [context]
+  (-> context
+    (update-in [:groups] conj (:pending context))
+    (assoc :pending [])))
+
 (defn- process-next-byte [seq context]
   (if-let [byte (first seq)]
     (if (is-valid-byte byte)
@@ -41,9 +46,8 @@
         (if (is-group-separator byte)
           ; Pack new group
           (process-next-byte (rest seq) (-> context
-                                            (update-in [:processed] + 1)
-                                            (update-in [:groups] conj (:pending context))
-                                            (assoc :pending [])))
+                                          (update-in [:processed] + 1)
+                                          (append-pending-to-groups)))
           ; Add to pending group
           (process-next-byte (rest seq) (-> context
                                             (update-in [:processed] + 1)
@@ -51,9 +55,7 @@
 
       (if (has-potential-address context)
         ; Create the address
-        (create-address-result-from-context (-> context
-                                                (update-in [:groups] conj (:pending context))
-                                                (assoc :pending [])) (rest seq))
+        (create-address-result-from-context (append-pending-to-groups context) (rest seq))
         ; Ended early
         (NotDeserialisableResult/create (+ (:processed context) 1))))
     ; No more data
