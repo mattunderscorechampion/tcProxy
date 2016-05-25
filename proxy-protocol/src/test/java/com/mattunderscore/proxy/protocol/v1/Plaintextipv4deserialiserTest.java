@@ -53,6 +53,14 @@ public final class Plaintextipv4deserialiserTest {
     }
 
     @Test
+    public void localSpaceTerminated() throws UnknownHostException {
+        final ByteBuffer buffer = ByteBuffer.wrap("127.0.0.1 ".getBytes());
+        final Result<InetAddress> address = new Plaintextipv4deserialiser().read(buffer);
+        assertEquals(InetAddress.getByAddress(new byte[] {127, 0, 0, 1}), address.result());
+        assertTrue(buffer.hasRemaining());
+    }
+
+    @Test
     public void tooShort() throws UnknownHostException {
         final ByteBuffer buffer = ByteBuffer.wrap("127.0.0".getBytes());
         final Result<InetAddress> address = new Plaintextipv4deserialiser().read(buffer);

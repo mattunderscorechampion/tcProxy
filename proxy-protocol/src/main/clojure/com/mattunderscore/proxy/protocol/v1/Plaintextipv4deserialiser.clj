@@ -38,9 +38,12 @@
             (process-next-byte (rest seq) (-> context
                                               (update-in [:processed] + 1)
                                               (update-in [:pending] conj byte))))))
-      (if (= 4 (count (:groups context)))
+      (if (and (= 3 (count (:groups context)))
+               (> (count (:pending context)) 0))
         ; Create the address
-        (create-address-result-from-context context (rest seq))
+        (create-address-result-from-context (-> context
+                                                (update-in [:groups] conj (:pending context))
+                                                (assoc :pending [])) (rest seq))
         ; Ended early
         (NotDeserialisableResult/create (+ (:processed context) 1))))
     ; No more data
@@ -53,11 +56,11 @@
             ; Ended early
             (NeedsMoreDataResult/INSTANCE))))
 
-(defn- read-from-sequence [seq]
+(defn- read-ip-from-sequence [seq]
   (process-next-byte seq {:processed 0 :groups [] :pending []}))
 
 (defn -doRead
   [this buffer]
 
   (let [byte-seq (repeatedly #(if (.hasRemaining buffer) (.get buffer) nil))]
-    (read-from-sequence byte-seq)))
+    (read-ip-from-sequence byte-seq)))
