@@ -61,12 +61,22 @@ public final class Plaintextipv4deserialiserTest {
     }
 
     @Test
-    public void tooShort() throws UnknownHostException {
+    public void addressTooShort() throws UnknownHostException {
         final ByteBuffer buffer = ByteBuffer.wrap("127.0.0".getBytes());
         final Result<InetAddress> address = new Plaintextipv4deserialiser().read(buffer);
         assertFalse(address.hasResult());
         assertFalse(address.hasMoreData());
         assertTrue(address.needsMoreData());
+        assertTrue(buffer.hasRemaining());
+    }
+
+    @Test
+    public void groupTooLong() throws UnknownHostException {
+        final ByteBuffer buffer = ByteBuffer.wrap("1271.0.0".getBytes());
+        final Result<InetAddress> address = new Plaintextipv4deserialiser().read(buffer);
+        assertTrue(address.notDeserialisable());
+        assertFalse(address.hasResult());
+        assertFalse(address.needsMoreData());
         assertTrue(buffer.hasRemaining());
     }
 }
