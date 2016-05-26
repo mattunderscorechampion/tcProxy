@@ -32,22 +32,20 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
-import com.mattunderscore.proxy.protocol.v1.Plaintextipv4deserialiser;
-
-import static org.hamcrest.Matchers.greaterThan;
+import static com.mattunderscore.proxy.protocol.v1.PlainTextIPV4DeserialiserInstance.INSTANCE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Unit tests for {@link PlainTextIPV4DeserialiserInstance}.
  * @author Matt Champion on 22/05/16
  */
-public final class Plaintextipv4deserialiserTest {
+public final class PlainTextIPV4DeserialiserInstanceTest {
     @Test
     public void local() throws UnknownHostException {
         final ByteBuffer buffer = ByteBuffer.wrap("127.0.0.1".getBytes());
-        final Result<InetAddress> address = new Plaintextipv4deserialiser().read(buffer);
+        final Result<InetAddress> address = INSTANCE.read(buffer);
         assertEquals(InetAddress.getByAddress(new byte[] {127, 0, 0, 1}), address.result());
         assertFalse(buffer.hasRemaining());
     }
@@ -55,7 +53,7 @@ public final class Plaintextipv4deserialiserTest {
     @Test
     public void localSpaceTerminated() throws UnknownHostException {
         final ByteBuffer buffer = ByteBuffer.wrap("127.0.0.1 ".getBytes());
-        final Result<InetAddress> address = new Plaintextipv4deserialiser().read(buffer);
+        final Result<InetAddress> address = INSTANCE.read(buffer);
         assertEquals(InetAddress.getByAddress(new byte[] {127, 0, 0, 1}), address.result());
         assertTrue(buffer.hasRemaining());
     }
@@ -63,7 +61,7 @@ public final class Plaintextipv4deserialiserTest {
     @Test
     public void addressTooShort() throws UnknownHostException {
         final ByteBuffer buffer = ByteBuffer.wrap("127.0.0".getBytes());
-        final Result<InetAddress> address = new Plaintextipv4deserialiser().read(buffer);
+        final Result<InetAddress> address = INSTANCE.read(buffer);
         assertFalse(address.hasResult());
         assertFalse(address.hasMoreData());
         assertTrue(address.needsMoreData());
@@ -73,7 +71,7 @@ public final class Plaintextipv4deserialiserTest {
     @Test
     public void groupTooLong() throws UnknownHostException {
         final ByteBuffer buffer = ByteBuffer.wrap("1271.0.0".getBytes());
-        final Result<InetAddress> address = new Plaintextipv4deserialiser().read(buffer);
+        final Result<InetAddress> address = INSTANCE.read(buffer);
         assertTrue(address.notDeserialisable());
         assertFalse(address.hasResult());
         assertFalse(address.needsMoreData());

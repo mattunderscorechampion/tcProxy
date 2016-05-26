@@ -10,68 +10,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>proxy-protocol</artifactId>
-    <name>PROXY protocol implementation</name>
-    <description>Implementation of the proxy protocol. To test serialiser API.</description>
+    <name>PROXY protocol</name>
+    <packaging>pom</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.mattunderscore.tcproxy</groupId>
-            <artifactId>tcProxy-io-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.mattunderscore.tcproxy</groupId>
-            <artifactId>tcProxy-io-jsl</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.clojure</groupId>
-            <artifactId>clojure</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.jcip</groupId>
-            <artifactId>jcip-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.theoryinpractise</groupId>
-                <artifactId>clojure-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>clojure-compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>clojure-test</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+    <modules>
+        <module>proxy-protocol-data-model</module>
+        <module>proxy-protocol-deserialisation</module>
+        <module>proxy-protocol-implementation</module>
+    </modules>
 </project>

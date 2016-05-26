@@ -58,6 +58,13 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>com.theoryinpractise</groupId>
+                    <artifactId>clojure-maven-plugin</artifactId>
+                    <version>1.7.1</version>
+                    <extensions>true</extensions>
+                </plugin>
+
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.3</version>
@@ -74,12 +81,6 @@
                     <configuration>
                         <goals>deploy</goals>
                     </configuration>
-                </plugin>
-
-                <plugin>
-                    <groupId>com.theoryinpractise</groupId>
-                    <artifactId>clojure-maven-plugin</artifactId>
-                    <version>1.7.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -195,6 +196,21 @@
             <dependency>
                 <groupId>com.mattunderscore.tcproxy</groupId>
                 <artifactId>proxy-protocol</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mattunderscore.tcproxy</groupId>
+                <artifactId>proxy-protocol-data-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mattunderscore.tcproxy</groupId>
+                <artifactId>proxy-protocol-deserialisation</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mattunderscore.tcproxy</groupId>
+                <artifactId>proxy-protocol-implementation</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
