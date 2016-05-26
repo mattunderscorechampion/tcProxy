@@ -27,7 +27,7 @@ package com.mattunderscore.proxy.protocol.v1;
 
 import com.mattunderscore.tcproxy.io.serialisation.Deserialiser;
 
-import com.mattunderscore.proxy.protocol.v1.Plaintextipv4deserialiser;
+import com.mattunderscore.proxy.protocol.v1.PlainTextIPV4Deserialiser;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -40,7 +40,7 @@ public final class PlainTextIPV4DeserialiserInstance {
     /**
      * Wrapper for Clojure deserialiser implementation.
      */
-    public static final Deserialiser<InetAddress, ByteBuffer> INSTANCE = new Plaintextipv4deserialiser();
+    public static final Deserialiser<InetAddress, ByteBuffer> INSTANCE = new PlainTextIPV4Deserialiser();
 
     private PlainTextIPV4DeserialiserInstance() {
     }

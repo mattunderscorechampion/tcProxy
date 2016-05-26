@@ -1,8 +1,9 @@
 
-(ns com.mattunderscore.proxy.protocol.v1.Plaintextipv4deserialiser
+(ns proxy.protocol.v1.ipv4-deserialiser
   (import [com.mattunderscore.tcproxy.io.serialisation AbstractByteBufferDeserialiser NotDeserialisableResult NeedsMoreDataResult DeserialisationResult]
           [java.net.Inet4Address])
   (:gen-class
+    :name com.mattunderscore.proxy.protocol.v1.PlainTextIPV4Deserialiser
     :extends com.mattunderscore.tcproxy.io.serialisation.AbstractByteBufferDeserialiser))
 
 (defn- is-group-separator [byte]
