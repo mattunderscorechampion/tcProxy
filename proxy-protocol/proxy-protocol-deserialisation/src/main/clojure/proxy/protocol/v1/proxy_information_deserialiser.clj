@@ -7,6 +7,13 @@
     :name com.mattunderscore.proxy.protocol.v1.ProxyInformationDeserialiser
     :extends com.mattunderscore.tcproxy.io.serialisation.AbstractByteBufferDeserialiser))
 
+(defmacro if-has-byte [desired-byte seq & body]
+  (list 'if-let (vector 'byte (list 'first seq))
+        (list 'if (list '= (list 'char 'byte) desired-byte)
+              body
+              (list 'fn (vector) (list 'NotDeserialisableResult/create 1)))
+        (list 'fn (vector) (list 'NeedsMoreDataResult/INSTANCE))))
+
 (defn- has-info [context]
   (and (:header context)
        (:address-type context)
@@ -18,7 +25,7 @@
               (:target-port context)))))
 
 (defn- process-next-byte [seq context]
-  (NeedsMoreDataResult/INSTANCE))
+  (if-has-byte \P seq (if-has-byte \R (rest seq) (fn [] (NeedsMoreDataResult/INSTANCE)))))
 
 (defn- read-info-from-sequence [seq]
   (process-next-byte seq {:processed 0 :header false :pending []}))
